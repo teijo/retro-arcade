@@ -1,0 +1,19 @@
+{
+  "name": "retro-arcade",
+  "version": "0.0.0",
+  "authors": [
+    "Teijo Laine"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bacon": "~0.7.70",
+    "react": "~0.13.3"
+  }
+}
