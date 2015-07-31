@@ -12,12 +12,13 @@ var CodeBox = React.createClass({
     },
     render() {
         var completed = this.state.level.substr(0, this.state.step);
-        var left = this.state.level.substr(this.state.step);
+        var cursor = this.state.level.substr(this.state.step, 1);
+        var left = this.state.level.substr(this.state.step + 1);
         return (
             <div>
                 <h2>{this.props.name}</h2>
                 <pre>
-                    <span style={{color: "red"}}>{completed}</span>{left}
+                    <span style={{color: "red"}}>{completed}</span><span style={{backgroundColor: "lime"}}>{cursor}</span>{left}
                 </pre>
             </div>
         );
