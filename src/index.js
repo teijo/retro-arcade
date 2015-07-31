@@ -12,7 +12,7 @@ var CodeBox = React.createClass({
            "    });\n" +
            "}>>);";
         this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
-            var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? this.state.specialsLeft - 1 : this.state.specialsLeft;
+            var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
             this.setState({step: keyEvent.step, specialsLeft: specialsLeft});
         });
         return {
