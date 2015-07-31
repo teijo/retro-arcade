@@ -1,3 +1,6 @@
+KEY_NORMAL = 0;
+KEY_SPECIAL = 1;
+
 var CodeBox = React.createClass({
     getInitialState() {
         var level =
@@ -8,12 +11,14 @@ var CodeBox = React.createClass({
            "        player.input.push(++step);\n" +
            "    });\n" +
            "}>>);";
-        this.props.events.takeWhile((step) => step <= level.length).onValue((steps) => {
-            this.setState({step: steps});
+        this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
+            var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? this.state.specialsLeft - 1 : this.state.specialsLeft;
+            this.setState({step: keyEvent.step, specialsLeft: specialsLeft});
         });
         return {
             level: level,
-            step: 0
+            step: 0,
+            specialsLeft: 3
         };
     },
     render() {
@@ -33,8 +38,9 @@ var CodeBox = React.createClass({
                     <span style={{color: "red"}}>{completed}</span><span style={{backgroundColor: "lime"}}>{cursor}</span><span dangerouslySetInnerHTML={{__html: left}} />
                 </pre>
                 <div className="row">
-                    <div className="col-xs-5">Progress: {progress.toFixed(2)}%</div>
-                    <div className="col-xs-5">Score: {step * 1024}</div>
+                    <div className="col-xs-3">Progress: {progress.toFixed(2)}%</div>
+                    <div className="col-xs-3">Score: {step * 1024}</div>
+                    <div className="col-xs-3">Specials: {this.state.specialsLeft}</div>
                 </div>
             </div>
         );
@@ -45,12 +51,13 @@ var players = [
     {
         name: "Player 1",
         trigger: "s",
+        special: "w",
         input: new Bacon.Bus()
     },
     {
         name: "Player 2",
         trigger: "l",
-
+        special: "o",
         input: new Bacon.Bus()
     }
 ]
@@ -66,9 +73,18 @@ React.render(
 
 
 var listener = new window.keypress.Listener();
+
 players.forEach(player => {
     var step = 0;
-    listener.simple_combo(player.trigger, () => {
-        player.input.push(++step);
-    });
+
+    var signalInput = function(player, inputType) {
+        var key = inputType === KEY_NORMAL ? player.trigger : player.special;
+        listener.simple_combo(key, () => {
+            step = inputType === KEY_NORMAL ? step + 1 : step;
+            player.input.push({step: step, keyType: inputType});
+        });
+    };
+
+    signalInput(player, KEY_NORMAL);
+    signalInput(player, KEY_SPECIAL);
 });
