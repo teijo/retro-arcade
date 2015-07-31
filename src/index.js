@@ -12,15 +12,19 @@ var CodeBox = React.createClass({
         };
     },
     render() {
-        var completed = this.state.level.substr(0, this.state.step);
-        var cursor = this.state.level.substr(this.state.step, 1);
-        var left = this.state.level.substr(this.state.step + 1);
+        var level = this.state.level;
+        var completed = level.substr(0, this.state.step);
+        var cursor = level.substr(this.state.step, 1);
+        var left = level.substr(this.state.step + 1);
+        var length = level.length;
+        var progress = this.state.step / length * 100;
         return (
             <div>
                 <h2>{this.props.name}</h2>
                 <pre>
                     <span style={{color: "red"}}>{completed}</span><span style={{backgroundColor: "lime"}}>{cursor}</span>{left}
                 </pre>
+                <h3>Progress: {progress.toFixed(2)}%</h3>
             </div>
         );
     }
