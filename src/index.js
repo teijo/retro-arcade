@@ -1,7 +1,7 @@
 var CodeBox = React.createClass({
     getInitialState() {
         var level =
-           "var listener = new window.keypress.Listener();\n" +
+           "var <<listener>> = new window.keypress.Listener();\n" +
            "players.forEach(<<player => {\n" +
            "    var step = 0;\n" +
            "    listener.simple_combo(player.trigger, () => {\n" +
@@ -18,8 +18,8 @@ var CodeBox = React.createClass({
     },
     render() {
         var level = this.state.level;
-        level = level.replace("<<", '<span style="color: blue;">');
-        level = level.replace(">>", '</span>');
+        level = level.replace(/<</g, '<span style="color: blue;">');
+        level = level.replace(/>>/g, '</span>');
         var completed = level.substr(0, this.state.step);
         var cursor = level.substr(this.state.step, 1);
         var left = level.substr(this.state.step + 1);
