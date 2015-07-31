@@ -3,3 +3,9 @@ body {
     width: 100%;
     font-size: 1.2em;
 }
+
+pre {
+    background-color: #EEE;
+    padding: 10px;
+    height: 500px;
+}
