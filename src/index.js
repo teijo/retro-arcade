@@ -1,12 +1,13 @@
 var CodeBox = React.createClass({
     getInitialState() {
-        this.props.events.onValue((steps) => {
+        var level = "Text that gets painted\n" +
+            "when you press 's' on\n" +
+            "keyboard.";
+        this.props.events.takeWhile((step) => step <= level.length).onValue((steps) => {
             this.setState({step: steps});
         });
         return {
-            level: "Text that gets painted\n" +
-                   "when you press 's' on\n" +
-                   "keyboard.",
+            level: level,
             step: 0
         };
     },
