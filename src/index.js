@@ -2,6 +2,33 @@ KEY_NORMAL = 0;
 KEY_SPECIAL = 1;
 
 var CodeBox = React.createClass({
+    statics: {
+        indentSkip(block, position) {
+            var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
+            return match != null ? match[1].length : 0;
+        },
+        jump(step, blocks, index, position) {
+            var block = blocks[index];
+            if (index % 2 == 0 && position == block.length) {
+                return step + blocks[index + 1].length;
+            }
+            return step;
+        },
+        step(position) {
+            return position + 1;
+        },
+        getPosition(blocks, step) {
+            var blockIndex = -1;
+            var next = step;
+            var remainder;
+            do {
+                remainder = next;
+                blockIndex++;
+                next -= blocks[blockIndex].length;
+            } while(next > 0);
+            return [blockIndex, remainder];
+        }
+    },
     getInitialState() {
         var level =
            "var <<listener>> = new window.keypress.Listener();\n" +
@@ -15,9 +42,9 @@ var CodeBox = React.createClass({
 
         this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
             var currentPosition = keyEvent.keyType == KEY_SPECIAL
-                ? ((this.state.specialsLeft > 0) ? this.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
-                : this.step(this.state.step) + this.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
-            var [blockIndex, blockPosition] = this.getPosition(blocks, currentPosition);
+                ? ((this.state.specialsLeft > 0) ? CodeBox.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
+                : CodeBox.step(this.state.step) + CodeBox.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
+            var [blockIndex, blockPosition] = CodeBox.getPosition(blocks, currentPosition);
             var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
             this.setState({
                 step: currentPosition,
@@ -34,31 +61,6 @@ var CodeBox = React.createClass({
             step: 0,
             specialsLeft: 3
         };
-    },
-    indentSkip(block, position) {
-        var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
-        return match != null ? match[1].length : 0;
-    },
-    jump(step, blocks, index, position) {
-        var block = blocks[index];
-        if (index % 2 == 0 && position == block.length) {
-            return step + blocks[index + 1].length;
-        }
-        return step;
-    },
-    step(position) {
-        return position + 1;
-    },
-    getPosition(blocks, step) {
-        var blockIndex = -1;
-        var next = step;
-        var remainder;
-        do {
-            remainder = next;
-            blockIndex++;
-            next -= blocks[blockIndex].length;
-        } while(next > 0);
-        return [blockIndex, remainder];
     },
     render() {
         var [step, level, blockPosition, blockIndex, blocks] = [
