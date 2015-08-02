@@ -44,10 +44,11 @@ var CodeBox = React.createClass({
         return [blockIndex, remainder];
     },
     render() {
-        var [step, level, blockPosition, blockIndex] = [
+        var [step, level, blockPosition, blockIndex, blocks] = [
             this.state.step, this.state.level,
-            this.state.blockPosition, this.state.blockIndex];
-        var elements = this.state.blocks.map((block, index) => {
+            this.state.blockPosition, this.state.blockIndex,
+            this.state.blocks];
+        var elements = blocks.map((block, index) => {
             var baseColor = index % 2 == 0 ? "black" : "blue";
             var key = "block_"+index;
             if (index == blockIndex) {
