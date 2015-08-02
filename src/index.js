@@ -96,7 +96,7 @@ var players = [
         special: "o",
         input: new Bacon.Bus()
     }
-]
+];
 
 React.render(
     <div className="row">
@@ -106,7 +106,6 @@ React.render(
             </div>
         })}
     </div>, document.getElementById("main"));
-
 
 var listener = new window.keypress.Listener();
 
