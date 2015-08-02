@@ -15,6 +15,7 @@
   "dependencies": {
     "bacon": "~0.7.70",
     "react": "~0.13.3",
-    "Keypress": "~2.1.0"
+    "Keypress": "~2.1.0",
+    "bootstrap-grid-css": "*"
   }
 }
