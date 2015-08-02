@@ -48,7 +48,12 @@ var CodeBox = React.createClass({
             } else if (index < blockIndex) {
                 return <span key={key} style={{color: "red"}}>{block}</span>
             } else {
-                return <span key={key} style={{color: baseColor}}>{block}</span>;
+                // Previous block finished, cursor jumps to current block
+                if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].length) {
+                    return <span key={key} style={{color: baseColor}}><span style={{backgroundColor: "lime"}}>{block.substr(0, 1)}</span><span dangerouslySetInnerHTML={{__html: block.substr(1)}} /></span>;
+                } else {
+                    return <span key={key} style={{color: baseColor}}>{block}</span>;
+                }
             }
         });
         var progress = step / level.length * 100;
