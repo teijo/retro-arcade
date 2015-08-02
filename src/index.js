@@ -11,12 +11,23 @@ var CodeBox = React.createClass({
            "        player.input.push(++step);\n" +
            "    });\n" +
            "}>>);";
+        var blocks = level.split(/<<|>>/);
+
         this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
             var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
-            this.setState({step: keyEvent.step, specialsLeft: specialsLeft});
+            var [blockIndex, blockPosition] = this.getPosition(blocks, keyEvent.step);
+            this.setState({
+                step: keyEvent.step,
+                specialsLeft: specialsLeft,
+                blockIndex: blockIndex,
+                blockPosition: blockPosition
+            });
         });
         return {
             level: level,
+            blocks: blocks,
+            blockIndex: 0,
+            blockPosition: 0,
             step: 0,
             specialsLeft: 3
         };
@@ -33,11 +44,10 @@ var CodeBox = React.createClass({
         return [blockIndex, remainder];
     },
     render() {
-        var level = this.state.level;
-        var blocks = level.split(/<<|>>/);
-        var step = this.state.step;
-        var [blockIndex, blockPosition] = this.getPosition(blocks, step);
-        var elements = blocks.map((block, index) => {
+        var [step, level, blockPosition, blockIndex] = [
+            this.state.step, this.state.level,
+            this.state.blockPosition, this.state.blockIndex];
+        var elements = this.state.blocks.map((block, index) => {
             var baseColor = index % 2 == 0 ? "black" : "blue";
             var key = "block_"+index;
             if (index == blockIndex) {
