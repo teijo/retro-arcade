@@ -16,7 +16,7 @@ var CodeBox = React.createClass({
         this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
             var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
             var currentPosition = keyEvent.keyType == KEY_SPECIAL
-                ? ((specialsLeft >= 0) ? this.jump(this.state.step) : this.state.step)
+                ? ((specialsLeft >= 0) ? this.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
                 : this.step(this.state.step) + this.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
             var [blockIndex, blockPosition] = this.getPosition(blocks, currentPosition);
             this.setState({
@@ -39,8 +39,12 @@ var CodeBox = React.createClass({
         var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
         return match != null ? match[1].length : 0;
     },
-    jump(position) {
-        return position + 10;
+    jump(step, blocks, index, position) {
+        var block = blocks[index];
+        if (index % 2 == 0 && position == block.length) {
+            return step + blocks[index + 1].length;
+        }
+        return step;
     },
     step(position) {
         return position + 1;
