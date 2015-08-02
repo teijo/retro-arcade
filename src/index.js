@@ -77,12 +77,14 @@ var listener = new window.keypress.Listener();
 players.forEach(player => {
     var step = 0;
 
-    var signalInput = function(player, inputType) {
-        var key = inputType === KEY_NORMAL ? player.trigger : player.special;
-        listener.simple_combo(key, () => {
-            step = inputType === KEY_NORMAL ? step + 1 : step;
-            player.input.push({step: step, keyType: inputType});
-        });
+    var signalInput = (player, inputType) => {
+        listener.register_combo({
+            keys: inputType === KEY_NORMAL ? player.trigger : player.special,
+            on_keyup: () => {
+                step = inputType === KEY_NORMAL ? step + 1 : step;
+                player.input.push({step: step, keyType: inputType});
+            }
+        })
     };
 
     signalInput(player, KEY_NORMAL);
