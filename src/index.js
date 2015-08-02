@@ -14,11 +14,11 @@ var CodeBox = React.createClass({
         var blocks = level.split(/<<|>>/);
 
         this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
-            var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
             var currentPosition = keyEvent.keyType == KEY_SPECIAL
-                ? ((specialsLeft >= 0) ? this.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
+                ? ((this.state.specialsLeft > 0) ? this.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
                 : this.step(this.state.step) + this.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
             var [blockIndex, blockPosition] = this.getPosition(blocks, currentPosition);
+            var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
             this.setState({
                 step: currentPosition,
                 specialsLeft: specialsLeft,
