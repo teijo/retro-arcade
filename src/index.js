@@ -17,7 +17,7 @@ var CodeBox = React.createClass({
             var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
             var currentPosition = keyEvent.keyType == KEY_SPECIAL
                 ? ((specialsLeft >= 0) ? this.jump(this.state.step) : this.state.step)
-                : this.step(this.state.step);
+                : this.step(this.state.step) + this.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
             var [blockIndex, blockPosition] = this.getPosition(blocks, currentPosition);
             this.setState({
                 step: currentPosition,
@@ -34,6 +34,10 @@ var CodeBox = React.createClass({
             step: 0,
             specialsLeft: 3
         };
+    },
+    indentSkip(block, position) {
+        var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
+        return match != null ? match[1].length : 0;
     },
     jump(position) {
         return position + 10;
