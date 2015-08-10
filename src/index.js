@@ -88,15 +88,17 @@ var CodeBox = React.createClass({
         });
         var progress = step / level.length * 100;
         return (
-            <div>
-                <h2>{this.props.name}</h2>
-                <pre>
+            <div className="screen-content">
+                <div className="header">
+                    <h2>{this.props.name}</h2>
+                </div>
+                <pre className="code">
                     {elements}
                 </pre>
-                <div className="row">
-                    <div className="col-xs-3">Progress: {progress.toFixed(2)}%</div>
-                    <div className="col-xs-3">Score: {step * 1024}</div>
-                    <div className="col-xs-3">Specials: {this.state.specialsLeft}</div>
+                <div className="footer">
+                    <div className="col progress">{progress.toFixed(2)}% <span className="title">Progress</span></div>
+                    <div className="col score">{step * 1024}<span className="title">Score</span></div>
+                    <div className="col specials">{this.state.specialsLeft}<span className="title">Specials</span></div>
                 </div>
             </div>
         );
@@ -119,9 +121,9 @@ var players = [
 ];
 
 React.render(
-    <div className="row">
+    <div className="game">
         {players.map((p, i) => {
-            return <div key={"player_" + i} className="col-xs-5">
+            return <div key={"player_" + i} className="player-screen">
                 <CodeBox name={p.name} events={p.input} />
             </div>
         })}
