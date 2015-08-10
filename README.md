@@ -10,3 +10,4 @@ Requires [nodejs](https://nodejs.org/) and then `bower` (`npm install -g bower`)
 - `bower install`
 - `npm install`
 - `npm start` starts watch and builds `src/` to `build/`
+- `open index.html` (in OS X) to open `index.html` as a file in browser
