@@ -1,7 +1,7 @@
 KEY_NORMAL = 0;
 KEY_SPECIAL = 1;
 
-var CodeBox = React.createClass({
+var Game = React.createClass({
     statics: {
         indentSkip(block, position) {
             var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
@@ -42,9 +42,9 @@ var CodeBox = React.createClass({
 
         this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
             var currentPosition = keyEvent.keyType == KEY_SPECIAL
-                ? ((this.state.specialsLeft > 0) ? CodeBox.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
-                : CodeBox.step(this.state.step) + CodeBox.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
-            var [blockIndex, blockPosition] = CodeBox.getPosition(blocks, currentPosition);
+                ? ((this.state.specialsLeft > 0) ? Game.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
+                : Game.step(this.state.step) + Game.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
+            var [blockIndex, blockPosition] = Game.getPosition(blocks, currentPosition);
             var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
             this.setState({
                 step: currentPosition,
@@ -63,10 +63,27 @@ var CodeBox = React.createClass({
         };
     },
     render() {
-        var [step, level, blockPosition, blockIndex, blocks] = [
-            this.state.step, this.state.level,
-            this.state.blockPosition, this.state.blockIndex,
-            this.state.blocks];
+        var [step, level] = [this.state.step, this.state.level];
+        var progress = step / level.length * 100;
+        return (
+            <div className="screen-content">
+                <div className="header">
+                    <h2>{this.props.name}</h2>
+                </div>
+                <CodeBox blockPosition={this.state.blockPosition} blockIndex={this.state.blockIndex} blocks={this.state.blocks}/>
+                <div className="footer">
+                    <div className="col progress">{progress.toFixed(0)}% <span className="title">Progress</span></div>
+                    <div className="col score">{step * 1024}<span className="title">Score</span></div>
+                    <div className="col specials">{this.state.specialsLeft}<span className="title">Specials</span></div>
+                </div>
+            </div>
+        );
+    }
+});
+
+var CodeBox = React.createClass({
+    render() {
+        var [blockPosition, blockIndex, blocks] = [this.props.blockPosition, this.props.blockIndex, this.props.blocks];
         var elements = blocks.map((block, index) => {
             var baseColor = index % 2 == 0 ? "black" : "blue";
             var key = "block_"+index;
@@ -86,24 +103,15 @@ var CodeBox = React.createClass({
                 }
             }
         });
-        var progress = step / level.length * 100;
         return (
-            <div className="screen-content">
-                <div className="header">
-                    <h2>{this.props.name}</h2>
-                </div>
-                <pre className="code">
-                    {elements}
-                </pre>
-                <div className="footer">
-                    <div className="col progress">{progress.toFixed(0)}% <span className="title">Progress</span></div>
-                    <div className="col score">{step * 1024}<span className="title">Score</span></div>
-                    <div className="col specials">{this.state.specialsLeft}<span className="title">Specials</span></div>
-                </div>
-            </div>
+            <pre className="code">
+                {elements}
+            </pre>
+            )
         );
     }
 });
+
 
 var players = [
     {
@@ -124,7 +132,7 @@ React.render(
     <div className="game">
         {players.map((p, i) => {
             return <div key={"player_" + i} className="player-screen">
-                <CodeBox name={p.name} events={p.input} />
+                <Game name={p.name} events={p.input} />
             </div>
         })}
     </div>, document.getElementById("main"));
