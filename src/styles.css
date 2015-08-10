@@ -27,6 +27,8 @@ html {
 	flex: 1 1 auto;
     background-color: #EEE;
     padding: 1rem;
+    display: block;
+    overflow: scroll;
 }
 
 .game .header {

@@ -82,6 +82,16 @@ var Game = React.createClass({
 });
 
 var CodeBox = React.createClass({
+    componentWillUpdate() {
+      var node = this.getDOMNode()
+      var cursor = React.findDOMNode(this.refs.cursor)
+      this.x = Math.max(0, cursor.offsetLeft - node.offsetLeft - node.clientWidth + 150)
+      this.y = Math.max(0, cursor.offsetTop - node.offsetTop - node.clientHeight + 150)
+    },
+    componentDidUpdate() {
+      this.getDOMNode().scrollLeft = this.x
+      this.getDOMNode().scrollTop = this.y
+    },
     render() {
         var [blockPosition, blockIndex, blocks] = [this.props.blockPosition, this.props.blockIndex, this.props.blocks];
         var elements = blocks.map((block, index) => {
@@ -91,13 +101,13 @@ var CodeBox = React.createClass({
                 var completed = block.substr(0, blockPosition);
                 var cursor = block.substr(blockPosition, 1);
                 var left = block.substr(blockPosition + 1);
-                return <span key={key} style={{color: baseColor}}><span style={{color: "red"}}>{completed}</span><span style={{backgroundColor: "lime"}}>{cursor}</span><span dangerouslySetInnerHTML={{__html: left}} /></span>;
+                return <span key={key} style={{color: baseColor}}><span style={{color: "red"}}>{completed}</span><span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span><span dangerouslySetInnerHTML={{__html: left}} /></span>;
             } else if (index < blockIndex) {
                 return <span key={key} style={{color: "red"}}>{block}</span>
             } else {
                 // Previous block finished, cursor jumps to current block
                 if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].length) {
-                    return <span key={key} style={{color: baseColor}}><span style={{backgroundColor: "lime"}}>{block.substr(0, 1)}</span><span dangerouslySetInnerHTML={{__html: block.substr(1)}} /></span>;
+                    return <span key={key} style={{color: baseColor}}><span style={{backgroundColor: "lime"}} ref="cursor">{block.substr(0, 1)}</span><span dangerouslySetInnerHTML={{__html: block.substr(1)}} /></span>;
                 } else {
                     return <span key={key} style={{color: baseColor}}>{block}</span>;
                 }
@@ -107,8 +117,8 @@ var CodeBox = React.createClass({
             <pre className="code">
                 {elements}
             </pre>
-            )
-        );
+        )
+        
     }
 });
 
