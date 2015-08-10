@@ -54,6 +54,8 @@ html {
    flex: 1 1 auto;
    font-size: 2rem;
    color: #980004;
+   text-align: right;
+   padding: 0.1rem;
 }
 
 .game .footer .title {

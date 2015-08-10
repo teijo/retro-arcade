@@ -96,7 +96,7 @@ var CodeBox = React.createClass({
                     {elements}
                 </pre>
                 <div className="footer">
-                    <div className="col progress">{progress.toFixed(2)}% <span className="title">Progress</span></div>
+                    <div className="col progress">{progress.toFixed(0)}% <span className="title">Progress</span></div>
                     <div className="col score">{step * 1024}<span className="title">Score</span></div>
                     <div className="col specials">{this.state.specialsLeft}<span className="title">Specials</span></div>
                 </div>
