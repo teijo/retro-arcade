@@ -122,6 +122,19 @@ var CodeBox = React.createClass({
     }
 });
 
+var GamePage = React.createClass({
+    render() {
+        return (
+            <div className="game">
+                {this.props.players.map((p, i) => {
+                    return <div key={"player_" + i} className="player-screen">
+                        <Game name={p.name} events={p.input} />
+                    </div>
+                })}
+            </div>
+        )
+    }
+});
 
 var players = [
     {
@@ -138,14 +151,7 @@ var players = [
     }
 ];
 
-React.render(
-    <div className="game">
-        {players.map((p, i) => {
-            return <div key={"player_" + i} className="player-screen">
-                <Game name={p.name} events={p.input} />
-            </div>
-        })}
-    </div>, document.getElementById("main"));
+React.render(<GamePage players={players} />, document.getElementById("main"));
 
 var listener = new window.keypress.Listener();
 
