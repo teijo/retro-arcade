@@ -190,22 +190,6 @@ var players = [
   }
 ];
 
-Bacon.fromEvent(window, "hashchange")
-    .map(e => {
-      var parts = e.newURL.split("#");
-      return (parts.length == 2) ? "#" + parts[1] : "#menu";
-    })
-    .toProperty(window.location.hash)
-    .map(hash => {
-      switch (hash) {
-        case "#game":
-          return <GamePage players={players}/>;
-        default:
-          return <MenuPage/>;
-      }
-    })
-    .onValue(component => React.render(component, document.getElementById("main")));
-
 var listener = new window.keypress.Listener();
 
 players.forEach(player => {
@@ -222,3 +206,19 @@ players.forEach(player => {
   signalInput(player, KEY_NORMAL);
   signalInput(player, KEY_SPECIAL);
 });
+
+Bacon.fromEvent(window, "hashchange")
+    .map(e => {
+      var parts = e.newURL.split("#");
+      return (parts.length == 2) ? "#" + parts[1] : "#menu";
+    })
+    .toProperty(window.location.hash)
+    .map(hash => {
+      switch (hash) {
+        case "#game":
+          return <GamePage players={players}/>;
+        default:
+          return <MenuPage/>;
+      }
+    })
+    .onValue(component => React.render(component, document.getElementById("main")));
