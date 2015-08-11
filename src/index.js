@@ -2,6 +2,10 @@ KEY_NORMAL = 0;
 KEY_SPECIAL = 1;
 
 var Game = React.createClass({
+    propTypes: {
+        events: React.PropTypes.object.isRequired,
+        name: React.PropTypes.string.isRequired
+    },
     statics: {
         indentSkip(block, position) {
             var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
@@ -82,6 +86,11 @@ var Game = React.createClass({
 });
 
 var CodeBox = React.createClass({
+    propTypes: {
+        blockPosition: React.PropTypes.number.isRequired,
+        blockIndex: React.PropTypes.number.isRequired,
+        blocks:React.PropTypes.array.isRequired
+    },
     componentWillUpdate() {
       var node = this.getDOMNode()
       var cursor = React.findDOMNode(this.refs.cursor)
@@ -123,6 +132,9 @@ var CodeBox = React.createClass({
 });
 
 var GamePage = React.createClass({
+    propTypes: {
+        players: React.PropTypes.array.isRequired
+    },
     render() {
         return (
             <div className="game">
