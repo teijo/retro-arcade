@@ -17,6 +17,10 @@ html {
 	bottom: 0;
 }
 
+.game nav {
+	display: flex;
+}
+
 .game .screen-content {
 	display: flex;
 	flex-direction: column;

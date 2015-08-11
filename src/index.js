@@ -137,12 +137,26 @@ var GamePage = React.createClass({
     },
     render() {
         return (
-            <div className="game">
-                {this.props.players.map((p, i) => {
-                    return <div key={"player_" + i} className="player-screen">
-                        <Game name={p.name} events={p.input} />
-                    </div>
-                })}
+            <div>
+              <div className="game">
+                  <nav><a href="#menu">Menu</a></nav>
+                  {this.props.players.map((p, i) => {
+                      return <div key={"player_" + i} className="player-screen">
+                          <Game name={p.name} events={p.input} />
+                      </div>
+                  })}
+              </div>
+            </div>
+        )
+    }
+});
+
+var MenuPage = React.createClass({
+    render() {
+        return (
+            <div className="menu">
+                <h1>Game Title</h1>
+                <a href="#game">Start game</a>
             </div>
         )
     }
@@ -163,7 +177,21 @@ var players = [
     }
 ];
 
-React.render(<GamePage players={players} />, document.getElementById("main"));
+Bacon.fromEvent(window, "hashchange")
+    .map(e => {
+        var parts = e.newURL.split("#");
+        return (parts.length == 2) ? "#" + parts[1] : "#menu";
+    })
+    .toProperty(window.location.hash)
+    .map(hash => {
+        switch (hash) {
+            case "#game":
+                return <GamePage players={players}/>;
+            default:
+                return <MenuPage/>;
+        }
+    })
+    .onValue(component => React.render(component, document.getElementById("main")));
 
 var listener = new window.keypress.Listener();
 
