@@ -152,7 +152,10 @@ var GamePage = React.createClass({
     return (
         <div>
           <div className="game">
-            <nav><a href="#menu">Menu</a></nav>
+            <nav>
+              <a href="#menu">Menu</a> |
+              <a href="#score">Score</a>
+            </nav>
             {this.props.players.map((p, i) => {
               return <div key={"player_" + i} className="player-screen">
                 <Game name={p.name} events={p.input}/>
@@ -170,6 +173,21 @@ var MenuPage = React.createClass({
         <div className="menu">
           <h1>Game Title</h1>
           <a href="#game">Start game</a>
+        </div>
+    )
+  }
+});
+
+var ScorePage = React.createClass({
+  render() {
+    return (
+        <div className="score">
+          <h1>Score</h1>
+          <ul>
+            <li>12345</li>
+            <li>54321</li>
+          </ul>
+          <a href="#menu">Main menu</a>
         </div>
     )
   }
@@ -217,6 +235,8 @@ Bacon.fromEvent(window, "hashchange")
       switch (hash) {
         case "#game":
           return <GamePage players={players}/>;
+        case "#score":
+          return <ScorePage/>;
         default:
           return <MenuPage/>;
       }
