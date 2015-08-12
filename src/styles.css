@@ -18,8 +18,18 @@ html {
   bottom: 0;
 }
 
-.game nav {
+nav {
   display: flex;
+}
+
+nav li {
+  list-style: none;
+  float: left;
+  margin: 5px;
+}
+
+nav ul {
+  margin: 0;
 }
 
 .game .screen-content {

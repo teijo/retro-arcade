@@ -144,6 +144,26 @@ var CodeBox = React.createClass({
   }
 });
 
+var JumpMenu = React.createClass({
+  render() {
+    return (
+      <nav>
+        <ul>
+          <li>Jump</li>
+          <li>:</li>
+          <li><a href="#menu">Menu</a></li>
+          <li>&gt;</li>
+          <li><a href="#howto">How to play</a></li>
+          <li>&gt;</li>
+          <li><a href="#game">Start game</a></li>
+          <li>&gt;</li>
+          <li><a href="#score">Score</a></li>
+        </ul>
+      </nav>
+    )
+  }
+});
+
 var GamePage = React.createClass({
   propTypes: {
     players: React.PropTypes.array.isRequired
@@ -152,10 +172,7 @@ var GamePage = React.createClass({
     return (
         <div>
           <div className="game">
-            <nav>
-              <a href="#menu">Menu</a> |
-              <a href="#score">Score</a>
-            </nav>
+            <JumpMenu/>
             {this.props.players.map((p, i) => {
               return <div key={"player_" + i} className="player-screen">
                 <Game name={p.name} events={p.input}/>
@@ -171,6 +188,7 @@ var MenuPage = React.createClass({
   render() {
     return (
         <div className="menu">
+          <JumpMenu/>
           <h1>Game Title</h1>
           <a href="#howto">How to play</a> | <a href="#game">Start game</a>
         </div>
@@ -186,9 +204,7 @@ var HowtoPage = React.createClass({
     return (
         <div>
           <div className="howto">
-            <nav>
-              <a href="#menu">Menu</a>
-            </nav>
+            <JumpMenu/>
             <h1>How To Play</h1>
             <p>Push the buttons</p>
             <a href="#game">Start game</a>
@@ -202,6 +218,7 @@ var ScorePage = React.createClass({
   render() {
     return (
         <div className="score">
+          <JumpMenu/>
           <h1>Score</h1>
           <ul>
             <li>12345</li>
