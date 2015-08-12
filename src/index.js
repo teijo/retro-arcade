@@ -172,7 +172,27 @@ var MenuPage = React.createClass({
     return (
         <div className="menu">
           <h1>Game Title</h1>
-          <a href="#game">Start game</a>
+          <a href="#howto">How to play</a> | <a href="#game">Start game</a>
+        </div>
+    )
+  }
+});
+
+var HowtoPage = React.createClass({
+  propTypes: {
+    players: React.PropTypes.array.isRequired
+  },
+  render() {
+    return (
+        <div>
+          <div className="howto">
+            <nav>
+              <a href="#menu">Menu</a>
+            </nav>
+            <h1>How To Play</h1>
+            <p>Push the buttons</p>
+            <a href="#game">Start game</a>
+          </div>
         </div>
     )
   }
@@ -233,6 +253,8 @@ Bacon.fromEvent(window, "hashchange")
     .toProperty(window.location.hash)
     .map(hash => {
       switch (hash) {
+        case "#howto":
+          return <HowtoPage/>;
         case "#game":
           return <GamePage players={players}/>;
         case "#score":
