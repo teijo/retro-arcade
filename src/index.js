@@ -15,33 +15,6 @@ var Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired
   },
-  statics: {
-    indentSkip(block, position) {
-      var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
-      return match != null ? match[1].length : 0;
-    },
-    jump(step, blocks, index, position) {
-      var block = blocks[index];
-      if (index % 2 == 0 && position == block.length) {
-        return step + blocks[index + 1].length;
-      }
-      return step;
-    },
-    step(position) {
-      return position + 1;
-    },
-    getPosition(blocks, step) {
-      var blockIndex = -1;
-      var next = step;
-      var remainder;
-      do {
-        remainder = next;
-        blockIndex++;
-        next -= blocks[blockIndex].length;
-      } while (next > 0);
-      return [blockIndex, remainder];
-    }
-  },
   render() {
     var {progress, step, blockPosition, name, blockIndex, specialsLeft} = this.props.state;
     return (
@@ -210,11 +183,39 @@ var ScorePage = React.createClass({
   }
 });
 
+var Movement = {
+  indentSkip(block, position) {
+    var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
+    return match != null ? match[1].length : 0;
+  },
+  jump(step, blocks, index, position) {
+    var block = blocks[index];
+    if (index % 2 == 0 && position == block.length) {
+      return step + blocks[index + 1].length;
+    }
+    return step;
+  },
+  step(position) {
+    return position + 1;
+  },
+  getPosition(blocks, step) {
+    var blockIndex = -1;
+    var next = step;
+    var remainder;
+    do {
+      remainder = next;
+      blockIndex++;
+      next -= blocks[blockIndex].length;
+    } while (next > 0);
+    return [blockIndex, remainder];
+  }
+};
+
 function nextStep(propertyVal, keyType) {
   var currentPosition = (keyType == KEY_SPECIAL)
-      ? ((propertyVal.specialsLeft > 0) ? Game.jump(propertyVal.step, BLOCKS, propertyVal.blockIndex, propertyVal.blockPosition) : propertyVal.step)
-      : Game.step(propertyVal.step) + Game.indentSkip(BLOCKS[propertyVal.blockIndex], propertyVal.blockPosition);
-  var [blockIndex, blockPosition] = Game.getPosition(BLOCKS, currentPosition);
+      ? ((propertyVal.specialsLeft > 0) ? Movement.jump(propertyVal.step, BLOCKS, propertyVal.blockIndex, propertyVal.blockPosition) : propertyVal.step)
+      : Movement.step(propertyVal.step) + Movement.indentSkip(BLOCKS[propertyVal.blockIndex], propertyVal.blockPosition);
+  var [blockIndex, blockPosition] = Movement.getPosition(BLOCKS, currentPosition);
   var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, propertyVal.specialsLeft - 1) : propertyVal.specialsLeft;
 
   return {
