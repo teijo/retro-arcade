@@ -1,6 +1,16 @@
 KEY_NORMAL = 0;
 KEY_SPECIAL = 1;
 
+var LEVEL =
+    "var <<listener>> = new window.keypress.Listener();\n" +
+    "players.forEach(<<player => {\n" +
+    "    var step = 0;\n" +
+    "    listener.simple_combo(player.trigger, () => {\n" +
+    "        player.input.push(++step);\n" +
+    "    });\n" +
+    "}>>);";
+var BLOCKS = LEVEL.split(/<<|>>/);
+
 var Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired
@@ -32,21 +42,8 @@ var Game = React.createClass({
       return [blockIndex, remainder];
     }
   },
-  getInitialState() {
-    var level =
-        "var <<listener>> = new window.keypress.Listener();\n" +
-        "players.forEach(<<player => {\n" +
-        "    var step = 0;\n" +
-        "    listener.simple_combo(player.trigger, () => {\n" +
-        "        player.input.push(++step);\n" +
-        "    });\n" +
-        "}>>);";
-    var blocks = level.split(/<<|>>/);
-    return {level: level, blocks: blocks};
-  },
   render() {
     var {progress, step, blockPosition, name, blockIndex, specialsLeft} = this.props.state.state;
-    var {blocks, level} = this.state;
     return (
         <div className="screen-content">
           <div className="header">
@@ -54,7 +51,7 @@ var Game = React.createClass({
           </div>
           <CodeBox blockPosition={blockPosition}
                    blockIndex={blockIndex}
-                   blocks={blocks}/>
+                   blocks={BLOCKS}/>
 
           <div className="footer">
             <div className="col progress">{progress.toFixed(0)}% <span
@@ -283,16 +280,6 @@ var players = [
 ].map(f => f(nextStep)).map(Bacon.combineTemplate);
 
 var statesP = Bacon.combineAsArray(players[0], players[1]);
-
-var LEVEL =
-    "var <<listener>> = new window.keypress.Listener();\n" +
-    "players.forEach(<<player => {\n" +
-    "    var step = 0;\n" +
-    "    listener.simple_combo(player.trigger, () => {\n" +
-    "        player.input.push(++step);\n" +
-    "    });\n" +
-    "}>>);";
-var BLOCKS = LEVEL.split(/<<|>>/);
 
 var templateE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
