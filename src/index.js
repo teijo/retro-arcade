@@ -269,7 +269,7 @@ var playerStatesP = Bacon.combineAsArray([
   }
 ].map(player => registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep)));
 
-var templateE = Bacon.fromEvent(window, "hashchange")
+var pageComponentE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
       var parts = e.newURL.split("#");
       return (parts.length == 2) ? "#" + parts[1] : "#menu";
@@ -288,4 +288,4 @@ var templateE = Bacon.fromEvent(window, "hashchange")
       }
     });
 
-Bacon.onValues(templateE, playerStatesP, (template, states) => React.render(template(states), document.getElementById("main")));
+Bacon.onValues(pageComponentE, playerStatesP, (template, states) => React.render(template(states), document.getElementById("main")));
