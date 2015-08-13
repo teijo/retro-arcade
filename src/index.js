@@ -1,22 +1,12 @@
 KEY_NORMAL = 0;
 KEY_SPECIAL = 1;
 
-var LEVEL =
-    "var <<listener>> = new window.keypress.Listener();\n" +
-    "players.forEach(<<player => {\n" +
-    "    var step = 0;\n" +
-    "    listener.simple_combo(player.trigger, () => {\n" +
-    "        player.input.push(++step);\n" +
-    "    });\n" +
-    "}>>);";
-var BLOCKS = LEVEL.split(/<<|>>/);
-
 var Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired
   },
   render() {
-    var {progress, step, blockPosition, name, blockIndex, specialsLeft} = this.props.state;
+    var {progress, step, blockPosition, name, blockIndex, specialsLeft, blocks} = this.props.state;
     return (
         <div className="screen-content">
           <div className="header">
@@ -24,7 +14,7 @@ var Game = React.createClass({
           </div>
           <CodeBox blockPosition={blockPosition}
                    blockIndex={blockIndex}
-                   blocks={BLOCKS}/>
+                   blocks={blocks}/>
 
           <div className="footer">
             <div className="col progress">{progress.toFixed(0)}% <span
@@ -213,19 +203,21 @@ var Movement = {
 
 function nextStep(propertyVal, keyType) {
   var currentPosition = (keyType == KEY_SPECIAL)
-      ? ((propertyVal.specialsLeft > 0) ? Movement.jump(propertyVal.step, BLOCKS, propertyVal.blockIndex, propertyVal.blockPosition) : propertyVal.step)
-      : Movement.step(propertyVal.step) + Movement.indentSkip(BLOCKS[propertyVal.blockIndex], propertyVal.blockPosition);
-  var [blockIndex, blockPosition] = Movement.getPosition(BLOCKS, currentPosition);
+      ? ((propertyVal.specialsLeft > 0) ? Movement.jump(propertyVal.step, propertyVal.blocks, propertyVal.blockIndex, propertyVal.blockPosition) : propertyVal.step)
+      : Movement.step(propertyVal.step) + Movement.indentSkip(propertyVal.blocks[propertyVal.blockIndex], propertyVal.blockPosition);
+  var [blockIndex, blockPosition] = Movement.getPosition(propertyVal.blocks, currentPosition);
   var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, propertyVal.specialsLeft - 1) : propertyVal.specialsLeft;
 
   return {
     name: propertyVal.name,
+    level: propertyVal.level,
+    blocks: propertyVal.blocks,
     specialsLeft: specialsLeft,
     blockIndex: blockIndex,
     blockPosition: blockPosition,
     step: currentPosition,
     score: currentPosition * 1024,
-    progress: currentPosition / LEVEL.length * 100
+    progress: currentPosition / propertyVal.level.length * 100
   };
 }
 
@@ -242,12 +234,24 @@ function hookInputs(input, trigger, special) {
   signalInput(KEY_SPECIAL);
 }
 
+var LEVEL =
+    "var <<listener>> = new window.keypress.Listener();\n" +
+    "players.forEach(<<player => {\n" +
+    "    var step = 0;\n" +
+    "    listener.simple_combo(player.trigger, () => {\n" +
+    "        player.input.push(++step);\n" +
+    "    });\n" +
+    "}>>);";
+var BLOCKS = LEVEL.split(/<<|>>/);
+
 var players = [
   (f) => {
     var input = new Bacon.Bus();
     hookInputs(input, "s", "w");
     return input.scan({
       name: "Player 1",
+      level: LEVEL,
+      blocks: BLOCKS,
       specialsLeft: 3,
       score: 0,
       progress: 0,
@@ -262,6 +266,8 @@ var players = [
     hookInputs(input, "l", "o");
     return input.scan({
       name: "Player 2",
+      level: LEVEL,
+      blocks: BLOCKS,
       specialsLeft: 3,
       score: 0,
       progress: 0,
