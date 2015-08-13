@@ -3,8 +3,7 @@ KEY_SPECIAL = 1;
 
 var Game = React.createClass({
   propTypes: {
-    events: React.PropTypes.object.isRequired,
-    name: React.PropTypes.string.isRequired
+    state: React.PropTypes.object.isRequired
   },
   statics: {
     indentSkip(block, position) {
@@ -43,47 +42,26 @@ var Game = React.createClass({
         "    });\n" +
         "}>>);";
     var blocks = level.split(/<<|>>/);
-
-    this.props.events.takeWhile((keyEvent) => keyEvent.step <= level.length).onValue((keyEvent) => {
-      var currentPosition = keyEvent.keyType == KEY_SPECIAL
-          ? ((this.state.specialsLeft > 0) ? Game.jump(this.state.step, blocks, this.state.blockIndex, this.state.blockPosition) : this.state.step)
-          : Game.step(this.state.step) + Game.indentSkip(blocks[this.state.blockIndex], this.state.blockPosition);
-      var [blockIndex, blockPosition] = Game.getPosition(blocks, currentPosition);
-      var specialsLeft = keyEvent.keyType == KEY_SPECIAL ? Math.max(0, this.state.specialsLeft - 1) : this.state.specialsLeft;
-      this.setState({
-        step: currentPosition,
-        specialsLeft: specialsLeft,
-        blockIndex: blockIndex,
-        blockPosition: blockPosition
-      });
-    });
-    return {
-      level: level,
-      blocks: blocks,
-      blockIndex: 0,
-      blockPosition: 0,
-      step: 0,
-      specialsLeft: 3
-    };
+    return {level: level, blocks: blocks};
   },
   render() {
-    var [step, level] = [this.state.step, this.state.level];
-    var progress = step / level.length * 100;
+    var {progress, step, blockPosition, name, blockIndex, specialsLeft} = this.props.state.state;
+    var {blocks, level} = this.state;
     return (
         <div className="screen-content">
           <div className="header">
-            <h2>{this.props.name}</h2>
+            <h2>{name}</h2>
           </div>
-          <CodeBox blockPosition={this.state.blockPosition}
-                   blockIndex={this.state.blockIndex}
-                   blocks={this.state.blocks}/>
+          <CodeBox blockPosition={blockPosition}
+                   blockIndex={blockIndex}
+                   blocks={blocks}/>
 
           <div className="footer">
             <div className="col progress">{progress.toFixed(0)}% <span
                 className="title">Progress</span></div>
             <div className="col score">{step * 1024}<span className="title">Score</span>
             </div>
-            <div className="col specials">{this.state.specialsLeft}<span
+            <div className="col specials">{specialsLeft}<span
                 className="title">Specials</span></div>
           </div>
         </div>
@@ -166,16 +144,16 @@ var JumpMenu = React.createClass({
 
 var GamePage = React.createClass({
   propTypes: {
-    players: React.PropTypes.array.isRequired
+    state: React.PropTypes.array.isRequired
   },
   render() {
     return (
         <div>
           <div className="game">
             <JumpMenu/>
-            {this.props.players.map((p, i) => {
-              return <div key={"player_" + i} className="player-screen">
-                <Game name={p.name} events={p.input}/>
+            {this.props.state.map((p, index) => {
+              return <div key={"player_" + index} className="player-screen">
+                <Game state={p}/>
               </div>
             })}
           </div>
@@ -185,6 +163,9 @@ var GamePage = React.createClass({
 });
 
 var MenuPage = React.createClass({
+  propTypes: {
+    state: React.PropTypes.array.isRequired
+  },
   render() {
     return (
         <div className="menu">
@@ -198,7 +179,7 @@ var MenuPage = React.createClass({
 
 var HowtoPage = React.createClass({
   propTypes: {
-    players: React.PropTypes.array.isRequired
+    state: React.PropTypes.array.isRequired
   },
   render() {
     return (
@@ -215,14 +196,16 @@ var HowtoPage = React.createClass({
 });
 
 var ScorePage = React.createClass({
+  propTypes: {
+    state: React.PropTypes.array.isRequired
+  },
   render() {
     return (
         <div className="score">
           <JumpMenu/>
           <h1>Score</h1>
           <ul>
-            <li>12345</li>
-            <li>54321</li>
+            {this.props.state.map((s, index) => <li key={index}>{s.state.score}</li>)}
           </ul>
           <a href="#menu">Main menu</a>
         </div>
@@ -230,39 +213,88 @@ var ScorePage = React.createClass({
   }
 });
 
-var players = [
-  {
-    name: "Player 1",
-    trigger: "s",
-    special: "w",
-    input: new Bacon.Bus()
-  },
-  {
-    name: "Player 2",
-    trigger: "l",
-    special: "o",
-    input: new Bacon.Bus()
-  }
-];
+function nextStep(propertyVal, streamVal) {
+  var currentPosition = streamVal.keyType == KEY_SPECIAL
+      ? ((propertyVal.specialsLeft > 0) ? Game.jump(propertyVal.step, BLOCKS, propertyVal.blockIndex, propertyVal.blockPosition) : propertyVal.step)
+      : Game.step(propertyVal.step) + Game.indentSkip(BLOCKS[propertyVal.blockIndex], propertyVal.blockPosition);
+  var [blockIndex, blockPosition] = Game.getPosition(BLOCKS, currentPosition);
+  var specialsLeft = streamVal.keyType == KEY_SPECIAL ? Math.max(0, propertyVal.specialsLeft - 1) : propertyVal.specialsLeft;
+
+  return {
+    name: propertyVal.name,
+    specialsLeft: specialsLeft,
+    blockIndex: blockIndex,
+    blockPosition: blockPosition,
+    step: currentPosition,
+    score: currentPosition * 1024,
+    progress: currentPosition / LEVEL.length * 100
+  };
+}
 
 var listener = new window.keypress.Listener();
 
-players.forEach(player => {
+function hookInputs(input, trigger, special) {
   var step = 0;
 
-  var signalInput = function(player, inputType) {
-    var key = inputType === KEY_NORMAL ? player.trigger : player.special;
+  var signalInput = function(inputType) {
+    var key = inputType === KEY_NORMAL ? trigger : special;
     listener.simple_combo(key, () => {
       step = inputType === KEY_NORMAL ? step + 1 : step;
-      player.input.push({step: step, keyType: inputType});
+      input.push({step: step, keyType: inputType});
     });
   };
 
-  signalInput(player, KEY_NORMAL);
-  signalInput(player, KEY_SPECIAL);
-});
+  signalInput(KEY_NORMAL);
+  signalInput(KEY_SPECIAL);
+}
 
-Bacon.fromEvent(window, "hashchange")
+var players = [
+  (f) => {
+    var input = new Bacon.Bus();
+    hookInputs(input, "s", "w");
+    return {
+      state: input.scan({
+        name: "Player 1",
+        specialsLeft: 3,
+        score: 0,
+        progress: 0,
+        blockIndex: 0,
+        blockPosition: 0,
+        step: 0
+      }, f)
+    }
+  }
+  ,
+  (f) => {
+    var input = new Bacon.Bus();
+    hookInputs(input, "l", "o");
+    return {
+      state: input.scan({
+        name: "Player 2",
+        specialsLeft: 3,
+        score: 0,
+        progress: 0,
+        blockIndex: 0,
+        blockPosition: 0,
+        step: 0
+      }, f)
+    }
+  }
+].map(f => f(nextStep)).map(Bacon.combineTemplate);
+
+var statesP = Bacon.combineAsArray(players[0], players[1]);
+
+var LEVEL =
+    "var <<listener>> = new window.keypress.Listener();\n" +
+    "players.forEach(<<player => {\n" +
+    "    var step = 0;\n" +
+    "    listener.simple_combo(player.trigger, () => {\n" +
+    "        player.input.push(++step);\n" +
+    "    });\n" +
+    "}>>);";
+var BLOCKS = LEVEL.split(/<<|>>/);
+
+var templateE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
       var parts = e.newURL.split("#");
       return (parts.length == 2) ? "#" + parts[1] : "#menu";
@@ -271,13 +303,14 @@ Bacon.fromEvent(window, "hashchange")
     .map(hash => {
       switch (hash) {
         case "#howto":
-          return <HowtoPage/>;
+          return (states) => <HowtoPage state={states}/>;
         case "#game":
-          return <GamePage players={players}/>;
+          return (states) => <GamePage state={states}/>;
         case "#score":
-          return <ScorePage/>;
+          return (states) => <ScorePage state={states}/>;
         default:
-          return <MenuPage/>;
+          return (states) => <MenuPage state={states}/>;
       }
-    })
-    .onValue(component => React.render(component, document.getElementById("main")));
+    });
+
+Bacon.onValues(templateE, statesP, (template, states) => React.render(template(states), document.getElementById("main")));
