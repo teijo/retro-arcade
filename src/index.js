@@ -210,12 +210,12 @@ var ScorePage = React.createClass({
   }
 });
 
-function nextStep(propertyVal, streamVal) {
-  var currentPosition = streamVal.keyType == KEY_SPECIAL
+function nextStep(propertyVal, keyType) {
+  var currentPosition = (keyType == KEY_SPECIAL)
       ? ((propertyVal.specialsLeft > 0) ? Game.jump(propertyVal.step, BLOCKS, propertyVal.blockIndex, propertyVal.blockPosition) : propertyVal.step)
       : Game.step(propertyVal.step) + Game.indentSkip(BLOCKS[propertyVal.blockIndex], propertyVal.blockPosition);
   var [blockIndex, blockPosition] = Game.getPosition(BLOCKS, currentPosition);
-  var specialsLeft = streamVal.keyType == KEY_SPECIAL ? Math.max(0, propertyVal.specialsLeft - 1) : propertyVal.specialsLeft;
+  var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, propertyVal.specialsLeft - 1) : propertyVal.specialsLeft;
 
   return {
     name: propertyVal.name,
@@ -231,16 +231,11 @@ function nextStep(propertyVal, streamVal) {
 var listener = new window.keypress.Listener();
 
 function hookInputs(input, trigger, special) {
-  var step = 0;
-
-  var signalInput = function(inputType) {
-    var key = inputType === KEY_NORMAL ? trigger : special;
-    listener.simple_combo(key, () => {
-      step = inputType === KEY_NORMAL ? step + 1 : step;
-      input.push({step: step, keyType: inputType});
-    });
-  };
-
+  function signalInput(inputType) {
+    listener.simple_combo(
+        (inputType === KEY_NORMAL)  ? trigger  : special,
+        () => input.push(inputType));
+  }
   signalInput(KEY_NORMAL);
   signalInput(KEY_SPECIAL);
 }
