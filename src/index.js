@@ -223,15 +223,11 @@ function nextStep(state, keyType) {
 
 var listener = new window.keypress.Listener();
 
-function hookInputs(input, trigger, special) {
-  function signalInput(inputType) {
-    listener.simple_combo(
-        (inputType === KEY_NORMAL) ? trigger : special,
-        () => input.push(inputType));
-  }
-
-  signalInput(KEY_NORMAL);
-  signalInput(KEY_SPECIAL);
+function registerInput(trigger, special) {
+  var inputE = new Bacon.Bus();
+  listener.simple_combo(trigger, () => inputE.push(KEY_NORMAL));
+  listener.simple_combo(special, () => inputE.push(KEY_SPECIAL));
+  return inputE;
 }
 
 var LEVEL =
@@ -246,9 +242,7 @@ var BLOCKS = LEVEL.split(/<<|>>/);
 
 var players = [
   (f) => {
-    var input = new Bacon.Bus();
-    hookInputs(input, "s", "w");
-    return input.scan({
+    return registerInput("s", "w").scan({
       name: "Player 1",
       level: LEVEL,
       blocks: BLOCKS,
@@ -262,9 +256,7 @@ var players = [
   }
   ,
   (f) => {
-    var input = new Bacon.Bus();
-    hookInputs(input, "l", "o");
-    return input.scan({
+    return registerInput("l", "o").scan({
       name: "Player 2",
       level: LEVEL,
       blocks: BLOCKS,
