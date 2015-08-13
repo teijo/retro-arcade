@@ -211,6 +211,7 @@ var nextStep = (function() {
 
     return {
       name: state.name,
+      keys: state.keys,
       level: state.level,
       blocks: state.blocks,
       specialsLeft: specialsLeft,
@@ -242,37 +243,32 @@ var LEVEL =
     "}>>);";
 var BLOCKS = LEVEL.split(/<<|>>/);
 
-var players = [
-  (f) => {
-    return registerInput("s", "w").scan({
-      name: "Player 1",
-      level: LEVEL,
-      blocks: BLOCKS,
-      specialsLeft: 3,
-      score: 0,
-      progress: 0,
-      blockIndex: 0,
-      blockPosition: 0,
-      step: 0
-    }, f);
+var playerStatesP = Bacon.combineAsArray([
+  {
+    name: "Player 1",
+    keys: {trigger: "s", special: "w"},
+    level: LEVEL,
+    blocks: BLOCKS,
+    specialsLeft: 3,
+    score: 0,
+    progress: 0,
+    blockIndex: 0,
+    blockPosition: 0,
+    step: 0
+  }, {
+    name: "Player 2",
+    keys: {trigger: "l", special: "o"},
+    level: LEVEL,
+    blocks: BLOCKS,
+    specialsLeft: 3,
+    score: 0,
+    progress: 0,
+    blockIndex: 0,
+    blockPosition: 0,
+    step: 0
   }
-  ,
-  (f) => {
-    return registerInput("l", "o").scan({
-      name: "Player 2",
-      level: LEVEL,
-      blocks: BLOCKS,
-      specialsLeft: 3,
-      score: 0,
-      progress: 0,
-      blockIndex: 0,
-      blockPosition: 0,
-      step: 0
-    }, f);
-  }
-].map(f => f(nextStep));
+].map(player => registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep)));
 
-var statesP = Bacon.combineAsArray(players);
 var templateE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
       var parts = e.newURL.split("#");
@@ -292,4 +288,4 @@ var templateE = Bacon.fromEvent(window, "hashchange")
       }
     });
 
-Bacon.onValues(templateE, statesP, (template, states) => React.render(template(states), document.getElementById("main")));
+Bacon.onValues(templateE, playerStatesP, (template, states) => React.render(template(states), document.getElementById("main")));
