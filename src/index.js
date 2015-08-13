@@ -275,8 +275,7 @@ var players = [
   }
 ].map(f => f(nextStep));
 
-var statesP = Bacon.combineAsArray(players[0], players[1]);
-
+var statesP = Bacon.combineAsArray(players);
 var templateE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
       var parts = e.newURL.split("#");
