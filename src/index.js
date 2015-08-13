@@ -46,14 +46,14 @@ var CodeBox = React.createClass({
     blocks: React.PropTypes.array.isRequired
   },
   componentWillUpdate() {
-    var node = this.getDOMNode()
-    var cursor = React.findDOMNode(this.refs.cursor)
-    this.x = Math.max(0, cursor.offsetLeft - node.offsetLeft - node.clientWidth + 150)
-    this.y = Math.max(0, cursor.offsetTop - node.offsetTop - node.clientHeight + 150)
+    var node = this.getDOMNode();
+    var cursor = React.findDOMNode(this.refs.cursor);
+    this.x = Math.max(0, cursor.offsetLeft - node.offsetLeft - node.clientWidth + 150);
+    this.y = Math.max(0, cursor.offsetTop - node.offsetTop - node.clientHeight + 150);
   },
   componentDidUpdate() {
-    this.getDOMNode().scrollLeft = this.x
-    this.getDOMNode().scrollTop = this.y
+    this.getDOMNode().scrollLeft = this.x;
+    this.getDOMNode().scrollTop = this.y;
   },
   render() {
     var [blockPosition, blockIndex, blocks] = [this.props.blockPosition, this.props.blockIndex, this.props.blocks];
@@ -64,51 +64,50 @@ var CodeBox = React.createClass({
         var completed = block.substr(0, blockPosition);
         var cursor = block.substr(blockPosition, 1);
         var left = block.substr(blockPosition + 1);
-        return <span key={key} style={{color: baseColor}}><span
-            style={{color: "red"}}>{completed}</span><span
-            style={{backgroundColor: "lime"}}
-            ref="cursor">{cursor}</span><span
-            dangerouslySetInnerHTML={{__html: left}}/></span>;
+        return (
+            <span key={key} style={{color: baseColor}}>
+              <span style={{color: "red"}}>{completed}</span>
+              <span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span>
+              <span dangerouslySetInnerHTML={{__html: left}}/>
+            </span>
+        );
       } else if (index < blockIndex) {
         return <span key={key} style={{color: "red"}}>{block}</span>
       } else {
         // Previous block finished, cursor jumps to current block
         if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].length) {
-          return <span key={key} style={{color: baseColor}}><span
-              style={{backgroundColor: "lime"}}
-              ref="cursor">{block.substr(0, 1)}</span><span
-              dangerouslySetInnerHTML={{__html: block.substr(1)}}/></span>;
+          return (
+              <span key={key} style={{color: baseColor}}>
+                <span style={{backgroundColor: "lime"}} ref="cursor">{block.substr(0, 1)}</span>
+                <span dangerouslySetInnerHTML={{__html: block.substr(1)}}/>
+              </span>
+          );
         } else {
           return <span key={key} style={{color: baseColor}}>{block}</span>;
         }
       }
     });
-    return (
-        <pre className="code">
-                {elements}
-            </pre>
-    )
-
+    return <pre className="code">{elements}</pre>;
   }
 });
 
 var JumpMenu = React.createClass({
   render() {
     return (
-      <nav>
-        <ul>
-          <li>Jump</li>
-          <li>:</li>
-          <li><a href="#menu">Menu</a></li>
-          <li>&gt;</li>
-          <li><a href="#howto">How to play</a></li>
-          <li>&gt;</li>
-          <li><a href="#game">Start game</a></li>
-          <li>&gt;</li>
-          <li><a href="#score">Score</a></li>
-        </ul>
-      </nav>
-    )
+        <nav>
+          <ul>
+            <li>Jump</li>
+            <li>:</li>
+            <li><a href="#menu">Menu</a></li>
+            <li>&gt;</li>
+            <li><a href="#howto">How to play</a></li>
+            <li>&gt;</li>
+            <li><a href="#game">Start game</a></li>
+            <li>&gt;</li>
+            <li><a href="#score">Score</a></li>
+          </ul>
+        </nav>
+    );
   }
 });
 
@@ -121,14 +120,14 @@ var GamePage = React.createClass({
         <div>
           <div className="game">
             <JumpMenu/>
-            {this.props.states.map((p, index) => {
-              return <div key={"player_" + index} className="player-screen">
-                <Game state={p}/>
-              </div>
-            })}
+            {this.props.states.map((p, index) =>
+                    <div key={"player_" + index} className="player-screen">
+                      <Game state={p}/>
+                    </div>
+            )}
           </div>
         </div>
-    )
+    );
   }
 });
 
@@ -143,7 +142,7 @@ var MenuPage = React.createClass({
           <h1>Game Title</h1>
           <a href="#howto">How to play</a> | <a href="#game">Start game</a>
         </div>
-    )
+    );
   }
 });
 
@@ -161,7 +160,7 @@ var HowtoPage = React.createClass({
             <a href="#game">Start game</a>
           </div>
         </div>
-    )
+    );
   }
 });
 
@@ -173,13 +172,14 @@ var ScorePage = React.createClass({
     return (
         <div className="score">
           <JumpMenu/>
+
           <h1>Score</h1>
           <ul>
             {this.props.states.map((s, index) => <li key={index}>{s.score}</li>)}
           </ul>
           <a href="#menu">Main menu</a>
         </div>
-    )
+    );
   }
 });
 
@@ -234,9 +234,10 @@ var listener = new window.keypress.Listener();
 function hookInputs(input, trigger, special) {
   function signalInput(inputType) {
     listener.simple_combo(
-        (inputType === KEY_NORMAL)  ? trigger  : special,
+        (inputType === KEY_NORMAL) ? trigger : special,
         () => input.push(inputType));
   }
+
   signalInput(KEY_NORMAL);
   signalInput(KEY_SPECIAL);
 }
