@@ -173,53 +173,55 @@ var ScorePage = React.createClass({
   }
 });
 
-var Movement = {
-  indentSkip(block, position) {
-    var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
-    return match != null ? match[1].length : 0;
-  },
-  jump(step, blocks, index, position) {
-    var block = blocks[index];
-    if (index % 2 == 0 && position == block.length) {
-      return step + blocks[index + 1].length;
+var nextStep = (function() {
+  var Movement = {
+    indentSkip(block, position) {
+      var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
+      return match != null ? match[1].length : 0;
+    },
+    jump(step, blocks, index, position) {
+      var block = blocks[index];
+      if (index % 2 == 0 && position == block.length) {
+        return step + blocks[index + 1].length;
+      }
+      return step;
+    },
+    step(position) {
+      return position + 1;
+    },
+    getPosition(blocks, step) {
+      var blockIndex = -1;
+      var next = step;
+      var remainder;
+      do {
+        remainder = next;
+        blockIndex++;
+        next -= blocks[blockIndex].length;
+      } while (next > 0);
+      return [blockIndex, remainder];
     }
-    return step;
-  },
-  step(position) {
-    return position + 1;
-  },
-  getPosition(blocks, step) {
-    var blockIndex = -1;
-    var next = step;
-    var remainder;
-    do {
-      remainder = next;
-      blockIndex++;
-      next -= blocks[blockIndex].length;
-    } while (next > 0);
-    return [blockIndex, remainder];
-  }
-};
-
-function nextStep(state, keyType) {
-  var currentPosition = (keyType == KEY_SPECIAL)
-      ? ((state.specialsLeft > 0) ? Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition) : state.step)
-      : Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
-  var [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
-  var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, state.specialsLeft - 1) : state.specialsLeft;
-
-  return {
-    name: state.name,
-    level: state.level,
-    blocks: state.blocks,
-    specialsLeft: specialsLeft,
-    blockIndex: blockIndex,
-    blockPosition: blockPosition,
-    step: currentPosition,
-    score: currentPosition * 1024,
-    progress: currentPosition / state.level.length * 100
   };
-}
+
+  return (state, keyType) => {
+    var currentPosition = (keyType == KEY_SPECIAL)
+        ? ((state.specialsLeft > 0) ? Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition) : state.step)
+        : Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
+    var [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
+    var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, state.specialsLeft - 1) : state.specialsLeft;
+
+    return {
+      name: state.name,
+      level: state.level,
+      blocks: state.blocks,
+      specialsLeft: specialsLeft,
+      blockIndex: blockIndex,
+      blockPosition: blockPosition,
+      step: currentPosition,
+      score: currentPosition * 1024,
+      progress: currentPosition / state.level.length * 100
+    };
+  }
+})();
 
 var listener = new window.keypress.Listener();
 
