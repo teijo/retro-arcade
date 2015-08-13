@@ -46,7 +46,7 @@ var CodeBox = React.createClass({
     this.getDOMNode().scrollTop = this.y;
   },
   render() {
-    var [blockPosition, blockIndex, blocks] = [this.props.blockPosition, this.props.blockIndex, this.props.blocks];
+    var {blockPosition, blockIndex, blocks} = this.props;
     var elements = blocks.map((block, index) => {
       var baseColor = index % 2 == 0 ? "black" : "blue";
       var key = "block_" + index;
