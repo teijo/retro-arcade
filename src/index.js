@@ -240,6 +240,12 @@ function registerInput(trigger, special) {
   return inputE;
 }
 
+function registerKey(key) {
+  var inputE = new Bacon.Bus();
+  listener.simple_combo(key, () => inputE.push(key));
+  return inputE;
+}
+
 var LEVEL =
     "var <<listener>> = new window.keypress.Listener();\n" +
     "players.forEach(<<player => {\n" +
@@ -250,33 +256,37 @@ var LEVEL =
     "}>>);";
 var BLOCKS = LEVEL.split(/<<|>>/);
 
-var playerStatesP = Bacon.combineAsArray([
-  {
-    name: "Player 1",
-    keys: {trigger: "s", special: "w"},
-    level: LEVEL,
-    levelLength: BLOCKS.join('').length,
-    blocks: BLOCKS,
-    specialsLeft: 3,
-    score: 0,
-    progress: 0,
-    blockIndex: 0,
-    blockPosition: 0,
-    step: 0
-  }, {
-    name: "Player 2",
-    keys: {trigger: "l", special: "o"},
-    level: LEVEL,
-    levelLength: BLOCKS.join('').length,
-    blocks: BLOCKS,
-    specialsLeft: 3,
-    score: 0,
-    progress: 0,
-    blockIndex: 0,
-    blockPosition: 0,
-    step: 0
-  }
-].map(player => registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep)));
+var playerStatesP = Bacon
+    .constant([
+      {
+        name: "Player 1",
+        keys: {trigger: "s", special: "w"},
+        level: LEVEL,
+        levelLength: BLOCKS.join('').length,
+        blocks: BLOCKS,
+        specialsLeft: 3,
+        score: 0,
+        progress: 0,
+        blockIndex: 0,
+        blockPosition: 0,
+        step: 0
+      }, {
+        name: "Player 2",
+        keys: {trigger: "l", special: "o"},
+        level: LEVEL,
+        levelLength: BLOCKS.join('').length,
+        blocks: BLOCKS,
+        specialsLeft: 3,
+        score: 0,
+        progress: 0,
+        blockIndex: 0,
+        blockPosition: 0,
+        step: 0
+      }
+    ])
+    .sampledBy(registerKey("q").toProperty(0)/*don't block at start*/)
+    .flatMap(players => Bacon.combineAsArray(players.map(player =>
+        registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep))));
 
 var pageComponentE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
