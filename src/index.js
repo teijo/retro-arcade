@@ -43,7 +43,7 @@ var Game = React.createClass({
     }
   },
   render() {
-    var {progress, step, blockPosition, name, blockIndex, specialsLeft} = this.props.state.state;
+    var {progress, step, blockPosition, name, blockIndex, specialsLeft} = this.props.state;
     return (
         <div className="screen-content">
           <div className="header">
@@ -141,14 +141,14 @@ var JumpMenu = React.createClass({
 
 var GamePage = React.createClass({
   propTypes: {
-    state: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired
   },
   render() {
     return (
         <div>
           <div className="game">
             <JumpMenu/>
-            {this.props.state.map((p, index) => {
+            {this.props.states.map((p, index) => {
               return <div key={"player_" + index} className="player-screen">
                 <Game state={p}/>
               </div>
@@ -161,7 +161,7 @@ var GamePage = React.createClass({
 
 var MenuPage = React.createClass({
   propTypes: {
-    state: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired
   },
   render() {
     return (
@@ -176,7 +176,7 @@ var MenuPage = React.createClass({
 
 var HowtoPage = React.createClass({
   propTypes: {
-    state: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired
   },
   render() {
     return (
@@ -194,7 +194,7 @@ var HowtoPage = React.createClass({
 
 var ScorePage = React.createClass({
   propTypes: {
-    state: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired
   },
   render() {
     return (
@@ -202,7 +202,7 @@ var ScorePage = React.createClass({
           <JumpMenu/>
           <h1>Score</h1>
           <ul>
-            {this.props.state.map((s, index) => <li key={index}>{s.state.score}</li>)}
+            {this.props.states.map((s, index) => <li key={index}>{s.score}</li>)}
           </ul>
           <a href="#menu">Main menu</a>
         </div>
@@ -249,35 +249,31 @@ var players = [
   (f) => {
     var input = new Bacon.Bus();
     hookInputs(input, "s", "w");
-    return {
-      state: input.scan({
-        name: "Player 1",
-        specialsLeft: 3,
-        score: 0,
-        progress: 0,
-        blockIndex: 0,
-        blockPosition: 0,
-        step: 0
-      }, f)
-    }
+    return input.scan({
+      name: "Player 1",
+      specialsLeft: 3,
+      score: 0,
+      progress: 0,
+      blockIndex: 0,
+      blockPosition: 0,
+      step: 0
+    }, f);
   }
   ,
   (f) => {
     var input = new Bacon.Bus();
     hookInputs(input, "l", "o");
-    return {
-      state: input.scan({
-        name: "Player 2",
-        specialsLeft: 3,
-        score: 0,
-        progress: 0,
-        blockIndex: 0,
-        blockPosition: 0,
-        step: 0
-      }, f)
-    }
+    return input.scan({
+      name: "Player 2",
+      specialsLeft: 3,
+      score: 0,
+      progress: 0,
+      blockIndex: 0,
+      blockPosition: 0,
+      step: 0
+    }, f);
   }
-].map(f => f(nextStep)).map(Bacon.combineTemplate);
+].map(f => f(nextStep));
 
 var statesP = Bacon.combineAsArray(players[0], players[1]);
 
@@ -290,13 +286,13 @@ var templateE = Bacon.fromEvent(window, "hashchange")
     .map(hash => {
       switch (hash) {
         case "#howto":
-          return (states) => <HowtoPage state={states}/>;
+          return (states) => <HowtoPage states={states}/>;
         case "#game":
-          return (states) => <GamePage state={states}/>;
+          return (states) => <GamePage states={states}/>;
         case "#score":
-          return (states) => <ScorePage state={states}/>;
+          return (states) => <ScorePage states={states}/>;
         default:
-          return (states) => <MenuPage state={states}/>;
+          return (states) => <MenuPage states={states}/>;
       }
     });
 
