@@ -201,23 +201,23 @@ var Movement = {
   }
 };
 
-function nextStep(propertyVal, keyType) {
+function nextStep(state, keyType) {
   var currentPosition = (keyType == KEY_SPECIAL)
-      ? ((propertyVal.specialsLeft > 0) ? Movement.jump(propertyVal.step, propertyVal.blocks, propertyVal.blockIndex, propertyVal.blockPosition) : propertyVal.step)
-      : Movement.step(propertyVal.step) + Movement.indentSkip(propertyVal.blocks[propertyVal.blockIndex], propertyVal.blockPosition);
-  var [blockIndex, blockPosition] = Movement.getPosition(propertyVal.blocks, currentPosition);
-  var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, propertyVal.specialsLeft - 1) : propertyVal.specialsLeft;
+      ? ((state.specialsLeft > 0) ? Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition) : state.step)
+      : Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
+  var [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
+  var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, state.specialsLeft - 1) : state.specialsLeft;
 
   return {
-    name: propertyVal.name,
-    level: propertyVal.level,
-    blocks: propertyVal.blocks,
+    name: state.name,
+    level: state.level,
+    blocks: state.blocks,
     specialsLeft: specialsLeft,
     blockIndex: blockIndex,
     blockPosition: blockPosition,
     step: currentPosition,
     score: currentPosition * 1024,
-    progress: currentPosition / propertyVal.level.length * 100
+    progress: currentPosition / state.level.length * 100
   };
 }
 
