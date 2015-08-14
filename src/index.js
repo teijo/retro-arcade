@@ -8,7 +8,7 @@ var Game = React.createClass({
   render() {
     var {progress, step, blockPosition, name, blockIndex, specialsLeft, blocks} = this.props.state;
     return (
-        <div className="screen-content">
+        <div className="player-screen">
           <div className="header">
             <h2>{name}</h2>
           </div>
@@ -92,11 +92,7 @@ var GamePage = React.createClass({
     return (
         <div>
           <div className="game">
-            {this.props.states.map((p, index) =>
-                    <div key={"player_" + index} className="player-screen">
-                      <Game state={p}/>
-                    </div>
-            )}
+            {this.props.states.map((p, index) => <Game key={"player_" + index} state={p}/>)}
           </div>
         </div>
     );

@@ -13,6 +13,7 @@ body {
   width: 960px;
   height: 600px;
   background-color: white;
+  position: relative;
 }
 
 html {
@@ -20,10 +21,8 @@ html {
 }
 
 .game {
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  display: flex;
+  flex: 1;
 }
 
 nav {
@@ -38,10 +37,6 @@ nav li {
 
 nav ul {
   margin: 0;
-}
-
-.game .screen-content {
-  height: 100%;
 }
 
 .game .code {
@@ -66,10 +61,8 @@ nav ul {
 }
 
 .game .player-screen {
-  float: left;
-  width: 50%;
-  height: 100%;
-  padding: 2rem;
+  flex: 1;
+  margin: 10px;
 }
 
 .game .footer .col {
