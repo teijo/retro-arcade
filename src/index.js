@@ -287,7 +287,7 @@ var playerStatesP = Bacon
         step: 0
       }
     ].map(Bacon.combineTemplate))
-    .sampledBy(registerKey("q").toProperty(0)/*don't block at start*/)
+    .sampledBy(Bacon.mergeAll(Bacon.once(), registerKey("q")))
     .flatMap(players => Bacon.combineAsArray(players.map(player =>
         registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep))));
 
