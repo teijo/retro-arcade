@@ -168,7 +168,7 @@ var ScorePage = React.createClass({
 
           <h1>Score</h1>
           <ul>
-            {this.props.states.map((s, index) => <li key={index}>{s.score}</li>)}
+            {this.props.states.map((s, index) => <li key={index}>{s.name} - {s.score}</li>)}
           </ul>
           <a href="#menu">Main menu</a>
         </div>
