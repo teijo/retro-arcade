@@ -38,6 +38,9 @@ var CodeBox = React.createClass({
   componentWillUpdate() {
     var node = this.getDOMNode();
     var cursor = React.findDOMNode(this.refs.cursor);
+    if (cursor === null) {
+      return;
+    }
     this.x = Math.max(0, cursor.offsetLeft - node.offsetLeft - node.clientWidth + 150);
     this.y = Math.max(0, cursor.offsetTop - node.offsetTop - node.clientHeight + 150);
   },
@@ -223,7 +226,7 @@ var nextStep = (function() {
       blockPosition: blockPosition,
       step: currentPosition,
       score: currentPosition * 1024,
-      progress: currentPosition / state.level.length * 100
+      progress: currentPosition / state.levelLength * 100
     };
   }
 })();
