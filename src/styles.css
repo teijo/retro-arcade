@@ -1,9 +1,18 @@
 body {
+  position: absolute;
   margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  display: flex;
+  background-color: lightblue;
+  justify-content: center;
+  align-items: center;
+}
+
+#main {
+  width: 960px;
+  height: 600px;
+  background-color: white;
 }
 
 html {
@@ -11,7 +20,6 @@ html {
 }
 
 .game {
-  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -33,8 +41,6 @@ nav ul {
 }
 
 .game .screen-content {
-  display: flex;
-  flex-direction: column;
   height: 100%;
 }
 
