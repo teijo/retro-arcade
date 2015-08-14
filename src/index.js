@@ -256,10 +256,13 @@ var LEVEL =
     "}>>);";
 var BLOCKS = LEVEL.split(/<<|>>/);
 
+var player1NameP = Bacon.constant("Player 1");
+var player2NameP = Bacon.constant("Player 2");
+
 var playerStatesP = Bacon
-    .constant([
+    .combineAsArray([
       {
-        name: "Player 1",
+        name: player1NameP,
         keys: {trigger: "s", special: "w"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
@@ -271,7 +274,7 @@ var playerStatesP = Bacon
         blockPosition: 0,
         step: 0
       }, {
-        name: "Player 2",
+        name: player2NameP,
         keys: {trigger: "l", special: "o"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
@@ -283,7 +286,7 @@ var playerStatesP = Bacon
         blockPosition: 0,
         step: 0
       }
-    ])
+    ].map(Bacon.combineTemplate))
     .sampledBy(registerKey("q").toProperty(0)/*don't block at start*/)
     .flatMap(players => Bacon.combineAsArray(players.map(player =>
         registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep))));
