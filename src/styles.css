@@ -23,6 +23,9 @@ html {
 .game {
   display: flex;
   flex: 1;
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 nav {
@@ -62,6 +65,8 @@ nav ul {
 
 .game .player-screen {
   flex: 1;
+  flex-direction: column;
+  display: flex;
   margin: 10px;
 }
 
