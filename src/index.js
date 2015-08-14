@@ -203,6 +203,9 @@ var nextStep = (function() {
   };
 
   return (state, keyType) => {
+    if (state.step == state.levelLength) {
+      return state;
+    }
     var currentPosition = (keyType == KEY_SPECIAL)
         ? ((state.specialsLeft > 0) ? Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition) : state.step)
         : Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
@@ -213,6 +216,7 @@ var nextStep = (function() {
       name: state.name,
       keys: state.keys,
       level: state.level,
+      levelLength: state.levelLength,
       blocks: state.blocks,
       specialsLeft: specialsLeft,
       blockIndex: blockIndex,
@@ -248,6 +252,7 @@ var playerStatesP = Bacon.combineAsArray([
     name: "Player 1",
     keys: {trigger: "s", special: "w"},
     level: LEVEL,
+    levelLength: BLOCKS.join('').length,
     blocks: BLOCKS,
     specialsLeft: 3,
     score: 0,
@@ -259,6 +264,7 @@ var playerStatesP = Bacon.combineAsArray([
     name: "Player 2",
     keys: {trigger: "l", special: "o"},
     level: LEVEL,
+    levelLength: BLOCKS.join('').length,
     blocks: BLOCKS,
     specialsLeft: 3,
     score: 0,
