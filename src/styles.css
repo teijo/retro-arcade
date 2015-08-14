@@ -27,7 +27,7 @@ html {
 }
 
 nav {
-  display: flex;
+  position: absolute;
 }
 
 nav li {
