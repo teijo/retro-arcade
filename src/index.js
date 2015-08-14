@@ -123,6 +123,9 @@ var HowtoPage = React.createClass({
           <div className="howto">
             <h1>How To Play</h1>
             <p>Push the buttons</p>
+            <ul>
+              {this.props.states.map((s, index) => <li key={index}>{s.name}, trigger: {s.keys.trigger}, special {s.keys.special}</li>)}
+            </ul>
             <a href="#game">Start game</a>
           </div>
         </div>
