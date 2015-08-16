@@ -10,8 +10,9 @@ body {
 }
 
 #main {
+  /* final aspect ratio 16:9 and resolution 1920x1080 */
   width: 960px;
-  height: 600px;
+  height: 540px;
   background-color: white;
   position: relative;
 }
