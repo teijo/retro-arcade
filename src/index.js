@@ -1,6 +1,32 @@
 KEY_NORMAL = 0;
 KEY_SPECIAL = 1;
 
+var AnimatedCounter = React.createClass({
+  propTypes: {
+    value: React.PropTypes.number.isRequired
+  },
+  componentDidMount() {
+    var node = React.findDOMNode(this.refs.cursor);
+    Bacon
+        .fromEvent(node, "animationend")
+        .onValue(() => node.classList.toggle("bump", false));
+  },
+  shouldComponentUpdate(nextProps, _) {
+    // Animate (update component) only when value changes
+    return this.props.value !== nextProps.value;
+  },
+  componentWillUpdate() {
+    React.findDOMNode(this.refs.cursor).classList.toggle("bump", true);
+  },
+  render() {
+    return (
+        <span className="counter">
+          <span ref="cursor">{this.props.value}</span>
+        </span>
+    );
+  }
+});
+
 var Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired
@@ -17,12 +43,18 @@ var Game = React.createClass({
                    blocks={blocks}/>
 
           <div className="footer">
-            <div className="col progress">{progress.toFixed(0)}% <span
-                className="title">Progress</span></div>
-            <div className="col score">{step * 1024}<span className="title">Score</span>
+            <div className="col progress">
+              <AnimatedCounter value={progress.toFixed(0) + "%"}/>
+              <span className="title">Progress</span>
             </div>
-            <div className="col specials">{specialsLeft}<span
-                className="title">Specials</span></div>
+            <div className="col score">
+              <AnimatedCounter value={step * 1024}/>
+              <span className="title">Score</span>
+            </div>
+            <div className="col specials">
+              <AnimatedCounter value={specialsLeft}/>
+              <span className="title">Specials</span>
+            </div>
           </div>
         </div>
     );

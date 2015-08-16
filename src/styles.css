@@ -58,10 +58,11 @@ nav ul {
 .game .footer {
   flex: 0 0 auto;
   background: #292b26;
-  padding: 1rem;
+  padding: 0.2rem;
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
+  min-height: 4rem;
 }
 
 .game .player-screen {
@@ -77,6 +78,7 @@ nav ul {
   color: #980004;
   text-align: right;
   padding: 0.1rem;
+  position: relative;
 }
 
 .game .footer .title {
@@ -84,9 +86,38 @@ nav ul {
   text-transform: uppercase;
   display: block;
   font-size: 1rem;
+  position: absolute;
+  bottom: 0;
+}
+
+.game .footer .counter {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 * {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+}
+
+.bump {
+  animation-duration: 0.1s;
+  animation-name: bump-animation;
+  font-size: 2rem;
+  color: red;
+}
+
+@keyframes bump-animation {
+  0% {
+    font-size: 2rem;
+  }
+
+  50% {
+    font-size: 2.1rem;
+  }
+
+  100% {
+    font-size: 2rem;
+  }
 }
