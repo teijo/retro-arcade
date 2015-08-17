@@ -161,7 +161,13 @@ let HowtoPage = React.createClass({
         <div>
           <div className="howto">
             <h1>How To Play</h1>
-            <p>Push the buttons</p>
+            <ol>
+              <li>Press &quot;trigger&quot; to advance</li>
+              <li>Press &quot;special&quot; when entering highlighted block</li>
+              <li>Aim for speed and accuracy</li>
+              <li>Profit</li>
+            </ol>
+            <h2>Player keys</h2>
             <ul>
               {this.props.states.map((s, index) => <li key={index}>{s.name}, trigger: {s.keys.trigger}, special {s.keys.special}</li>)}
             </ul>
