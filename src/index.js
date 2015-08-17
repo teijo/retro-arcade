@@ -34,7 +34,8 @@ let Game = React.createClass({
     state: React.PropTypes.object.isRequired
   },
   render() {
-    let {progress, score, blockPosition, name, blockIndex, specialsLeft, blocks} = this.props.state;
+    let {consecutiveSpecialHits, progress, score, blockPosition, name,
+        blockIndex, specialsLeft, blocks} = this.props.state;
     return (
         <div className="player-screen">
           <div className="header">
@@ -52,6 +53,10 @@ let Game = React.createClass({
             <div className="col score">
               <AnimatedCounter value={score}/>
               <span className="title">Score</span>
+            </div>
+            <div className="col">
+              <AnimatedCounter value={consecutiveSpecialHits}/>
+              <span className="title">Combo</span>
             </div>
             <div className="col specials">
               <AnimatedCounter value={specialsLeft}/>
@@ -226,6 +231,7 @@ let nextStep = (function() {
 
     let currentPosition,
         stepScore = 0,
+        consecutiveSpecialHits = state.consecutiveSpecialHits,
         specialsLeft = state.specialsLeft;
 
     if (keyType == KEY_SPECIAL) {
@@ -236,7 +242,8 @@ let nextStep = (function() {
         [specialHit, currentPosition] = [false, state.step];
       }
       specialsLeft = Math.max(0, state.specialsLeft - 1);
-      stepScore = specialHit ? (currentPosition - state.step) * SPECIAL_STEP_MULTIPLIER : 0;
+      consecutiveSpecialHits = specialHit ? consecutiveSpecialHits + 1 : 0;
+      stepScore = specialHit ? (currentPosition - state.step) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER : 0;
     } else if (keyType == KEY_NORMAL) {
       currentPosition = Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
       stepScore = (currentPosition - state.step) * STEP_MULTIPLIER;
@@ -252,6 +259,7 @@ let nextStep = (function() {
       level: state.level,
       levelLength: state.levelLength,
       blocks: state.blocks,
+      consecutiveSpecialHits: consecutiveSpecialHits,
       specialsLeft: specialsLeft,
       blockIndex: blockIndex,
       blockPosition: blockPosition,
@@ -299,6 +307,7 @@ let playerStatesP = Bacon
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
         specialsLeft: 3,
+        consecutiveSpecialHits: 0,
         score: 0,
         progress: 0,
         blockIndex: 0,
@@ -311,6 +320,7 @@ let playerStatesP = Bacon
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
         specialsLeft: 3,
+        consecutiveSpecialHits: 0,
         score: 0,
         progress: 0,
         blockIndex: 0,
