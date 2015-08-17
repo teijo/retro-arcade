@@ -190,6 +190,8 @@ var nextStep = (function() {
     },
     jump(step, blocks, index, position) {
       var block = blocks[index];
+      // Jump if _cursor_ is at the first character of special block
+      // (actual position is last of previous block)
       if (index % 2 == 0 && position == block.length) {
         return step + blocks[index + 1].length;
       }
