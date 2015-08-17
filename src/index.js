@@ -3,12 +3,12 @@
 const KEY_NORMAL = 0;
 const KEY_SPECIAL = 1;
 
-var AnimatedCounter = React.createClass({
+let AnimatedCounter = React.createClass({
   propTypes: {
     value: React.PropTypes.number.isRequired
   },
   componentDidMount() {
-    var node = React.findDOMNode(this.refs.cursor);
+    let node = React.findDOMNode(this.refs.cursor);
     Bacon
         .fromEvent(node, "animationend")
         .onValue(() => node.classList.toggle("bump", false));
@@ -29,12 +29,12 @@ var AnimatedCounter = React.createClass({
   }
 });
 
-var Game = React.createClass({
+let Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired
   },
   render() {
-    var {progress, score, blockPosition, name, blockIndex, specialsLeft, blocks} = this.props.state;
+    let {progress, score, blockPosition, name, blockIndex, specialsLeft, blocks} = this.props.state;
     return (
         <div className="player-screen">
           <div className="header">
@@ -63,15 +63,15 @@ var Game = React.createClass({
   }
 });
 
-var CodeBox = React.createClass({
+let CodeBox = React.createClass({
   propTypes: {
     blockPosition: React.PropTypes.number.isRequired,
     blockIndex: React.PropTypes.number.isRequired,
     blocks: React.PropTypes.array.isRequired
   },
   componentWillUpdate() {
-    var node = this.getDOMNode();
-    var cursor = React.findDOMNode(this.refs.cursor);
+    let node = this.getDOMNode();
+    let cursor = React.findDOMNode(this.refs.cursor);
     if (cursor === null) {
       return;
     }
@@ -83,14 +83,14 @@ var CodeBox = React.createClass({
     this.getDOMNode().scrollTop = this.y;
   },
   render() {
-    var {blockPosition, blockIndex, blocks} = this.props;
-    var elements = blocks.map((block, index) => {
-      var baseColor = index % 2 == 0 ? "black" : "blue";
-      var key = "block_" + index;
+    let {blockPosition, blockIndex, blocks} = this.props;
+    let elements = blocks.map((block, index) => {
+      let baseColor = index % 2 == 0 ? "black" : "blue";
+      let key = "block_" + index;
       if (index == blockIndex) {
-        var completed = block.substr(0, blockPosition);
-        var cursor = block.substr(blockPosition, 1);
-        var left = block.substr(blockPosition + 1);
+        let completed = block.substr(0, blockPosition);
+        let cursor = block.substr(blockPosition, 1);
+        let left = block.substr(blockPosition + 1);
         return (
             <span key={key} style={{color: baseColor}}>
               <span style={{color: "red"}}>{completed}</span>
@@ -118,7 +118,7 @@ var CodeBox = React.createClass({
   }
 });
 
-var GamePage = React.createClass({
+let GamePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired
   },
@@ -133,7 +133,7 @@ var GamePage = React.createClass({
   }
 });
 
-var MenuPage = React.createClass({
+let MenuPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired
   },
@@ -147,7 +147,7 @@ var MenuPage = React.createClass({
   }
 });
 
-var HowtoPage = React.createClass({
+let HowtoPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired
   },
@@ -167,7 +167,7 @@ var HowtoPage = React.createClass({
   }
 });
 
-var ScorePage = React.createClass({
+let ScorePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired
   },
@@ -184,17 +184,17 @@ var ScorePage = React.createClass({
   }
 });
 
-var nextStep = (function() {
+let nextStep = (function() {
   const STEP_MULTIPLIER = 8;
   const SPECIAL_STEP_MULTIPLIER = 32;
 
-  var Movement = {
+  let Movement = {
     indentSkip(block, position) {
-      var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
+      let match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
       return match != null ? match[1].length : 0;
     },
     jump(step, blocks, index, position) {
-      var block = blocks[index];
+      let block = blocks[index];
       // Jump if _cursor_ is at the first character of special block
       // (actual position is last of previous block)
       if (index % 2 == 0 && position == block.length) {
@@ -207,9 +207,9 @@ var nextStep = (function() {
       return position + 1;
     },
     getPosition(blocks, step) {
-      var blockIndex = -1;
-      var next = step;
-      var remainder;
+      let blockIndex = -1;
+      let next = step;
+      let remainder;
       do {
         remainder = next;
         blockIndex++;
@@ -224,7 +224,7 @@ var nextStep = (function() {
       return state;
     }
 
-    var currentPosition,
+    let currentPosition,
         stepScore = 0,
         specialsLeft = state.specialsLeft;
 
@@ -244,7 +244,7 @@ var nextStep = (function() {
       throw new Error("Invalid keyType: " + keyType)
     }
 
-    var [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
+    let [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
 
     return {
       name: state.name,
@@ -262,35 +262,35 @@ var nextStep = (function() {
   }
 })();
 
-var listener = new window.keypress.Listener();
+let listener = new window.keypress.Listener();
 
 function registerInput(trigger, special) {
-  var inputE = new Bacon.Bus();
+  let inputE = new Bacon.Bus();
   listener.simple_combo(trigger, () => inputE.push(KEY_NORMAL));
   listener.simple_combo(special, () => inputE.push(KEY_SPECIAL));
   return inputE;
 }
 
 function registerKey(key) {
-  var inputE = new Bacon.Bus();
+  let inputE = new Bacon.Bus();
   listener.simple_combo(key, () => inputE.push(key));
   return inputE;
 }
 
-var LEVEL =
-    "var <<listener>> = new window.keypress.Listener();\n" +
+let LEVEL =
+    "let <<listener>> = new window.keypress.Listener();\n" +
     "players.forEach(<<player => {\n" +
-    "    var step = 0;\n" +
+    "    let step = 0;\n" +
     "    listener.simple_combo(player.trigger, () => {\n" +
     "        player.input.push(++step);\n" +
     "    });\n" +
     "}>>);";
-var BLOCKS = LEVEL.split(/<<|>>/);
+let BLOCKS = LEVEL.split(/<<|>>/);
 
-var player1NameP = Bacon.constant("Player 1");
-var player2NameP = Bacon.constant("Player 2");
+let player1NameP = Bacon.constant("Player 1");
+let player2NameP = Bacon.constant("Player 2");
 
-var playerStatesP = Bacon
+let playerStatesP = Bacon
     .combineAsArray([
       {
         name: player1NameP,
@@ -322,9 +322,9 @@ var playerStatesP = Bacon
     .flatMap(players => Bacon.combineAsArray(players.map(player =>
         registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep))));
 
-var pageComponentE = Bacon.fromEvent(window, "hashchange")
+let pageComponentE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
-      var parts = e.newURL.split("#");
+      let parts = e.newURL.split("#");
       return (parts.length == 2) ? "#" + parts[1] : "#menu";
     })
     .toProperty(window.location.hash)
