@@ -1,5 +1,7 @@
-KEY_NORMAL = 0;
-KEY_SPECIAL = 1;
+"use strict";
+
+const KEY_NORMAL = 0;
+const KEY_SPECIAL = 1;
 
 var AnimatedCounter = React.createClass({
   propTypes: {
@@ -32,7 +34,7 @@ var Game = React.createClass({
     state: React.PropTypes.object.isRequired
   },
   render() {
-    var {progress, step, blockPosition, name, blockIndex, specialsLeft, blocks} = this.props.state;
+    var {progress, score, blockPosition, name, blockIndex, specialsLeft, blocks} = this.props.state;
     return (
         <div className="player-screen">
           <div className="header">
@@ -48,7 +50,7 @@ var Game = React.createClass({
               <span className="title">Progress</span>
             </div>
             <div className="col score">
-              <AnimatedCounter value={step * 1024}/>
+              <AnimatedCounter value={score}/>
               <span className="title">Score</span>
             </div>
             <div className="col specials">
@@ -183,6 +185,9 @@ var ScorePage = React.createClass({
 });
 
 var nextStep = (function() {
+  const STEP_MULTIPLIER = 8;
+  const SPECIAL_STEP_MULTIPLIER = 32;
+
   var Movement = {
     indentSkip(block, position) {
       var match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
@@ -193,9 +198,10 @@ var nextStep = (function() {
       // Jump if _cursor_ is at the first character of special block
       // (actual position is last of previous block)
       if (index % 2 == 0 && position == block.length) {
-        return step + blocks[index + 1].length;
+        return [true, step + blocks[index + 1].length];
       }
-      return step;
+      // Missed special usage
+      return [false, step];
     },
     step(position) {
       return position + 1;
@@ -217,11 +223,28 @@ var nextStep = (function() {
     if (state.step == state.levelLength) {
       return state;
     }
-    var currentPosition = (keyType == KEY_SPECIAL)
-        ? ((state.specialsLeft > 0) ? Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition) : state.step)
-        : Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
+
+    var currentPosition,
+        stepScore = 0,
+        specialsLeft = state.specialsLeft;
+
+    if (keyType == KEY_SPECIAL) {
+      let specialHit;
+      if (state.specialsLeft > 0) {
+        [specialHit, currentPosition] = Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition);
+      } else {
+        [specialHit, currentPosition] = [false, state.step];
+      }
+      specialsLeft = Math.max(0, state.specialsLeft - 1);
+      stepScore = specialHit ? (currentPosition - state.step) * SPECIAL_STEP_MULTIPLIER : 0;
+    } else if (keyType == KEY_NORMAL) {
+      currentPosition = Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
+      stepScore = (currentPosition - state.step) * STEP_MULTIPLIER;
+    } else {
+      throw new Error("Invalid keyType: " + keyType)
+    }
+
     var [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
-    var specialsLeft = (keyType == KEY_SPECIAL) ? Math.max(0, state.specialsLeft - 1) : state.specialsLeft;
 
     return {
       name: state.name,
@@ -233,7 +256,7 @@ var nextStep = (function() {
       blockIndex: blockIndex,
       blockPosition: blockPosition,
       step: currentPosition,
-      score: currentPosition * 1024,
+      score: state.score + stepScore,
       progress: currentPosition / state.levelLength * 100
     };
   }
