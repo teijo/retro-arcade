@@ -23,7 +23,7 @@ let AnimatedCounter = React.createClass({
   render() {
     return (
         <span className="counter">
-          <span ref="cursor">{this.props.value.toFixed(0)}</span>
+          <span ref="cursor">{this.props.value}</span>
         </span>
     );
   }
@@ -47,7 +47,7 @@ let Game = React.createClass({
 
           <div className="footer">
             <div className="col progress">
-              <AnimatedCounter value={progress}/>
+              <AnimatedCounter value={Math.round(progress)}/>
               <span className="title">Progress</span>
             </div>
             <div className="col score">
