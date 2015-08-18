@@ -278,19 +278,11 @@ let nextStep = (function() {
 
 let listener = new window.keypress.Listener();
 
-function registerInput(trigger, special) {
-  let inputE = new Bacon.Bus();
-  listener.simple_combo(trigger, () => inputE.push(KEY_NORMAL));
-  listener.simple_combo(special, () => inputE.push(KEY_SPECIAL));
-  return inputE;
-}
-
 function registerKey(key) {
   let inputE = new Bacon.Bus();
   listener.simple_combo(key, () => inputE.push(key));
   return inputE;
 }
-
 
 const LEFT = 0;
 const RIGHT = 1;
