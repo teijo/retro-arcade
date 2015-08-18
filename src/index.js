@@ -321,7 +321,7 @@ let playerStatesP = Bacon
         step: 0
       }, {
         name: player2NameP,
-        keys: {trigger: "l", special: "o"},
+        keys: {trigger: "j", special: "u"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
