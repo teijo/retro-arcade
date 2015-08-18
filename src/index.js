@@ -291,6 +291,35 @@ function registerKey(key) {
   return inputE;
 }
 
+
+const LEFT = 0;
+const RIGHT = 1;
+
+const mapping = {
+  'a': LEFT,
+  'd': RIGHT,
+  'h': LEFT,
+  'k': RIGHT
+};
+
+// Outputs an incremented number when input sequence is advanced
+function sequenceStream(keyE, sequence) {
+    return keyE
+        .map(key => mapping[key])
+        .scan({n: 0, loops: 0, seq: sequence}, (conf, key) => {
+          var loops = conf.loops;
+          var n = conf.n;
+          // Advance sequence only if correct next input given
+          if (conf.seq[n] === key) {
+            n = (n + 1) % conf.seq.length;
+            loops++;
+          }
+          return {n: n, seq: conf.seq, loops: loops};
+        })
+        .map(conf => conf.loops)
+        .skipDuplicates();
+}
+
 let LEVEL =
     "let <<listener>> = new window.keypress.Listener();\n" +
     "players.forEach(<<player => {\n" +
@@ -308,7 +337,7 @@ let playerStatesP = Bacon
     .combineAsArray([
       {
         name: player1NameP,
-        keys: {trigger: "s", special: "w"},
+        keys: {left: 'a', right: 'd', trigger: "s", special: "w"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
@@ -321,7 +350,7 @@ let playerStatesP = Bacon
         step: 0
       }, {
         name: player2NameP,
-        keys: {trigger: "j", special: "u"},
+        keys: {left: 'h', right: 'k', trigger: "j", special: "u"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
@@ -335,8 +364,19 @@ let playerStatesP = Bacon
       }
     ].map(Bacon.combineTemplate))
     .sampledBy(Bacon.mergeAll(Bacon.once(), registerKey("q")))
-    .flatMap(players => Bacon.combineAsArray(players.map(player =>
-        registerInput(player.keys.trigger, player.keys.special).scan(player, nextStep))));
+    .flatMap(players => Bacon.combineAsArray(players.map(player => {
+      let sequenceKeyE = Bacon.mergeAll(registerKey(player.keys.left), registerKey(player.keys.right));
+      let normalE = sequenceStream(sequenceKeyE, [LEFT, RIGHT]);
+
+      // Remove later, real movement through sequence
+      let cheatStepE = registerKey(player.keys.trigger);
+      let stepE = Bacon.mergeAll(normalE, cheatStepE);
+      let specialE = registerKey(player.keys.special);
+
+      return Bacon
+          .mergeAll(specialE.map(k => KEY_SPECIAL), stepE.map(k => KEY_NORMAL))
+          .scan(player, nextStep);
+    })));
 
 let pageComponentE = Bacon.fromEvent(window, "hashchange")
     .map(e => {
