@@ -292,19 +292,19 @@ const RIGHT = 'RIGHT';
 function sequenceStream(keyConfig, sequence) {
   let keySequence = sequence.map(command => keyConfig[command]);
   let keyE = keySequence.map(registerKey);
-    return Bacon.mergeAll(keyE)
-        .scan({n: 0, loops: 0, seq: keySequence}, (conf, key) => {
-          var loops = conf.loops;
-          var n = conf.n;
-          // Advance sequence only if correct next input given
-          if (conf.seq[n] === key) {
-            n = (n + 1) % conf.seq.length;
-            loops++;
-          }
-          return {n: n, seq: conf.seq, loops: loops};
-        })
-        .map(conf => conf.loops)
-        .skipDuplicates();
+  return Bacon.mergeAll(keyE)
+      .scan({n: 0, loops: 0, seq: keySequence}, (conf, key) => {
+        var loops = conf.loops;
+        var n = conf.n;
+        // Advance sequence only if correct next input given
+        if (conf.seq[n] === key) {
+          n = (n + 1) % conf.seq.length;
+          loops++;
+        }
+        return {n: n, seq: conf.seq, loops: loops};
+      })
+      .map(conf => conf.loops)
+      .skipDuplicates();
 }
 
 let LEVEL =
