@@ -169,7 +169,7 @@ let HowtoPage = React.createClass({
             </ol>
             <h2>Player keys</h2>
             <ul>
-              {this.props.states.map((s, index) => <li key={index}>{s.name}, trigger: {s.keys.trigger}, special {s.keys.special}</li>)}
+              {this.props.states.map((s, index) => <li key={index}>{s.name}, trigger: {s.keys.TRIGGER}, special {s.keys.SPECIAL}</li>)}
             </ul>
             <a href="#game">Start game</a>
           </div>
@@ -329,7 +329,7 @@ let playerStatesP = Bacon
     .combineAsArray([
       {
         name: player1NameP,
-        keys: {left: 'a', right: 'd', trigger: "s", special: "w"},
+        keys: {LEFT: 'a', RIGHT: 'd', TRIGGER: "s", SPECIAL: "w"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
@@ -342,7 +342,7 @@ let playerStatesP = Bacon
         step: 0
       }, {
         name: player2NameP,
-        keys: {left: 'h', right: 'k', trigger: "j", special: "u"},
+        keys: {LEFT: 'h', RIGHT: 'k', TRIGGER: "j", SPECIAL: "u"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
@@ -357,13 +357,13 @@ let playerStatesP = Bacon
     ].map(Bacon.combineTemplate))
     .sampledBy(Bacon.mergeAll(Bacon.once(), registerKey("q")))
     .flatMap(players => Bacon.combineAsArray(players.map(player => {
-      let sequenceKeyE = Bacon.mergeAll(registerKey(player.keys.left), registerKey(player.keys.right));
+      let sequenceKeyE = Bacon.mergeAll(registerKey(player.keys.LEFT), registerKey(player.keys.RIGHT));
       let normalE = sequenceStream(sequenceKeyE, [LEFT, RIGHT]);
 
       // Remove later, real movement through sequence
-      let cheatStepE = registerKey(player.keys.trigger);
+      let cheatStepE = registerKey(player.keys.TRIGGER);
       let stepE = Bacon.mergeAll(normalE, cheatStepE);
-      let specialE = registerKey(player.keys.special);
+      let specialE = registerKey(player.keys.SPECIAL);
 
       return Bacon
           .mergeAll(specialE.map(k => KEY_SPECIAL), stepE.map(k => KEY_NORMAL))
