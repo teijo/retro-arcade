@@ -353,7 +353,7 @@ let playerStatesP = Bacon
       }
     ].map(Bacon.combineTemplate))
     .sampledBy(Bacon.mergeAll(Bacon.once(), registerKey("q")))
-    .flatMap(players => Bacon.combineAsArray(players.map(player => {
+    .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
       let normalE = sequenceStream(player.keys, [DOWN]);
       let specialE = registerKey(player.keys.UP);
       return Bacon
