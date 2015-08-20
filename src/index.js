@@ -169,7 +169,7 @@ let HowtoPage = React.createClass({
             </ol>
             <h2>Player keys</h2>
             <ul>
-              {this.props.states.map((s, index) => <li key={index}>{s.name}, trigger: {s.keys.TRIGGER}, special {s.keys.SPECIAL}</li>)}
+              {this.props.states.map((s, index) => <li key={index}>{s.name}, trigger: {s.keys.DOWN}, special {s.keys.UP}</li>)}
             </ul>
             <a href="#game">Start game</a>
           </div>
@@ -285,6 +285,8 @@ function registerKey(key) {
 }
 
 // Input config object keys
+const UP = 'UP';
+const DOWN = 'DOWN';
 const LEFT = 'LEFT';
 const RIGHT = 'RIGHT';
 
@@ -324,7 +326,7 @@ let playerStatesP = Bacon
     .combineAsArray([
       {
         name: player1NameP,
-        keys: {LEFT: 'a', RIGHT: 'd', TRIGGER: "s", SPECIAL: "w"},
+        keys: {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
@@ -337,7 +339,7 @@ let playerStatesP = Bacon
         step: 0
       }, {
         name: player2NameP,
-        keys: {LEFT: 'h', RIGHT: 'k', TRIGGER: "j", SPECIAL: "u"},
+        keys: {LEFT: 'h', RIGHT: 'k', DOWN: "j", UP: "u"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
         blocks: BLOCKS,
@@ -352,15 +354,10 @@ let playerStatesP = Bacon
     ].map(Bacon.combineTemplate))
     .sampledBy(Bacon.mergeAll(Bacon.once(), registerKey("q")))
     .flatMap(players => Bacon.combineAsArray(players.map(player => {
-      let normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
-
-      // Remove later, real movement through sequence
-      let cheatStepE = registerKey(player.keys.TRIGGER);
-      let stepE = Bacon.mergeAll(normalE, cheatStepE);
-      let specialE = registerKey(player.keys.SPECIAL);
-
+      let normalE = sequenceStream(player.keys, [DOWN]);
+      let specialE = registerKey(player.keys.UP);
       return Bacon
-          .mergeAll(specialE.map(k => KEY_SPECIAL), stepE.map(k => KEY_NORMAL))
+          .mergeAll(specialE.map(k => KEY_SPECIAL), normalE.map(k => KEY_NORMAL))
           .scan(player, nextStep);
     })));
 
