@@ -171,8 +171,8 @@ let MenuPage = React.createClass({
             <PlayerName placeholder={this.props.settings[1].name} changeBus={this.props.outputs.player2Name}/>
           </div>
           <ul>
-            <li><a href="#game">Start game</a></li>
-            <li><a href="#howto">How to play</a></li>
+            <li><a href="#game">Start game &gt;</a></li>
+            <li><a href="#howto">How to play &gt;</a></li>
           </ul>
         </div>
     );
@@ -199,7 +199,7 @@ let HowtoPage = React.createClass({
             <ul>
               {this.props.states.map((s, index) => <li key={index}>{this.props.settings[index].name} trigger: {s.keys.DOWN}, special {s.keys.UP}</li>)}
             </ul>
-            <a href="#game">Start game</a>
+            <a href="#menu">&lt; Back to main menu</a>
           </div>
         </div>
     );
