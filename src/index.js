@@ -249,7 +249,7 @@ let ScorePage = React.createClass({
   }
 });
 
-let nextStep = (function() {
+let nextStep = (() => {
   const STEP_MULTIPLIER = 8;
   const SPECIAL_STEP_MULTIPLIER = 32;
 
@@ -350,8 +350,8 @@ function sequenceStream(keyConfig, sequence) {
   let keyE = keySequence.map(registerKey);
   return Bacon.mergeAll(keyE)
       .scan({n: 0, loops: 0, seq: keySequence}, (conf, key) => {
-        var loops = conf.loops;
-        var n = conf.n;
+        let loops = conf.loops;
+        let n = conf.n;
         // Advance sequence only if correct next input given
         if (conf.seq[n] === key) {
           n = (n + 1) % conf.seq.length;
@@ -383,14 +383,14 @@ let outputs = {
   player2Name(name) { player2NameChangeE.push(name) }
 };
 
-var activePageP = Bacon.fromEvent(window, "hashchange")
+let activePageP = Bacon.fromEvent(window, "hashchange")
     .map(e => {
       let parts = e.newURL.split("#");
       return (parts.length == 2) ? "#" + parts[1] : "#menu";
     })
     .toProperty(window.location.hash);
 
-var gameIsActiveP = activePageP.map(page => page === "#game");
+let gameIsActiveP = activePageP.map(page => page === "#game");
 
 let playerSettingsP = Bacon
     .combineAsArray([
