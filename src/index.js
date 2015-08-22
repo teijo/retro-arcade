@@ -47,11 +47,11 @@ let Game = React.createClass({
                    blocks={blocks}/>
 
           <div className="footer">
-            <div className="col progress">
+            <div className="col">
               <AnimatedCounter value={Math.round(progress)}/>
               <span className="title">Progress</span>
             </div>
-            <div className="col score">
+            <div className="col">
               <AnimatedCounter value={score}/>
               <span className="title">Score</span>
             </div>
@@ -59,7 +59,7 @@ let Game = React.createClass({
               <AnimatedCounter value={consecutiveSpecialHits}/>
               <span className="title">Combo</span>
             </div>
-            <div className="col specials">
+            <div className="col">
               <AnimatedCounter value={specialsLeft}/>
               <span className="title">Specials</span>
             </div>
@@ -214,11 +214,16 @@ let ScorePage = React.createClass({
   render() {
     return (
         <div className="score">
-          <h1>Score</h1>
+          <h1>Game over</h1>
           <ul>
-            {this.props.states.map((s, index) => <li key={index}>{this.props.settings[index].name} - {s.score}</li>)}
+            {this.props.states.map((s, index) =>
+                <li key={index}>
+                  <h2>{this.props.settings[index].name}</h2>
+                  <p className="resultScore">{s.score}</p>
+                </li>
+            )}
           </ul>
-          <a href="#menu">Main menu</a>
+          <a href="#menu">&lt; Back to main menu</a>
         </div>
     );
   }
