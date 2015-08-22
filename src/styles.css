@@ -81,6 +81,15 @@ h1 {
   font-size: 2rem;
 }
 
+.howto ul, .howto ol, .howto a {
+  flex: 1;
+}
+
+.howto a {
+  font-size: 2rem;
+}
+
+
 .score h1 {
   flex: 1;
 }
