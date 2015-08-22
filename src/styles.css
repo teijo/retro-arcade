@@ -14,6 +14,16 @@ h1, h2 {
   margin: 0;
 }
 
+a {
+  text-decoration: none;
+  color: blue;
+}
+
+a:hover, a:active {
+  text-decoration: underline;
+  color: red;
+}
+
 pre {
   font-family: 'VT323';
 }
