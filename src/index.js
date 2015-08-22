@@ -142,14 +142,14 @@ let GamePage = React.createClass({
 
 let PlayerName = React.createClass({
   propTypes: {
-    changeBus: React.PropTypes.object.isRequired,
+    onchange: React.PropTypes.func.isRequired,
     placeholder: React.PropTypes.string.isRequired
   },
   componentDidMount() {
-    var inputChange = Bacon
+    Bacon
         .fromEvent(React.findDOMNode(this.refs.input), "keyup")
-        .map(e => e.target.value);
-    this.props.changeBus.plug(inputChange);
+        .map(e => e.target.value)
+        .onValue(this.props.onchange);
   },
   render() {
     return <input placeholder={this.props.placeholder} ref="input" type="text"/>;
@@ -167,8 +167,8 @@ let MenuPage = React.createClass({
         <div className="menu">
           <h1>Game Title</h1>
           <div>
-            <PlayerName placeholder={this.props.settings[0].name} changeBus={this.props.outputs.player1Name}/>
-            <PlayerName placeholder={this.props.settings[1].name} changeBus={this.props.outputs.player2Name}/>
+            <PlayerName placeholder={this.props.settings[0].name} onchange={this.props.outputs.player1Name}/>
+            <PlayerName placeholder={this.props.settings[1].name} onchange={this.props.outputs.player2Name}/>
           </div>
           <ul>
             <li><a href="#game">Start game &gt;</a></li>
@@ -359,8 +359,8 @@ let BLOCKS = LEVEL.split(/<<|>>/);
 let player1NameChangeE = new Bacon.Bus();
 let player2NameChangeE = new Bacon.Bus();
 let outputs = {
-  player1Name: player1NameChangeE,
-  player2Name: player2NameChangeE
+  player1Name(name) { player1NameChangeE.push(name) },
+  player2Name(name) { player2NameChangeE.push(name) }
 };
 
 var activePageP = Bacon.fromEvent(window, "hashchange")
