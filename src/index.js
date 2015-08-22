@@ -124,14 +124,34 @@ let CodeBox = React.createClass({
   }
 });
 
+let Countdown = React.createClass({
+  propTypes: {
+    value: React.PropTypes.number.isRequired
+  },
+  render() {
+    return (
+        <span className="countdown" ref="cursor">{this.props.value}</span>
+    );
+  }
+});
+
 let GamePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
     settings: React.PropTypes.array.isRequired
   },
+  getInitialState() {
+    return {countdown: "Ready?"}
+  },
+  componentDidMount() {
+    Bacon
+        .sequentially(1000, [3, 2, 1, "CODE!", ""])
+        .onValue(v => this.setState({countdown: v}));
+  },
   render() {
     return (
         <div>
+          <Countdown value={this.state.countdown}/>
           <div className="game">
             {this.props.states.map((p, index) => <Game key={"player_" + index} settings={this.props.settings[index]} state={p}/>)}
           </div>
