@@ -355,7 +355,7 @@ var activePageP = Bacon.fromEvent(window, "hashchange")
     })
     .toProperty(window.location.hash);
 
-var gameIsActiveP = activePageP.map(page => page === "#game").log("active");
+var gameIsActiveP = activePageP.map(page => page === "#game");
 
 let playerStatesP = Bacon
     .combineAsArray([
