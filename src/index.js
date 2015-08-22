@@ -306,7 +306,9 @@ function sequenceStream(keyConfig, sequence) {
         return {n: n, seq: conf.seq, loops: loops};
       })
       .map(conf => conf.loops)
-      .skipDuplicates();
+      .skipDuplicates()
+      // Skip initial state as all events trigger cursor movement
+      .skip(1);
 }
 
 let LEVEL =
