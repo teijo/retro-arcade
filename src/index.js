@@ -342,10 +342,7 @@ let BLOCKS = LEVEL.split(/<<|>>/);
 
 
 let player1NameChangeE = new Bacon.Bus();
-let player1NameP = player1NameChangeE.toProperty("Player 1");
 let player2NameChangeE = new Bacon.Bus();
-let player2NameP = player2NameChangeE.toProperty("Player 2");
-
 let outputs = {
   player1Name: player1NameChangeE,
   player2Name: player2NameChangeE
@@ -363,7 +360,7 @@ var gameIsActiveP = activePageP.map(page => page === "#game").log("active");
 let playerStatesP = Bacon
     .combineAsArray([
       {
-        name: player1NameP,
+        name: player1NameChangeE.toProperty("Player 1"),
         keys: {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
@@ -376,7 +373,7 @@ let playerStatesP = Bacon
         blockPosition: 0,
         step: 0
       }, {
-        name: player2NameP,
+        name: player2NameChangeE.toProperty("Player 2"),
         keys: {LEFT: 'h', RIGHT: 'k', DOWN: "j", UP: "u"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
