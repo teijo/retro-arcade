@@ -31,15 +31,16 @@ let AnimatedCounter = React.createClass({
 
 let Game = React.createClass({
   propTypes: {
-    state: React.PropTypes.object.isRequired
+    state: React.PropTypes.object.isRequired,
+    settings: React.PropTypes.object.isRequired
   },
   render() {
-    let {consecutiveSpecialHits, progress, score, blockPosition, name,
+    let {consecutiveSpecialHits, progress, score, blockPosition,
         blockIndex, specialsLeft, blocks} = this.props.state;
     return (
         <div className="player-screen">
           <div className="header">
-            <h2>{name}</h2>
+            <h2>{this.props.settings.name}</h2>
           </div>
           <CodeBox blockPosition={blockPosition}
                    blockIndex={blockIndex}
@@ -125,13 +126,14 @@ let CodeBox = React.createClass({
 
 let GamePage = React.createClass({
   propTypes: {
-    states: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired,
+    settings: React.PropTypes.array.isRequired
   },
   render() {
     return (
         <div>
           <div className="game">
-            {this.props.states.map((p, index) => <Game key={"player_" + index} state={p}/>)}
+            {this.props.states.map((p, index) => <Game key={"player_" + index} settings={this.props.settings[index]} state={p}/>)}
           </div>
         </div>
     );
@@ -157,6 +159,7 @@ let PlayerName = React.createClass({
 let MenuPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
+    settings: React.PropTypes.array.isRequired,
     outputs: React.PropTypes.object.isRequired
   },
   render() {
@@ -164,8 +167,8 @@ let MenuPage = React.createClass({
         <div className="menu">
           <h1>Game Title</h1>
           <a href="#howto">How to play</a> | <a href="#game">Start game</a>
-          <PlayerName placeholder={this.props.states[0].name} changeBus={this.props.outputs.player1Name}/>
-          <PlayerName placeholder={this.props.states[1].name} changeBus={this.props.outputs.player2Name}/>
+          <PlayerName placeholder={this.props.settings[0].name} changeBus={this.props.outputs.player1Name}/>
+          <PlayerName placeholder={this.props.settings[1].name} changeBus={this.props.outputs.player2Name}/>
         </div>
     );
   }
@@ -173,7 +176,8 @@ let MenuPage = React.createClass({
 
 let HowtoPage = React.createClass({
   propTypes: {
-    states: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired,
+    settings: React.PropTypes.array.isRequired
   },
   render() {
     return (
@@ -188,7 +192,7 @@ let HowtoPage = React.createClass({
             </ol>
             <h2>Player keys</h2>
             <ul>
-              {this.props.states.map((s, index) => <li key={index}>{s.name}, trigger: {s.keys.DOWN}, special {s.keys.UP}</li>)}
+              {this.props.states.map((s, index) => <li key={index}>{this.props.settings[index].name} trigger: {s.keys.DOWN}, special {s.keys.UP}</li>)}
             </ul>
             <a href="#game">Start game</a>
           </div>
@@ -199,14 +203,15 @@ let HowtoPage = React.createClass({
 
 let ScorePage = React.createClass({
   propTypes: {
-    states: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired,
+    settings: React.PropTypes.array.isRequired
   },
   render() {
     return (
         <div className="score">
           <h1>Score</h1>
           <ul>
-            {this.props.states.map((s, index) => <li key={index}>{s.name} - {s.score}</li>)}
+            {this.props.states.map((s, index) => <li key={index}>{this.props.settings[index].name} - {s.score}</li>)}
           </ul>
           <a href="#menu">Main menu</a>
         </div>
@@ -357,10 +362,19 @@ var activePageP = Bacon.fromEvent(window, "hashchange")
 
 var gameIsActiveP = activePageP.map(page => page === "#game");
 
+let playerSettingsP = Bacon
+    .combineAsArray([
+      {
+        name: player1NameChangeE.toProperty("Player 1")
+      },
+      {
+        name: player2NameChangeE.toProperty("Player 2")
+      }
+    ].map(Bacon.combineTemplate));
+
 let playerStatesP = Bacon
     .combineAsArray([
       {
-        name: player1NameChangeE.toProperty("Player 1"),
         keys: {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
@@ -373,7 +387,6 @@ let playerStatesP = Bacon
         blockPosition: 0,
         step: 0
       }, {
-        name: player2NameChangeE.toProperty("Player 2"),
         keys: {LEFT: 'h', RIGHT: 'k', DOWN: "j", UP: "u"},
         level: LEVEL,
         levelLength: BLOCKS.join('').length,
@@ -401,14 +414,14 @@ let pageComponentE = activePageP
     .map(hash => {
       switch (hash) {
         case "#howto":
-          return (states) => <HowtoPage states={states}/>;
+          return (states, settings) => <HowtoPage states={states} settings={settings}/>;
         case "#game":
-          return (states) => <GamePage states={states}/>;
+          return (states, settings) => <GamePage states={states} settings={settings}/>;
         case "#score":
-          return (states) => <ScorePage states={states}/>;
+          return (states, settings) => <ScorePage states={states} settings={settings}/>;
         default:
-          return (states) => <MenuPage states={states} outputs={outputs}/>;
+          return (states, settings) => <MenuPage states={states} settings={settings} outputs={outputs}/>;
       }
     });
 
-Bacon.onValues(pageComponentE, playerStatesP, (template, states) => React.render(template(states), document.getElementById("main")));
+Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, (template, states, names) => React.render(template(states, names), document.getElementById("main")));
