@@ -138,15 +138,34 @@ let GamePage = React.createClass({
   }
 });
 
+let PlayerName = React.createClass({
+  propTypes: {
+    changeBus: React.PropTypes.object.isRequired,
+    placeholder: React.PropTypes.string.isRequired
+  },
+  componentDidMount() {
+    var inputChange = Bacon
+        .fromEvent(React.findDOMNode(this.refs.input), "keyup")
+        .map(e => e.target.value);
+    this.props.changeBus.plug(inputChange);
+  },
+  render() {
+    return <input placeholder={this.props.placeholder} ref="input" type="text"/>;
+  }
+});
+
 let MenuPage = React.createClass({
   propTypes: {
-    states: React.PropTypes.array.isRequired
+    states: React.PropTypes.array.isRequired,
+    outputs: React.PropTypes.object.isRequired
   },
   render() {
     return (
         <div className="menu">
           <h1>Game Title</h1>
           <a href="#howto">How to play</a> | <a href="#game">Start game</a>
+          <PlayerName placeholder={this.props.states[0].name} changeBus={this.props.outputs.player1Name}/>
+          <PlayerName placeholder={this.props.states[1].name} changeBus={this.props.outputs.player2Name}/>
         </div>
     );
   }
@@ -279,9 +298,11 @@ let nextStep = (function() {
 let listener = new window.keypress.Listener();
 
 function registerKey(key) {
-  let inputE = new Bacon.Bus();
-  listener.simple_combo(key, () => inputE.push(key));
-  return inputE;
+  return Bacon
+      .fromEvent(window, "keypress")
+      .map(e => e.keyCode)
+      .filter(code => String.fromCharCode(code) === key)
+      .map(key);
 }
 
 // Input config object keys
@@ -321,8 +342,25 @@ let LEVEL =
     "}>>);";
 let BLOCKS = LEVEL.split(/<<|>>/);
 
-let player1NameP = Bacon.constant("Player 1");
-let player2NameP = Bacon.constant("Player 2");
+
+let player1NameChangeE = new Bacon.Bus();
+let player1NameP = player1NameChangeE.toProperty("Player 1");
+let player2NameChangeE = new Bacon.Bus();
+let player2NameP = player2NameChangeE.toProperty("Player 2");
+
+let outputs = {
+  player1Name: player1NameChangeE,
+  player2Name: player2NameChangeE
+};
+
+var activePageP = Bacon.fromEvent(window, "hashchange")
+    .map(e => {
+      let parts = e.newURL.split("#");
+      return (parts.length == 2) ? "#" + parts[1] : "#menu";
+    })
+    .toProperty(window.location.hash);
+
+var gameIsActiveP = activePageP.map(page => page === "#game").log("active");
 
 let playerStatesP = Bacon
     .combineAsArray([
@@ -360,15 +398,11 @@ let playerStatesP = Bacon
       let specialE = registerKey(player.keys.UP);
       return Bacon
           .mergeAll(specialE.map(k => KEY_SPECIAL), normalE.map(k => KEY_NORMAL))
+          .takeWhile(gameIsActiveP)
           .scan(player, nextStep);
     })));
 
-let pageComponentE = Bacon.fromEvent(window, "hashchange")
-    .map(e => {
-      let parts = e.newURL.split("#");
-      return (parts.length == 2) ? "#" + parts[1] : "#menu";
-    })
-    .toProperty(window.location.hash)
+let pageComponentE = activePageP
     .map(hash => {
       switch (hash) {
         case "#howto":
@@ -378,7 +412,7 @@ let pageComponentE = Bacon.fromEvent(window, "hashchange")
         case "#score":
           return (states) => <ScorePage states={states}/>;
         default:
-          return (states) => <MenuPage states={states}/>;
+          return (states) => <MenuPage states={states} outputs={outputs}/>;
       }
     });
 
