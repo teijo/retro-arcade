@@ -295,8 +295,6 @@ let nextStep = (function() {
   }
 })();
 
-let listener = new window.keypress.Listener();
-
 function registerKey(key) {
   return Bacon
       .fromEvent(window, "keypress")
