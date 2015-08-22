@@ -166,9 +166,14 @@ let MenuPage = React.createClass({
     return (
         <div className="menu">
           <h1>Game Title</h1>
-          <a href="#howto">How to play</a> | <a href="#game">Start game</a>
-          <PlayerName placeholder={this.props.settings[0].name} changeBus={this.props.outputs.player1Name}/>
-          <PlayerName placeholder={this.props.settings[1].name} changeBus={this.props.outputs.player2Name}/>
+          <div>
+            <PlayerName placeholder={this.props.settings[0].name} changeBus={this.props.outputs.player1Name}/>
+            <PlayerName placeholder={this.props.settings[1].name} changeBus={this.props.outputs.player2Name}/>
+          </div>
+          <ul>
+            <li><a href="#game">Start game</a></li>
+            <li><a href="#howto">How to play</a></li>
+          </ul>
         </div>
     );
   }
