@@ -397,6 +397,13 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
 
 let gameIsActiveP = activePageP.map(page => page.hash === "#game" && page.countdown === "");
 
+let resetStateE = Bacon.mergeAll(
+    // Force reset on "Q"
+    Bacon.mergeAll(Bacon.once(), registerKey("q")),
+    // Reset on menu->game page transition
+    activePageP.slidingWindow(2, 2).filter(w => w[0].hash === "#menu" && w[1].hash === "#game")
+).map("[reset state]");
+
 let playerSettingsP = Bacon
     .combineAsArray([
       {
@@ -435,7 +442,7 @@ let playerStatesP = Bacon
         step: 0
       }
     ].map(Bacon.combineTemplate))
-    .sampledBy(Bacon.mergeAll(Bacon.once(), registerKey("q")))
+    .sampledBy(resetStateE)
     .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
       let normalE = sequenceStream(player.keys, [DOWN]);
       let specialE = registerKey(player.keys.UP);
