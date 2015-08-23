@@ -460,3 +460,12 @@ let pageComponentE = activePageP
     });
 
 Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, (template, states, names) => React.render(template(states, names), document.getElementById("main")));
+
+function playersProgressedToEnd(states) {
+  return states.reduce((end, s) => s.progress === 100 && end, true);
+}
+
+gameIsActiveP
+    .and(playerStatesP.map(playersProgressedToEnd))
+    .filter(s => s === true)
+    .onValue(() => window.location.hash = "#score");
