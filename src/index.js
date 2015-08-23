@@ -383,7 +383,7 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
       var hash = (parts.length == 2) ? "#" + parts[1] : "#menu";
       switch (hash) {
         case "#game":
-          return Bacon.sequentially(1000, [3, 2, 1, "CODE!", ""]).map(c => {
+          return Bacon.sequentially(1000, ["3", "2", "1", "CODE!", ""]).map(c => {
             return {hash: hash, countdown: c};
           });
         default:
