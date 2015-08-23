@@ -386,11 +386,11 @@ let outputs = {
 let activePageP = Bacon.fromEvent(window, "hashchange")
     .map(e => {
       let parts = e.newURL.split("#");
-      return (parts.length == 2) ? "#" + parts[1] : "#menu";
+      return {hash: (parts.length == 2) ? "#" + parts[1] : "#menu"};
     })
-    .toProperty(window.location.hash);
+    .toProperty({hash: window.location.hash});
 
-let gameIsActiveP = activePageP.map(page => page === "#game");
+let gameIsActiveP = activePageP.map(page => page.hash === "#game");
 
 let playerSettingsP = Bacon
     .combineAsArray([
@@ -441,8 +441,8 @@ let playerStatesP = Bacon
     })));
 
 let pageComponentE = activePageP
-    .map(hash => {
-      switch (hash) {
+    .map(page => {
+      switch (page.hash) {
         case "#howto":
           return (states, settings) => <HowtoPage states={states} settings={settings}/>;
         case "#game":
