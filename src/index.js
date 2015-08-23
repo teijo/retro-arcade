@@ -126,7 +126,7 @@ let CodeBox = React.createClass({
 
 let Countdown = React.createClass({
   propTypes: {
-    value: React.PropTypes.number.isRequired
+    value: React.PropTypes.string.isRequired
   },
   render() {
     return (
@@ -138,20 +138,13 @@ let Countdown = React.createClass({
 let GamePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
-    settings: React.PropTypes.array.isRequired
-  },
-  getInitialState() {
-    return {countdown: "Ready?"}
-  },
-  componentDidMount() {
-    Bacon
-        .sequentially(1000, [3, 2, 1, "CODE!", ""])
-        .onValue(v => this.setState({countdown: v}));
+    settings: React.PropTypes.array.isRequired,
+    page: React.PropTypes.object.isRequired
   },
   render() {
     return (
         <div>
-          <Countdown value={this.state.countdown}/>
+          <Countdown value={this.props.page.countdown}/>
           <div className="game">
             {this.props.states.map((p, index) => <Game key={"player_" + index} settings={this.props.settings[index]} state={p}/>)}
           </div>
@@ -384,13 +377,22 @@ let outputs = {
 };
 
 let activePageP = Bacon.fromEvent(window, "hashchange")
-    .map(e => {
+    .toProperty({newURL: window.location.hash})
+    .flatMapLatest(e => {
       let parts = e.newURL.split("#");
-      return {hash: (parts.length == 2) ? "#" + parts[1] : "#menu"};
+      var hash = (parts.length == 2) ? "#" + parts[1] : "#menu";
+      switch (hash) {
+        case "#game":
+          return Bacon.sequentially(1000, [3, 2, 1, "CODE!", ""]).map(c => {
+            return {hash: hash, countdown: c};
+          });
+        default:
+          return Bacon.constant({hash: hash});
+      }
     })
-    .toProperty({hash: window.location.hash});
+    .toProperty();
 
-let gameIsActiveP = activePageP.map(page => page.hash === "#game");
+let gameIsActiveP = activePageP.map(page => page.hash === "#game" && page.countdown === "");
 
 let playerSettingsP = Bacon
     .combineAsArray([
@@ -446,7 +448,7 @@ let pageComponentE = activePageP
         case "#howto":
           return (states, settings) => <HowtoPage states={states} settings={settings}/>;
         case "#game":
-          return (states, settings) => <GamePage states={states} settings={settings}/>;
+          return (states, settings) => <GamePage states={states} page={page} settings={settings}/>;
         case "#score":
           return (states, settings) => <ScorePage states={states} settings={settings}/>;
         default:
