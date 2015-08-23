@@ -441,7 +441,7 @@ let playerStatesP = Bacon
       let specialE = registerKey(player.keys.UP);
       return Bacon
           .mergeAll(specialE.map(k => KEY_SPECIAL), normalE.map(k => KEY_NORMAL))
-          .takeWhile(gameIsActiveP)
+          .filter(gameIsActiveP)
           .scan(player, nextStep);
     })));
 
