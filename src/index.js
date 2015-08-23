@@ -384,8 +384,8 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
       switch (hash) {
         case "#game":
           return Bacon
-              .sequentially(1000, ["2", "1", "CODE!", ""])
-              .toProperty("3") // immediate start from first countdown element
+              .sequentially(1000, ["3", "2", "1", "CODE!", ""])
+              .toProperty("READY?") // immediate start from first countdown element
               .map(c => {
                 return {hash: hash, countdown: c};
               });
