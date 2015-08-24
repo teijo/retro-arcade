@@ -69,6 +69,16 @@ let Game = React.createClass({
   }
 });
 
+let UpcomingBlock = React.createClass({
+  propTypes: {
+    content: React.PropTypes.string.isRequired,
+    color: React.PropTypes.string.isRequired
+  },
+  render() {
+      return <span style={{color: this.props.color}}>{this.props.content}</span>;
+  }
+});
+
 let CodeBox = React.createClass({
   propTypes: {
     blockPosition: React.PropTypes.number.isRequired,
@@ -116,7 +126,7 @@ let CodeBox = React.createClass({
               </span>
           );
         } else {
-          return <span key={key} style={{color: baseColor}}>{block}</span>;
+          return <UpcomingBlock key={key} color={baseColor} content={block} />;
         }
       }
     });
