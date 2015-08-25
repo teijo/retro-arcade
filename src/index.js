@@ -69,6 +69,35 @@ let Game = React.createClass({
   }
 });
 
+let ActiveBlock = React.createClass({
+  propTypes: {
+    content: React.PropTypes.string.isRequired,
+    color: React.PropTypes.string.isRequired,
+    position: React.PropTypes.number.isRequired,
+    onInput: React.PropTypes.func.isRequired
+  },
+  componentDidUpdate() {
+    let cursor = React.findDOMNode(this.refs.cursor);
+    if (cursor === null) {
+      return;
+    }
+    this.props.onInput(cursor.offsetLeft, cursor.offsetTop);
+  },
+  render() {
+    let {content, position, color} = this.props;
+    let completed = content.substr(0, position);
+    let cursor = content.substr(position, 1);
+    let left = content.substr(position + 1);
+    return (
+        <span style={{color: color}}>
+          <span style={{color: "red"}}>{completed}</span>
+          <span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span>
+          <span dangerouslySetInnerHTML={{__html: left}}/>
+        </span>
+    );
+  }
+});
+
 let UpcomingBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
@@ -85,18 +114,11 @@ let CodeBox = React.createClass({
     blockIndex: React.PropTypes.number.isRequired,
     blocks: React.PropTypes.array.isRequired
   },
-  componentWillUpdate() {
+  onInput(cursorOffsetLeft, cursorOffsetTop) {
     let node = this.getDOMNode();
-    let cursor = React.findDOMNode(this.refs.cursor);
-    if (cursor === null) {
-      return;
-    }
-    this.x = Math.max(0, cursor.offsetLeft - node.offsetLeft - node.clientWidth + 150);
-    this.y = Math.max(0, cursor.offsetTop - node.offsetTop - node.clientHeight + 150);
-  },
-  componentDidUpdate() {
-    this.getDOMNode().scrollLeft = this.x;
-    this.getDOMNode().scrollTop = this.y;
+    let {offsetLeft, offsetTop, clientWidth, clientHeight} = node;
+    node.scrollLeft = Math.max(0, cursorOffsetLeft - offsetLeft - clientWidth + 150);
+    node.scrollTop = Math.max(0, cursorOffsetTop - offsetTop - clientHeight + 150);
   },
   render() {
     let {blockPosition, blockIndex, blocks} = this.props;
@@ -104,16 +126,7 @@ let CodeBox = React.createClass({
       let baseColor = index % 2 == 0 ? "black" : "blue";
       let key = "block_" + index;
       if (index == blockIndex) {
-        let completed = block.substr(0, blockPosition);
-        let cursor = block.substr(blockPosition, 1);
-        let left = block.substr(blockPosition + 1);
-        return (
-            <span key={key} style={{color: baseColor}}>
-              <span style={{color: "red"}}>{completed}</span>
-              <span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span>
-              <span dangerouslySetInnerHTML={{__html: left}}/>
-            </span>
-        );
+        return <ActiveBlock key={key} onInput={this.onInput} content={block} position={blockPosition} color={baseColor}/>
       } else if (index < blockIndex) {
         return <span key={key} style={{color: "red"}}>{block}</span>
       } else {
