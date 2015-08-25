@@ -104,7 +104,31 @@ let UpcomingBlock = React.createClass({
     color: React.PropTypes.string.isRequired
   },
   render() {
-      return <span style={{color: this.props.color}}>{this.props.content}</span>;
+    return <span style={{color: this.props.color}}>{this.props.content}</span>;
+  }
+});
+
+let PassedBlock = React.createClass({
+  propTypes: {
+    content: React.PropTypes.string.isRequired
+  },
+  render() {
+    return <span style={{color: "red"}}>{this.props.content}</span>;
+  }
+});
+
+let UpcomingNextBlock = React.createClass({
+  propTypes: {
+    content: React.PropTypes.string.isRequired,
+    color: React.PropTypes.string.isRequired
+  },
+  render() {
+    return (
+        <span style={{color: this.props.color}}>
+          <span style={{backgroundColor: "lime"}} ref="cursor">{this.props.content.substr(0, 1)}</span>
+          <span dangerouslySetInnerHTML={{__html: this.props.content.substr(1)}}/>
+        </span>
+    );
   }
 });
 
@@ -128,16 +152,11 @@ let CodeBox = React.createClass({
       if (index == blockIndex) {
         return <ActiveBlock key={key} onInput={this.onInput} content={block} position={blockPosition} color={baseColor}/>
       } else if (index < blockIndex) {
-        return <span key={key} style={{color: "red"}}>{block}</span>
+        return <PassedBlock content={block} key={key}/>
       } else {
         // Previous block finished, cursor jumps to current block
         if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].length) {
-          return (
-              <span key={key} style={{color: baseColor}}>
-                <span style={{backgroundColor: "lime"}} ref="cursor">{block.substr(0, 1)}</span>
-                <span dangerouslySetInnerHTML={{__html: block.substr(1)}}/>
-              </span>
-          );
+          return <UpcomingNextBlock key={key} color={baseColor} content={block} />;
         } else {
           return <UpcomingBlock key={key} color={baseColor} content={block} />;
         }
