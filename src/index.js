@@ -369,13 +369,13 @@ function sequenceStream(keyConfig, sequence) {
 }
 
 let LEVEL =
-    "let <<listener>> = new window.keypress.Listener();\n" +
-    "players.forEach(<<player => {\n" +
-    "    let step = 0;\n" +
-    "    listener.simple_combo(player.trigger, () => {\n" +
-    "        player.input.push(++step);\n" +
-    "    });\n" +
-    "}>>);";
+`let <<listener>> = new window.keypress.Listener();
+players.forEach(<<player => {
+  let step = 0;
+  listener.simple_combo(player.trigger, () => {
+    player.input.push(++step);
+  });
+}>>);`;
 let BLOCKS = LEVEL.split(/<<|>>/);
 
 
