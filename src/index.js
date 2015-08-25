@@ -13,7 +13,7 @@ let AnimatedCounter = React.createClass({
         .fromEvent(node, "animationend")
         .onValue(() => node.classList.toggle("bump", false));
   },
-  shouldComponentUpdate(nextProps, _) {
+  shouldComponentUpdate(nextProps) {
     // Animate (update component) only when value changes
     return this.props.value !== nextProps.value;
   },
