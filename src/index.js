@@ -69,6 +69,15 @@ let Game = React.createClass({
   }
 });
 
+let PassedBlock = React.createClass({
+  propTypes: {
+    content: React.PropTypes.string.isRequired
+  },
+  render() {
+    return <span style={{color: "red"}}>{this.props.content}</span>;
+  }
+});
+
 let ActiveBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
@@ -90,7 +99,7 @@ let ActiveBlock = React.createClass({
     let left = content.substr(position + 1);
     return (
         <span style={{color: color}}>
-          <span style={{color: "red"}}>{completed}</span>
+          <PassedBlock content={completed}/>
           <span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span>
           <span dangerouslySetInnerHTML={{__html: left}}/>
         </span>
@@ -105,15 +114,6 @@ let UpcomingBlock = React.createClass({
   },
   render() {
     return <span style={{color: this.props.color}}>{this.props.content}</span>;
-  }
-});
-
-let PassedBlock = React.createClass({
-  propTypes: {
-    content: React.PropTypes.string.isRequired
-  },
-  render() {
-    return <span style={{color: "red"}}>{this.props.content}</span>;
   }
 });
 
