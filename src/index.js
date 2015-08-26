@@ -299,8 +299,15 @@ let nextStep = (() => {
 
   let Movement = {
     indentSkip(block, position) {
-      let match = block.substr(position + 1).match(/^(\n|\s{2,})[^\s]/);
-      return match != null ? match[1].length : 0;
+      // Match line change and indention whitespace
+      let match = block.substr(position + 1).match(/^(\n|\s{2,})+/);
+      if (match == null) {
+        return 0;
+      } else {
+        // If next line starts from column 0, skip just \n, else skip until
+        // first non-whitespace column which is after the match
+        return match[1].length == 1 ? 1 : match[1].length + 1;
+      }
     },
     jump(step, blocks, index, position) {
       let block = blocks[index];
