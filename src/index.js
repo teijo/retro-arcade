@@ -352,9 +352,15 @@ let nextStep = (() => {
       } else {
         [specialHit, currentPosition] = [false, state.step];
       }
-      specialsLeft = Math.max(0, state.specialsLeft - 1);
-      consecutiveSpecialHits = specialHit ? consecutiveSpecialHits + 1 : 0;
-      stepScore = specialHit ? (currentPosition - state.step) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER : 0;
+      if (specialHit) {
+        // Rewards for hitting special
+        consecutiveSpecialHits = consecutiveSpecialHits + 1;
+        stepScore = (currentPosition - state.step) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
+      } else {
+        // Penalties for wasting special
+        consecutiveSpecialHits = 0;
+        specialsLeft = Math.max(0, state.specialsLeft - 1);
+      }
     } else if (keyType == KEY_NORMAL) {
       currentPosition = Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
       stepScore = (currentPosition - state.step) * STEP_MULTIPLIER;
