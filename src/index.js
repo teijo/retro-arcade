@@ -3,15 +3,19 @@
 const KEY_NORMAL = 0;
 const KEY_SPECIAL = 1;
 
+function disableClassOnAnimationEnd(ref, className) {
+  let node = React.findDOMNode(ref);
+  Bacon
+      .fromEvent(node, "animationend")
+      .onValue(() => node.classList.toggle(className, false));
+}
+
 let AnimatedCounter = React.createClass({
   propTypes: {
     value: React.PropTypes.number.isRequired
   },
   componentDidMount() {
-    let node = React.findDOMNode(this.refs.cursor);
-    Bacon
-        .fromEvent(node, "animationend")
-        .onValue(() => node.classList.toggle("bump", false));
+    disableClassOnAnimationEnd(this.refs.cursor, "bump");
   },
   shouldComponentUpdate(nextProps) {
     // Animate (update component) only when value changes
@@ -71,10 +75,15 @@ let Game = React.createClass({
 
 let PassedBlock = React.createClass({
   propTypes: {
-    content: React.PropTypes.string.isRequired
+    content: React.PropTypes.string.isRequired,
+    animate: React.PropTypes.bool.isRequired
+  },
+  componentDidMount() {
+    disableClassOnAnimationEnd(this.refs.block, "finish");
   },
   render() {
-    return <span style={{color: "red"}}>{this.props.content}</span>;
+    let classes = this.props.animate ? "finish" : "";
+    return <span ref="block" style={{color: "red"}} className={classes}>{this.props.content}</span>;
   }
 });
 
@@ -99,7 +108,7 @@ let ActiveBlock = React.createClass({
     let left = content.substr(position + 1);
     return (
         <span style={{color: color}}>
-          <PassedBlock content={completed}/>
+          <PassedBlock animate={false} content={completed}/>
           <span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span>
           <span dangerouslySetInnerHTML={{__html: left}}/>
         </span>
@@ -149,10 +158,10 @@ let CodeBox = React.createClass({
     let elements = blocks.map((block, index) => {
       let baseColor = index % 2 == 0 ? "black" : "blue";
       let key = "block_" + index;
-      if (index == blockIndex) {
+      if (index == blockIndex && blockPosition < blocks[blockIndex].length) {
         return <ActiveBlock key={key} onInput={this.onInput} content={block} position={blockPosition} color={baseColor}/>
-      } else if (index < blockIndex) {
-        return <PassedBlock content={block} key={key}/>
+      } else if (index <= blockIndex) {
+        return <PassedBlock animate={true} content={block} key={key}/>
       } else {
         // Previous block finished, cursor jumps to current block
         if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].length) {

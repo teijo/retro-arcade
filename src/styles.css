@@ -235,3 +235,24 @@ nav ul {
     font-size: 2rem;
   }
 }
+
+.finish {
+  animation-duration: 0.5s;
+  animation-name: finish-animation;
+  color: lime;
+}
+
+@keyframes finish-animation {
+  0% {
+    color: red;
+  }
+
+  50% {
+    color: limegreen;
+    background-color: lightgray;
+  }
+
+  100% {
+    color: red;
+  }
+}
