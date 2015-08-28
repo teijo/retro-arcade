@@ -559,6 +559,6 @@ function playersProgressedToEnd(states) {
 }
 
 gameIsActiveP
-    .and(playerStatesP.map(playersProgressedToEnd))
+    .and(activePageP.map(p => p.timeLeft == 0).or(playerStatesP.map(playersProgressedToEnd).toProperty(false)))
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
