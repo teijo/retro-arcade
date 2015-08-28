@@ -186,6 +186,15 @@ let Countdown = React.createClass({
   }
 });
 
+let GameTime = React.createClass({
+  propTypes: {
+    value: React.PropTypes.string.isRequired
+  },
+  render() {
+    return <span className="timeLeft">{this.props.value}</span>;
+  }
+});
+
 let GamePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
@@ -196,6 +205,7 @@ let GamePage = React.createClass({
     return (
         <div>
           <Countdown value={this.props.page.countdown}/>
+          <GameTime value={this.props.page.timeLeft}/>
           <div className="game">
             {this.props.states.map((p, index) => <Game key={"player_" + index} settings={this.props.settings[index]} state={p}/>)}
           </div>
@@ -440,6 +450,13 @@ let outputs = {
   player2Name(name) { player2NameChangeE.push(name) }
 };
 
+function timer(count, delay) {
+  return Bacon
+      .interval(delay || 1000)
+      .scan(count, t => t - 1)
+      .takeWhile(t => t >= 0);
+}
+
 let activePageP = Bacon.fromEvent(window, "hashchange")
     .toProperty({newURL: window.location.hash})
     .flatMapLatest(e => {
@@ -450,8 +467,13 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
           return Bacon
               .sequentially(1000, ["3", "2", "1", "CODE!", ""])
               .toProperty("READY?") // immediate start from first countdown element
-              .map(c => {
-                return {hash: hash, countdown: c};
+              .flatMap(c => {
+                let initialCount = 60;
+                return Bacon.combineTemplate({
+                  hash: hash,
+                  countdown: c,
+                  timeLeft: c == "" ? timer(initialCount) : initialCount
+                });
               });
         default:
           return Bacon.constant({hash: hash});

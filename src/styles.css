@@ -199,14 +199,25 @@ nav ul {
 }
 
 .countdown {
+    position: absolute;
+    top: calc(50% - 100px);
+    left: calc(50% - 100px);
+    text-align: center;
+    width: 200px;
+    height: 200px;
+    z-index: 100;
+    font-size: 4rem;
+    color: red;
+}
+
+.timeLeft {
   position: absolute;
-  top: calc(50% - 100px);
+  top: 10px;
   left: calc(50% - 100px);
   text-align: center;
   width: 200px;
-  height: 200px;
   z-index: 100;
-  font-size: 4rem;
+  font-size: 2rem;
   color: red;
 }
 
