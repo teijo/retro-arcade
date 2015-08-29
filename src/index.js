@@ -4,6 +4,8 @@ const TIME_DELAY = 1000; // Length of a timer tick in milliseconds, for clocks
 const GAME_TIME = 60;
 const KEY_NORMAL = Symbol("normal-key");
 const KEY_SPECIAL = Symbol("special-key");
+const TYPE_NORMAL = Symbol("normal block type");
+const TYPE_GET_SPECIAL = Symbol("get special block type");
 
 function disableClassOnAnimationEnd(ref, className) {
   let node = React.findDOMNode(ref);
@@ -158,7 +160,7 @@ let CodeBox = React.createClass({
   render() {
     let {blockPosition, blockIndex, blocks} = this.props;
     let elements = blocks.map((block, index) => {
-      let baseColor = index % 2 == 0 ? "black" : "blue";
+      let baseColor = block.type === TYPE_GET_SPECIAL ? "green" : (index % 2 == 0 ? "black" : "blue");
       let key = "block_" + index;
       if (index == blockIndex && blockPosition < blocks[blockIndex].text.length) {
         return <ActiveBlock key={key} onInput={this.onInput} content={block.text} position={blockPosition} color={baseColor}/>
@@ -380,6 +382,13 @@ let nextStep = (() => {
 
     let [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
 
+    // Just finished a block
+    if (blockPosition == state.blocks[blockIndex].text.length) {
+      if (state.blocks[blockIndex].type === TYPE_GET_SPECIAL) {
+        specialsLeft++;
+      }
+    }
+
     return {
       name: state.name,
       keys: state.keys,
@@ -434,13 +443,15 @@ function sequenceStream(keyConfig, sequence) {
 
 function parseBlock(rawBlock, index) {
   switch (rawBlock[0]) {
+    case "!":
+      return {type: TYPE_GET_SPECIAL, text: rawBlock.slice(1)};
     default:
-      return {text: rawBlock};
+      return {type: TYPE_NORMAL, text: rawBlock};
   }
 }
 
 let LEVEL =
-`<<let>> listener = <<new>> <<window>>.keypress.Listener();
+`<<let>> listener = <<!new>> <<window>>.keypress.Listener();
 players.<<forEach>>(player => {
   let step = 0;
   listener.<<simple_combo>>(player.trigger, () => {
