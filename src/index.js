@@ -160,16 +160,16 @@ let CodeBox = React.createClass({
     let elements = blocks.map((block, index) => {
       let baseColor = index % 2 == 0 ? "black" : "blue";
       let key = "block_" + index;
-      if (index == blockIndex && blockPosition < blocks[blockIndex].length) {
-        return <ActiveBlock key={key} onInput={this.onInput} content={block} position={blockPosition} color={baseColor}/>
+      if (index == blockIndex && blockPosition < blocks[blockIndex].text.length) {
+        return <ActiveBlock key={key} onInput={this.onInput} content={block.text} position={blockPosition} color={baseColor}/>
       } else if (index <= blockIndex) {
-        return <PassedBlock animate={true} content={block} key={key}/>
+        return <PassedBlock animate={true} content={block.text} key={key}/>
       } else {
         // Previous block finished, cursor jumps to current block
-        if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].length) {
-          return <UpcomingNextBlock key={key} color={baseColor} content={block} />;
+        if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].text.length) {
+          return <UpcomingNextBlock key={key} color={baseColor} content={block.text} />;
         } else {
-          return <UpcomingBlock key={key} color={baseColor} content={block} />;
+          return <UpcomingBlock key={key} color={baseColor} content={block.text} />;
         }
       }
     });
@@ -325,8 +325,8 @@ let nextStep = (() => {
       let block = blocks[index];
       // Jump if _cursor_ is at the first character of special block
       // (actual position is last of previous block)
-      if (index % 2 == 0 && position == block.length) {
-        return [true, step + blocks[index + 1].length];
+      if (index % 2 == 0 && position == block.text.length) {
+        return [true, step + blocks[index + 1].text.length];
       }
       // Missed special usage
       return [false, step];
@@ -341,7 +341,7 @@ let nextStep = (() => {
       do {
         remainder = next;
         blockIndex++;
-        next -= blocks[blockIndex].length;
+        next -= blocks[blockIndex].text.length;
       } while (next > 0);
       return [blockIndex, remainder];
     }
@@ -374,7 +374,7 @@ let nextStep = (() => {
         specialsLeft = Math.max(0, state.specialsLeft - 1);
       }
     } else if (keyType == KEY_NORMAL) {
-      currentPosition = Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex], state.blockPosition);
+      currentPosition = Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex].text, state.blockPosition);
       stepScore = (currentPosition - state.step) * STEP_MULTIPLIER;
     } else {
       throw new Error("Invalid keyType: " + keyType)
@@ -434,6 +434,13 @@ function sequenceStream(keyConfig, sequence) {
       .skip(1);
 }
 
+function parseBlock(rawBlock, index) {
+  switch (rawBlock[0]) {
+    default:
+      return {text: rawBlock};
+  }
+}
+
 let LEVEL =
 `<<let>> listener = <<new>> <<window>>.keypress.Listener();
 players.<<forEach>>(player => {
@@ -442,7 +449,7 @@ players.<<forEach>>(player => {
     player.input.<<push>>(++step);
   });
 });`;
-let BLOCKS = LEVEL.split(/<<|>>/);
+let BLOCKS = LEVEL.split(/<<|>>/).map(parseBlock);
 
 
 let player1NameChangeE = new Bacon.Bus();
@@ -506,7 +513,7 @@ let playerStatesP = Bacon
       {
         keys: {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w"},
         level: LEVEL,
-        levelLength: BLOCKS.join('').length,
+        levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
@@ -518,7 +525,7 @@ let playerStatesP = Bacon
       }, {
         keys: {LEFT: 'h', RIGHT: 'k', DOWN: "j", UP: "u"},
         level: LEVEL,
-        levelLength: BLOCKS.join('').length,
+        levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
