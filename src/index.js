@@ -182,9 +182,7 @@ let Countdown = React.createClass({
     value: React.PropTypes.string.isRequired
   },
   render() {
-    return (
-        <span className="countdown" ref="cursor">{this.props.value}</span>
-    );
+    return <span className="countdown" ref="cursor">{this.props.value}</span>;
   }
 });
 
