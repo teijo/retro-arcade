@@ -190,7 +190,7 @@ let Countdown = React.createClass({
 
 let GameTime = React.createClass({
   propTypes: {
-    value: React.PropTypes.string.isRequired
+    value: React.PropTypes.number.isRequired
   },
   render() {
     return <span className="timeLeft">{this.props.value}</span>;
