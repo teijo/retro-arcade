@@ -1,6 +1,7 @@
 "use strict";
 
 const TIME_DELAY = 1000; // Length of a timer tick in milliseconds, for clocks
+const GAME_TIME = 60;
 const KEY_NORMAL = 0;
 const KEY_SPECIAL = 1;
 
@@ -469,11 +470,10 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
               .sequentially(TIME_DELAY, ["3", "2", "1", "CODE!", ""])
               .toProperty("READY?") // immediate start from first countdown element
               .flatMap(c => {
-                let initialCount = 60;
                 return Bacon.combineTemplate({
                   hash: hash,
                   countdown: c,
-                  timeLeft: c == "" ? timer(initialCount, TIME_DELAY) : initialCount
+                  timeLeft: c == "" ? timer(GAME_TIME, TIME_DELAY) : GAME_TIME
                 });
               });
         default:
