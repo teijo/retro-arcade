@@ -2,8 +2,8 @@
 
 const TIME_DELAY = 1000; // Length of a timer tick in milliseconds, for clocks
 const GAME_TIME = 60;
-const KEY_NORMAL = 0;
-const KEY_SPECIAL = 1;
+const KEY_NORMAL = Symbol("normal-key");
+const KEY_SPECIAL = Symbol("special-key");
 
 function disableClassOnAnimationEnd(ref, className) {
   let node = React.findDOMNode(ref);
