@@ -468,7 +468,7 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
     .toProperty({newURL: window.location.hash})
     .flatMapLatest(e => {
       let parts = e.newURL.split("#");
-      var hash = (parts.length == 2) ? "#" + parts[1] : "#menu";
+      let hash = (parts.length == 2) ? "#" + parts[1] : "#menu";
       switch (hash) {
         case "#game":
           return Bacon
