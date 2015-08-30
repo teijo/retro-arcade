@@ -104,7 +104,7 @@ let PassedBlock = React.createClass({
   }
 });
 
-export let ActiveBlock = React.createClass({
+let ActiveBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
     position: React.PropTypes.number.isRequired,
@@ -143,7 +143,7 @@ let UpcomingBlock = React.createClass({
   }
 });
 
-export let UpcomingNextBlock = React.createClass({
+let UpcomingNextBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
     type: React.PropTypes.any.isRequired
