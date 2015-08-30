@@ -13,6 +13,19 @@ function disableClassOnAnimationEnd(ref, className) {
       .onValue(() => node.classList.toggle(className, false));
 }
 
+function typeToClassName(type) {
+  switch(type) {
+    case Const.TYPE_GET_SPECIAL:
+      return "block-special-add";
+    case Const.TYPE_BONUS:
+      return "block-bonus";
+    case Const.TYPE_NORMAL:
+      return "block-normal";
+    default:
+      return "";
+  }
+}
+
 let AnimatedCounter = React.createClass({
   propTypes: {
     value: React.PropTypes.number.isRequired
@@ -79,13 +92,14 @@ let Game = React.createClass({
 let PassedBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
-    animate: React.PropTypes.bool.isRequired
+    animate: React.PropTypes.bool.isRequired,
+    type: React.PropTypes.any.isRequired
   },
   componentDidMount() {
     disableClassOnAnimationEnd(this.refs.block, "finish");
   },
   render() {
-    let classes = classNames({finish: this.props.animate});
+    let classes = classNames(typeToClassName(this.props.type), {finish: this.props.animate});
     return <span ref="block" style={{color: "red"}} className={classes}>{this.props.content}</span>;
   }
 });
@@ -93,9 +107,9 @@ let PassedBlock = React.createClass({
 export let ActiveBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
-    color: React.PropTypes.string.isRequired,
     position: React.PropTypes.number.isRequired,
-    onInput: React.PropTypes.func.isRequired
+    onInput: React.PropTypes.func.isRequired,
+    type: React.PropTypes.any.isRequired
   },
   componentDidUpdate() {
     let cursor = React.findDOMNode(this.refs.cursor);
@@ -105,12 +119,12 @@ export let ActiveBlock = React.createClass({
     this.props.onInput(cursor.offsetLeft, cursor.offsetTop);
   },
   render() {
-    let {content, position, color} = this.props;
+    let {content, position} = this.props;
     let completed = content.substr(0, position);
     let cursor = content.substr(position, 1);
     let left = content.substr(position + 1);
     return (
-        <span style={{color: color}}>
+        <span className={typeToClassName(this.props.type)}>
           <PassedBlock animate={false} content={completed}/>
           <span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span>
           <span dangerouslySetInnerHTML={{__html: left}}/>
@@ -122,21 +136,21 @@ export let ActiveBlock = React.createClass({
 let UpcomingBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
-    color: React.PropTypes.string.isRequired
+    type: React.PropTypes.any.isRequired
   },
   render() {
-    return <span style={{color: this.props.color}}>{this.props.content}</span>;
+    return <span className={typeToClassName(this.props.type)}>{this.props.content}</span>;
   }
 });
 
 export let UpcomingNextBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
-    color: React.PropTypes.string.isRequired
+    type: React.PropTypes.any.isRequired
   },
   render() {
     return (
-        <span style={{color: this.props.color}}>
+        <span className={typeToClassName(this.props.type)}>
           <span style={{backgroundColor: "lime"}} ref="cursor">{this.props.content.substr(0, 1)}</span>
           <span dangerouslySetInnerHTML={{__html: this.props.content.substr(1)}}/>
         </span>
@@ -159,18 +173,17 @@ let CodeBox = React.createClass({
   render() {
     let {blockPosition, blockIndex, blocks} = this.props;
     let elements = blocks.map((block, index) => {
-      let baseColor = block.type === Const.TYPE_GET_SPECIAL ? "green" : (index % 2 == 0 ? "black" : "blue");
       let key = "block_" + index;
       if (index == blockIndex && blockPosition < blocks[blockIndex].text.length) {
-        return <ActiveBlock key={key} onInput={this.onInput} content={block.text} position={blockPosition} color={baseColor}/>
+        return <ActiveBlock key={key} type={block.type} onInput={this.onInput} content={block.text} position={blockPosition}/>
       } else if (index <= blockIndex) {
-        return <PassedBlock animate={true} content={block.text} key={key}/>
+        return <PassedBlock animate={true} type={block.type} content={block.text} key={key}/>
       } else {
         // Previous block finished, cursor jumps to current block
         if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].text.length) {
-          return <UpcomingNextBlock key={key} color={baseColor} content={block.text} />;
+          return <UpcomingNextBlock key={key} type={block.type} content={block.text} />;
         } else {
-          return <UpcomingBlock key={key} color={baseColor} content={block.text} />;
+          return <UpcomingBlock key={key} type={block.type} content={block.text} />;
         }
       }
     });

@@ -142,12 +142,12 @@ function sequenceStream(keyConfig, sequence) {
       .skip(1);
 }
 
-function parseBlock(rawBlock) {
+function parseBlock(rawBlock, index) {
   switch (rawBlock[0]) {
     case "!":
       return {type: Const.TYPE_GET_SPECIAL, text: rawBlock.slice(1)};
     default:
-      return {type: Const.TYPE_NORMAL, text: rawBlock};
+      return {type: index % 2 ? Const.TYPE_BONUS : Const.TYPE_NORMAL, text: rawBlock};
   }
 }
 

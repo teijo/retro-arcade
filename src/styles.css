@@ -218,6 +218,22 @@ nav ul {
   left: 0;
 }
 
+.game .block-bonus {
+  color: darkblue;
+  background-color: rgba(0, 0, 255, 0.2);
+  border-radius: 5px;
+}
+
+.game .block-special-add {
+  color: darkgreen;
+  background-color: rgba(0, 255, 0, 0.2);
+  border-radius: 5px;
+}
+
+.game .block-normal {
+  color: black;
+}
+
 .countdown {
     position: absolute;
     top: calc(50% - 100px);
