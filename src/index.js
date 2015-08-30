@@ -1,6 +1,6 @@
 "use strict";
 
-import React from "React";
+import React from "react";
 import Bacon from "Bacon";
 
 import * as Const from "./const";

@@ -14,8 +14,8 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "browser": {
-    "Bacon": "bower_components/bacon/dist/Bacon.js",
-    "React": "bower_components/react/react.js",
-    "classNames": "bower_components/classnames/index.js"
+    "Bacon": "./bower_components/bacon/dist/Bacon.js",
+    "react": "./bower_components/react/react.js",
+    "classNames": "./bower_components/classnames/index.js"
   }
 }
