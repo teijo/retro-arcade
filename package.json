@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "jsx --harmony -w src build"
+    "start": "gulp watch"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "react-tools": "^0.13.3"
+    "react-tools": "^0.13.3",
+    "gulp": "^3.9.0",
+    "gulp-watch": "^4.3.5",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
