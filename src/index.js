@@ -86,7 +86,7 @@ let PassedBlock = React.createClass({
     disableClassOnAnimationEnd(this.refs.block, "finish");
   },
   render() {
-    let classes = this.props.animate ? "finish" : "";
+    let classes = classNames({finish: this.props.animate});
     return <span ref="block" style={{color: "red"}} className={classes}>{this.props.content}</span>;
   }
 });
