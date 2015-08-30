@@ -119,6 +119,26 @@ h1 {
   margin: 1rem;
 }
 
+.score .winner {
+  color: red;
+  animation: winning-score 1s infinite;
+  height: 100%;
+}
+
+@keyframes winning-score {
+  0% {
+    font-size: 3rem;
+  }
+
+  50% {
+    font-size: 4rem;
+  }
+
+  100% {
+    font-size: 3rem;
+  }
+}
+
 html {
   font-size: 22px;
 }

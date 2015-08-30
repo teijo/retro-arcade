@@ -288,15 +288,20 @@ let ScorePage = React.createClass({
     settings: React.PropTypes.array.isRequired
   },
   render() {
+    let maxScore = this.props.states.reduce((max, state) => Math.max(max, state.score), 0);
     return (
         <div className="score">
           <h1>Game over</h1>
           <ul>
-            {this.props.states.map((s, index) =>
-                <li key={index}>
-                  <h2>{this.props.settings[index].name}</h2>
-                  <p className="resultScore">{s.score}</p>
-                </li>
+            {this.props.states.map((s, index) => {
+                  let classes = classNames('resultScore', {winner: s.score === maxScore});
+                  return (
+                      <li key={index}>
+                        <h2>{this.props.settings[index].name}</h2>
+                        <p className={classes}>{s.score}</p>
+                      </li>
+                  );
+                }
             )}
           </ul>
           <a href="#menu">&lt; Back to main menu</a>
