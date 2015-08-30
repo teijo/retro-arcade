@@ -1,9 +1,9 @@
 "use strict";
 
-import React from "../bower_components/react/react.js"
-import Bacon from "../bower_components/bacon/dist/Bacon.js"
+import React from "React";
+import Bacon from "Bacon";
 
-import * as Const from "./const"
+import * as Const from "./const";
 import {HowtoPage, GamePage, ScorePage, MenuPage} from "./components";
 
 let nextStep = (() => {

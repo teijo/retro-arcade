@@ -12,5 +12,10 @@
     "gulp": "^3.9.0",
     "gulp-watch": "^4.3.5",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "browser": {
+    "Bacon": "bower_components/bacon/dist/Bacon.js",
+    "React": "bower_components/react/react.js",
+    "classNames": "bower_components/classnames/index.js"
   }
 }
