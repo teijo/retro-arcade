@@ -7,7 +7,6 @@
     "start": "gulp watch"
   },
   "author": "",
-  "license": "MIT",
   "devDependencies": {
     "react-tools": "^0.13.3",
     "gulp": "^3.9.0",
