@@ -274,21 +274,19 @@ export let HowtoPage = React.createClass({
   },
   render() {
     return (
-        <div>
-          <div className="howto">
-            <h1>How To Play</h1>
-            <ol>
-              <li>Press &quot;trigger&quot; to advance</li>
-              <li>Press &quot;special&quot; when entering highlighted block</li>
-              <li>Aim for speed and accuracy</li>
-              <li>Profit</li>
-            </ol>
-            <h2>Player keys</h2>
-            <ul>
-              {this.props.states.map((s, index) => <li key={index}>{this.props.settings[index].name} trigger: {s.keys.DOWN}, special {s.keys.UP}</li>)}
-            </ul>
-            <a href="#menu">&lt; Back to main menu</a>
-          </div>
+        <div className="howto">
+          <h1>How To Play</h1>
+          <ol>
+            <li>Press &quot;trigger&quot; to advance</li>
+            <li>Press &quot;special&quot; when entering highlighted block</li>
+            <li>Aim for speed and accuracy</li>
+            <li>Profit</li>
+          </ol>
+          <h2>Player keys</h2>
+          <ul>
+            {this.props.states.map((s, index) => <li key={index}>{this.props.settings[index].name} trigger: {s.keys.DOWN}, special {s.keys.UP}</li>)}
+          </ul>
+          <a href="#menu">&lt; Back to main menu</a>
         </div>
     );
   }
