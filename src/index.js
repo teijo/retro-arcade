@@ -1,5 +1,8 @@
 "use strict";
 
+import React from "../bower_components/react/react.js"
+import Bacon from "../bower_components/bacon/dist/Bacon.js"
+
 import * as Const from "./const"
 import {HowtoPage, GamePage, ScorePage, MenuPage} from "./components";
 
@@ -50,13 +53,13 @@ let nextStep = (() => {
       return state;
     }
 
-    let currentPosition,
+    let currentPosition = 0,
         stepScore = 0,
         consecutiveSpecialHits = state.consecutiveSpecialHits,
         specialsLeft = state.specialsLeft;
 
     if (keyType == Const.KEY_SPECIAL) {
-      let specialHit;
+      let specialHit = false;
       if (state.specialsLeft > 0) {
         [specialHit, currentPosition] = Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition);
       } else {
@@ -82,7 +85,7 @@ let nextStep = (() => {
 
     // Just finished a block
     if (blockPosition == state.blocks[blockIndex].text.length) {
-      if (state.blocks[blockIndex].type === TYPE_GET_SPECIAL) {
+      if (state.blocks[blockIndex].type === Const.TYPE_GET_SPECIAL) {
         specialsLeft++;
       }
     }
@@ -139,7 +142,7 @@ function sequenceStream(keyConfig, sequence) {
       .skip(1);
 }
 
-function parseBlock(rawBlock, index) {
+function parseBlock(rawBlock) {
   switch (rawBlock[0]) {
     case "!":
       return {type: Const.TYPE_GET_SPECIAL, text: rawBlock.slice(1)};

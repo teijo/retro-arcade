@@ -1,5 +1,9 @@
 "use strict";
 
+import React from "../bower_components/react/react.js"
+import Bacon from "../bower_components/bacon/dist/Bacon.js"
+import classNames from "../bower_components/classnames/index.js"
+
 import * as Const from "./const"
 
 function disableClassOnAnimationEnd(ref, className) {
