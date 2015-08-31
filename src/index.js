@@ -135,10 +135,10 @@ function registerKey(key) {
 }
 
 // Input config object keys
-const UP = 'UP';
-const DOWN = 'DOWN';
-const LEFT = 'LEFT';
-const RIGHT = 'RIGHT';
+const UP = 'UP',
+      DOWN = 'DOWN',
+      LEFT = 'LEFT',
+      RIGHT = 'RIGHT';
 
 // Outputs an incremented number when input sequence is advanced
 function sequenceStream(keyConfig, sequence) {
