@@ -289,7 +289,17 @@ let pageComponentE = activePageP
       }
     });
 
-Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, (template, states, settings) => React.render(template(states, settings), document.getElementById("main")));
+// From MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
+function freeze(obj) {
+  Object.getOwnPropertyNames(obj).forEach(function(name) {
+    if (typeof obj[name] == 'object' && !Object.isFrozen(obj[name])) {
+      freeze(obj[name]);
+    }
+  });
+  return Object.freeze(obj);
+}
+
+Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, (template, states, settings) => React.render(template(freeze(states), freeze(settings)), document.getElementById("main")));
 
 function playersProgressedToEnd(states) {
   return states.reduce((end, s) => s.progress === 100 && end, true);
