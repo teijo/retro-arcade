@@ -2,6 +2,7 @@
 
 import React from "react";
 import Bacon from "Bacon";
+import Immutable from "immutable";
 
 import * as Const from "./const";
 import {HowtoPage, GamePage, ScorePage, MenuPage} from "./components";
@@ -23,11 +24,11 @@ let nextStep = (() => {
       }
     },
     jump(step, blocks, index, position) {
-      let block = blocks[index];
+      let block = blocks.get(index);
       // Jump if _cursor_ is at the first character of special block
       // (actual position is last of previous block)
-      if (index % 2 == 0 && position == block.text.length) {
-        return [true, step + blocks[index + 1].text.length];
+      if (index % 2 == 0 && position == block.get('text').length) {
+        return [true, step + blocks.get(index + 1).get('text').length];
       }
       // Missed special usage
       return [false, step];
@@ -42,68 +43,86 @@ let nextStep = (() => {
       do {
         remainder = next;
         blockIndex++;
-        next -= blocks[blockIndex].text.length;
+        next -= blocks.get(blockIndex).get('text').length;
       } while (next > 0);
       return [blockIndex, remainder];
     }
   };
 
-  return (state, keyType) => {
-    if (state.step == state.levelLength) {
-      return state;
-    }
+  function applyProgress(currentState) {
+    return currentState.set('progress', currentState.get('step') / currentState.get('levelLength') * 100);
+  }
 
-    let currentPosition = 0,
-        stepScore = 0,
-        consecutiveSpecialHits = state.consecutiveSpecialHits,
-        specialsLeft = state.specialsLeft;
-
-    if (keyType == Const.KEY_SPECIAL) {
-      let specialHit = false;
-      if (state.specialsLeft > 0) {
-        [specialHit, currentPosition] = Movement.jump(state.step, state.blocks, state.blockIndex, state.blockPosition);
-      } else {
-        [specialHit, currentPosition] = [false, state.step];
-      }
-      if (specialHit) {
-        // Rewards for hitting special
-        consecutiveSpecialHits = consecutiveSpecialHits + 1;
-        stepScore = (currentPosition - state.step) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
-      } else {
-        // Penalties for wasting special
-        consecutiveSpecialHits = 0;
-        specialsLeft = Math.max(0, state.specialsLeft - 1);
-      }
-    } else if (keyType == Const.KEY_NORMAL) {
-      currentPosition = Movement.step(state.step) + Movement.indentSkip(state.blocks[state.blockIndex].text, state.blockPosition);
-      stepScore = (currentPosition - state.step) * STEP_MULTIPLIER;
-    } else {
-      throw new Error("Invalid keyType: " + keyType)
-    }
-
-    let [blockIndex, blockPosition] = Movement.getPosition(state.blocks, currentPosition);
-
-    // Just finished a block
-    if (blockPosition == state.blocks[blockIndex].text.length) {
-      if (state.blocks[blockIndex].type === Const.TYPE_GET_SPECIAL) {
-        specialsLeft++;
-      }
-    }
-
-    return {
-      name: state.name,
-      keys: state.keys,
-      level: state.level,
-      levelLength: state.levelLength,
-      blocks: state.blocks,
-      consecutiveSpecialHits: consecutiveSpecialHits,
-      specialsLeft: specialsLeft,
+  function applyNormalKey(state) {
+    let currentPosition = Movement.step(state.get('step')) + Movement.indentSkip(state.get('blocks').get(state.get('blockIndex')).get('text'), state.get('blockPosition')),
+        stepScore = (currentPosition - state.get('step')) * STEP_MULTIPLIER,
+        [blockIndex, blockPosition] = Movement.getPosition(state.get('blocks'), currentPosition);
+    return state.merge({
       blockIndex: blockIndex,
       blockPosition: blockPosition,
       step: currentPosition,
-      score: state.score + stepScore,
-      progress: currentPosition / state.levelLength * 100
-    };
+      score: state.get('score') + stepScore
+    });
+  }
+
+  function applySpecialKey(state) {
+    let currentPosition = 0,
+        stepScore = 0,
+        consecutiveSpecialHits = state.get('consecutiveSpecialHits'),
+        specialsLeft = state.get('specialsLeft'),
+        specialHit = false;
+    if (state.get('specialsLeft') > 0) {
+      [specialHit, currentPosition] = Movement.jump(state.get('step'), state.get('blocks'), state.get('blockIndex'), state.get('blockPosition'));
+    } else {
+      [specialHit, currentPosition] = [false, state.get('step')];
+    }
+    if (specialHit) {
+      // Rewards for hitting special
+      consecutiveSpecialHits = consecutiveSpecialHits + 1;
+      stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
+    } else {
+      // Penalties for wasting special
+      consecutiveSpecialHits = 0;
+      specialsLeft = Math.max(0, state.get('specialsLeft') - 1);
+    }
+    let [blockIndex, blockPosition] = Movement.getPosition(state.get('blocks'), currentPosition);
+    return state.merge({
+      blockIndex: blockIndex,
+      blockPosition: blockPosition,
+      step: currentPosition,
+      consecutiveSpecialHits: consecutiveSpecialHits,
+      specialsLeft: specialsLeft,
+      score: state.get('score') + stepScore
+    });
+  }
+
+  function applyBlockFinish(initialState, currentState) {
+    // Just finished a block
+    if (currentState.get('blockPosition') == initialState.get('blocks').get(currentState.get('blockIndex')).get('text').length) {
+      if (initialState.get('blocks').get(currentState.get('blockIndex')).get('type') === Const.TYPE_GET_SPECIAL) {
+        return currentState.set('specialsLeft', initialState.get('specialsLeft') + 1);
+      }
+    }
+    return currentState;
+  }
+
+  // Gets and returns Immutable.Map as state
+  return (initialState, keyType) => {
+    if (initialState.get('step') == initialState.get('levelLength')) {
+      return initialState;
+    }
+
+    let state = initialState;
+    if (keyType == Const.KEY_SPECIAL) {
+      state = applySpecialKey(state);
+    }
+    if (keyType == Const.KEY_NORMAL) {
+      state = applyNormalKey(state);
+    }
+    state = applyBlockFinish(initialState, state);
+    state = applyProgress(state);
+
+    return state;
   }
 })();
 
@@ -253,7 +272,7 @@ let playerStatesP = Bacon
       return Bacon
           .mergeAll(specialE.map(Const.KEY_SPECIAL), normalE.map(Const.KEY_NORMAL))
           .filter(gameIsActiveP)
-          .scan(player, nextStep);
+          .scan(player, (state, keyType) => nextStep(Immutable.fromJS(state), keyType).toJS());
     })));
 
 let pageComponentE = activePageP

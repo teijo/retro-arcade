@@ -16,6 +16,7 @@
   "browser": {
     "Bacon": "./bower_components/bacon/dist/Bacon.js",
     "react": "./bower_components/react/react.js",
-    "classNames": "./bower_components/classnames/index.js"
+    "classNames": "./bower_components/classnames/index.js",
+    "immutable": "./bower_components/immutable/dist/immutable.js"
   }
 }
