@@ -119,10 +119,10 @@ let ActiveBlock = React.createClass({
     this.props.onInput(cursor.offsetLeft, cursor.offsetTop);
   },
   render() {
-    let {content, position} = this.props;
-    let completed = content.substr(0, position);
-    let cursor = content.substr(position, 1);
-    let left = content.substr(position + 1);
+    let {content, position} = this.props,
+        completed = content.substr(0, position),
+        cursor = content.substr(position, 1),
+        left = content.substr(position + 1);
     return (
         <span className={typeToClassName(this.props.type)}>
           <PassedBlock animate={false} type={this.props.type} content={completed}/>
