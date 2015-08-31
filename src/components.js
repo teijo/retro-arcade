@@ -125,7 +125,7 @@ let ActiveBlock = React.createClass({
     let left = content.substr(position + 1);
     return (
         <span className={typeToClassName(this.props.type)}>
-          <PassedBlock animate={false} content={completed}/>
+          <PassedBlock animate={false} type={this.props.type} content={completed}/>
           <span style={{backgroundColor: "lime"}} ref="cursor">{cursor}</span>
           <span dangerouslySetInnerHTML={{__html: left}}/>
         </span>
