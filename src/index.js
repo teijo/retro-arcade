@@ -240,7 +240,7 @@ let playerSettingsP = Bacon
 let playerStatesP = Bacon
     .combineAsArray([
       {
-        keys: {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w"},
+        keys: {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w", A: "f", B: "g"},
         level: LEVEL,
         levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
@@ -252,7 +252,7 @@ let playerStatesP = Bacon
         blockPosition: 0,
         step: 0
       }, {
-        keys: {LEFT: 'h', RIGHT: 'k', DOWN: "j", UP: "u"},
+        keys: {LEFT: 'j', RIGHT: 'l', DOWN: "k", UP: "i", A: ";", B: "'"},
         level: LEVEL,
         levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
@@ -267,8 +267,8 @@ let playerStatesP = Bacon
     ].map(Bacon.combineTemplate))
     .sampledBy(resetStateE)
     .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
-      let normalE = sequenceStream(player.keys, [DOWN]);
-      let specialE = registerKey(player.keys.UP);
+      let normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
+      let specialE = registerKey(player.keys.A);
       return Bacon
           .mergeAll(specialE.map(Const.KEY_SPECIAL), normalE.map(Const.KEY_NORMAL))
           .filter(gameIsActiveP)
