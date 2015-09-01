@@ -49,6 +49,31 @@ let AnimatedCounter = React.createClass({
   }
 });
 
+let Splatter = React.createClass({
+  propTypes: {
+    value: React.PropTypes.number.isRequired
+  },
+  componentDidMount() {
+    disableClassOnAnimationEnd(this.refs.splash, "splash");
+  },
+  shouldComponentUpdate(nextProps) {
+    // Animate (update component) only when value changes
+    return this.props.value !== nextProps.value;
+  },
+  componentWillUpdate() {
+    console.log("will")
+    React.findDOMNode(this.refs.splash).classList.toggle("splash", true);
+  },
+  render() {
+    let text = this.props.value == 0 ? "" : "PERFECT " + this.props.value + "X!";
+    return (
+        <div className="splatter-container">
+          <span ref="splash" className="splatter">{text}</span>
+        </div>
+    );
+  }
+});
+
 let Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired,
@@ -65,7 +90,7 @@ let Game = React.createClass({
           <CodeBox blockPosition={blockPosition}
                    blockIndex={blockIndex}
                    blocks={blocks}/>
-
+          <Splatter value={consecutiveSpecialHits}/>
           <div className="footer">
             <div className="col">
               <AnimatedCounter value={Math.round(progress)}/>
@@ -74,10 +99,6 @@ let Game = React.createClass({
             <div className="col">
               <AnimatedCounter value={score}/>
               <span className="title">Score</span>
-            </div>
-            <div className="col">
-              <AnimatedCounter value={consecutiveSpecialHits}/>
-              <span className="title">Combo</span>
             </div>
             <div className="col">
               <AnimatedCounter value={specialsLeft}/>

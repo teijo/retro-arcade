@@ -192,6 +192,7 @@ nav ul {
   flex-direction: column;
   display: flex;
   margin: 10px;
+  position: relative;
 }
 
 .game .footer .col {
@@ -232,6 +233,41 @@ nav ul {
 
 .block-normal {
   color: black;
+}
+
+.splatter-container {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  position: absolute;
+}
+
+.splatter {
+  top: 30%;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  color: blue;
+  font-size: 3rem;
+  display: none;
+}
+
+.splash {
+  display: block;
+  animation-duration: 1s;
+  animation-name: splash-animation;
+}
+
+@keyframes splash-animation {
+  0% {
+    font-size: 2rem;
+    opactiy: 0.5;
+  }
+
+  100% {
+    font-size: 4rem;
+    opacity: 0;
+  }
 }
 
 .countdown {
