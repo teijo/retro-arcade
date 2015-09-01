@@ -24,14 +24,17 @@ let nextStep = (() => {
       }
     },
     jump(step, blocks, index, position) {
-      let block = blocks.get(index);
+      let blockLength = blocks.get(index).get('text').length;
       // Jump if _cursor_ is at the first character of special block
       // (actual position is last of previous block)
-      if (index % 2 == 0 && position == block.get('text').length) {
-        return [true, step + blocks.get(index + 1).get('text').length];
+      if (index % 2 == 0 && position == blockLength) {
+        return [0, step + blocks.get(index + 1).get('text').length];
+      } else if (index % 2 == 1) {
+        return [position, step + blockLength - position];
+      } else {
+        // Missed special usage
+        return [-1, step];
       }
-      // Missed special usage
-      return [false, step];
     },
     step(position) {
       return position + 1;
@@ -70,18 +73,24 @@ let nextStep = (() => {
         stepScore = 0,
         consecutiveSpecialHits = state.get('consecutiveSpecialHits'),
         specialsLeft = state.get('specialsLeft'),
-        specialHit = false;
+        hitPosition = -1; // The character at which autocomplete was used
     if (state.get('specialsLeft') > 0) {
-      [specialHit, currentPosition] = Movement.jump(state.get('step'), state.get('blocks'), state.get('blockIndex'), state.get('blockPosition'));
+      [hitPosition, currentPosition] = Movement.jump(state.get('step'), state.get('blocks'), state.get('blockIndex'), state.get('blockPosition'));
     } else {
-      [specialHit, currentPosition] = [false, state.get('step')];
+      [hitPosition, currentPosition] = [false, state.get('step')];
     }
-    if (specialHit) {
+    // Perfect hit
+    if (hitPosition == 0) {
       // Rewards for hitting special
       consecutiveSpecialHits = consecutiveSpecialHits + 1;
       stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
+    } else if (hitPosition > 0) {
+      // Missed first char but still in special block
+      stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER / hitPosition;
+      consecutiveSpecialHits = 0;
+      specialsLeft = Math.max(0, state.get('specialsLeft') - 1);
     } else {
-      // Penalties for wasting special
+      // Not in special block
       consecutiveSpecialHits = 0;
       specialsLeft = Math.max(0, state.get('specialsLeft') - 1);
     }
