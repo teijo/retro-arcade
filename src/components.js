@@ -61,7 +61,6 @@ let Splatter = React.createClass({
     return this.props.value !== nextProps.value;
   },
   componentWillUpdate() {
-    console.log("will")
     React.findDOMNode(this.refs.splash).classList.toggle("splash", true);
   },
   render() {
