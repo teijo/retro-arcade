@@ -226,13 +226,11 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
           return Bacon
               .sequentially(Const.TIME_DELAY, ["3", "2", "1", "CODE!", ""])
               .toProperty("READY?") // immediate start from first countdown element
-              .flatMap(c => {
-                return Bacon.combineTemplate({
+              .flatMap(c => Bacon.combineTemplate({
                   hash: hash,
                   countdown: c,
                   timeLeft: c == "" ? timer(Const.GAME_TIME, Const.TIME_DELAY) : Const.GAME_TIME
-                });
-              });
+              }));
         default:
           return Bacon.constant({hash: hash});
       }
