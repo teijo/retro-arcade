@@ -56,6 +56,13 @@ let nextStep = (() => {
     return currentState.set('progress', currentState.get('step') / currentState.get('levelLength') * 100);
   }
 
+  function applyTimeBonus(state, timeLeft) {
+    return state.merge({
+      timeLeft: timeLeft,
+      score: state.get('score') + timeLeft * 1000
+    });
+  }
+
   function applyNormalKey(state) {
     let currentPosition = Movement.step(state.get('step')) + Movement.indentSkip(state.get('blocks').get(state.get('blockIndex')).get('text'), state.get('blockPosition')),
         stepScore = (currentPosition - state.get('step')) * STEP_MULTIPLIER,
@@ -116,10 +123,12 @@ let nextStep = (() => {
   }
 
   // Gets and returns Immutable.Map as state
-  return (initialState, keyType) => {
+  return (initialState, timeAndKey) => {
     if (initialState.get('step') == initialState.get('levelLength')) {
       return initialState;
     }
+
+    let {keyType, timeLeft} = timeAndKey;
 
     let state = initialState;
     if (keyType == Const.KEY_SPECIAL) {
@@ -130,6 +139,9 @@ let nextStep = (() => {
     }
     state = applyBlockFinish(initialState, state);
     state = applyProgress(state);
+    if (state.get('progress') === 100) {
+      state = applyTimeBonus(state, timeLeft);
+    }
 
     return state;
   }
@@ -229,6 +241,8 @@ let activePageP = Bacon.fromEvent(window, "hashchange")
 
 let gameIsActiveP = activePageP.map(page => page.hash === "#game" && page.countdown === "");
 
+let gameTimeLeftP = activePageP.filter(page => page.hash === "#game").map(page => page.timeLeft);
+
 let resetStateE = Bacon.mergeAll(
     // Force reset on "Q"
     Bacon.mergeAll(Bacon.once(), registerKey("q")),
@@ -278,10 +292,12 @@ let playerStatesP = Bacon
     .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
       let normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
       let specialE = registerKey(player.keys.A);
-      return Bacon
+      let keysE = Bacon
           .mergeAll(specialE.map(Const.KEY_SPECIAL), normalE.map(Const.KEY_NORMAL))
-          .filter(gameIsActiveP)
-          .scan(player, (state, keyType) => nextStep(Immutable.fromJS(state), keyType).toJS());
+          .filter(gameIsActiveP);
+      return gameTimeLeftP
+          .sampledBy(keysE, (timeLeft, keyType) => ({timeLeft: timeLeft, keyType: keyType}))
+          .scan(player, (state, timeAndKey) => nextStep(Immutable.fromJS(state), timeAndKey).toJS());
     })));
 
 let pageComponentE = activePageP
