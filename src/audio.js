@@ -14,13 +14,18 @@ let Audio = React.createClass({
 });
 
 export let loadAudioContext = (...files) => {
+  // Load all files with <audio> tag
   React.render(<div>{files.map((f, index) => <Audio key={index} file={f}/>)}</div>,
       document.getElementById("audio-loader"));
   let context = new (window.AudioContext || window.webkitAudioContext)();
-  return (id) => {
+
+  function player(id) {
     let audio = document.getElementById("audio-" + id);
     audio.volume = 1.0;
     context.createMediaElementSource(audio).connect(context.destination);
     return () => audio.play();
   }
+
+  // Return a playback functions for each loaded file
+  return files.map(player);
 };
