@@ -7,7 +7,7 @@ let Audio = React.createClass({
   render() {
     return (
         <audio id={"audio-" + this.props.file} crossOrigin="anonymous">
-          <source src={"audio/" + this.props.file} type="audio/wav"/>
+          <source src={"assets/" + this.props.file} type="audio/wav"/>
         </audio>
     );
   }

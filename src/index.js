@@ -333,3 +333,12 @@ gameIsActiveP
     .and(activePageP.map(p => p.timeLeft == 0).or(playerStatesP.map(playersProgressedToEnd).toProperty(false)))
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
+
+let [game, menu] = Audio.loadAudioContext('game.mp3', 'menu.mp3');
+activePageP
+    .map(p => p.hash === "#game")
+    .skipDuplicates()
+    .onValue((isActive) => {
+      game.play(isActive);
+      menu.play(!isActive);
+    });
