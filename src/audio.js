@@ -23,7 +23,15 @@ export let loadAudioContext = (...files) => {
     let audio = document.getElementById("audio-" + id);
     audio.volume = 1.0;
     context.createMediaElementSource(audio).connect(context.destination);
-    return () => audio.play();
+    return {
+      play(active) {
+        if (active) {
+          audio.play();
+        } else {
+          audio.pause();
+        }
+      }
+    }
   }
 
   // Return a playback functions for each loaded file
