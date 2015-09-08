@@ -6,6 +6,7 @@ import Immutable from "immutable";
 
 import * as Const from "./const";
 import {HowtoPage, GamePage, ScorePage, MenuPage} from "./components";
+import * as Audio from "./audio";
 
 let nextStep = (() => {
   const STEP_MULTIPLIER = 8;
