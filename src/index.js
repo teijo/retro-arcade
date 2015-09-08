@@ -334,7 +334,7 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-let [game, menu] = Audio.loadAudioContext('game.mp3', 'menu.mp3');
+let [game, menu] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3');
 activePageP
     .map(p => p.hash === "#game")
     .skipDuplicates()
