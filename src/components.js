@@ -273,7 +273,7 @@ export let MenuPage = React.createClass({
   render() {
     return (
         <div className="menu">
-          <h1>Arcanecoder</h1>
+          <img src="assets/img/logo.png" />
           <div>
             <PlayerName placeholder={this.props.settings[0].name} onchange={this.props.outputs.player1Name}/>
             <PlayerName placeholder={this.props.settings[1].name} onchange={this.props.outputs.player2Name}/>

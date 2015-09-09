@@ -61,6 +61,10 @@ h1 {
   width: 100%
 }
 
+.menu img {
+  width: 60%;
+}
+
 .menu input {
   flex: 1;
   padding: 0.5rem;
