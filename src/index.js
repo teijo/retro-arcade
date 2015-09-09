@@ -312,7 +312,7 @@ let pageComponentE = activePageP
         case "#score":
           return (states, settings) => <ScorePage states={states} settings={settings}/>;
         default:
-          return (states, settings) => <MenuPage states={states} settings={settings} outputs={outputs}/>;
+          return (states, settings, menuIndex) => <MenuPage states={states} settings={settings} outputs={outputs} menuIndex={menuIndex}/>;
       }
     });
 
@@ -326,7 +326,24 @@ function freeze(obj) {
   return Object.freeze(obj);
 }
 
-Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, (template, states, settings) => React.render(template(freeze(states), freeze(settings)), document.getElementById("main")));
+let isGamePageP = activePageP
+    .map(p => p.hash === "#game")
+    .skipDuplicates();
+
+function merge(...keys) {
+  return Bacon.mergeAll(keys.map(registerKey));
+}
+
+let downsE = merge(player1Keys.DOWN, player2Keys.DOWN).map(() => (x) => x - 1);
+let upsE = merge(player1Keys.UP, player2Keys.UP).map(() => (x) => x + 1);
+let asE = merge(player1Keys.A, player2Keys.A);
+
+let menuIndexP = Bacon
+    .mergeAll(downsE, upsE)
+    .filter(isGamePageP.not())
+    .scan(0, (index, func) => func(index));
+
+Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, menuIndexP, (template, states, settings, menuIndex) => React.render(template(freeze(states), freeze(settings), menuIndex), document.getElementById("main")));
 
 function playersProgressedToEnd(states) {
   return states.reduce((end, s) => s.progress === 100 && end, true);
@@ -338,9 +355,8 @@ gameIsActiveP
     .onValue(() => window.location.hash = "#score");
 
 let [game, menu] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3');
-activePageP
-    .map(p => p.hash === "#game")
-    .skipDuplicates()
+
+isGamePageP
     .onValue((isActive) => {
       game.play(isActive);
       menu.play(!isActive);

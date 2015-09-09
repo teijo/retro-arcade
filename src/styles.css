@@ -24,6 +24,11 @@ a:hover, a:active {
   color: red;
 }
 
+.selected a {
+  text-decoration: underline;
+  color: red;
+}
+
 pre {
   font-family: 'VT323';
 }

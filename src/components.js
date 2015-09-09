@@ -268,9 +268,15 @@ export let MenuPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
     settings: React.PropTypes.array.isRequired,
-    outputs: React.PropTypes.object.isRequired
+    outputs: React.PropTypes.object.isRequired,
+    menuIndex: React.PropTypes.number.isRequired
   },
   render() {
+    let menu = [
+      <a href="#game">Start game &gt;</a>,
+      <a href="#howto">How to play &gt;</a>
+    ];
+    let menuIndex = Math.abs(this.props.menuIndex % menu.length);
     return (
         <div className="menu">
           <img src="assets/img/logo.png" />
@@ -279,8 +285,9 @@ export let MenuPage = React.createClass({
             <PlayerName placeholder={this.props.settings[1].name} onchange={this.props.outputs.player2Name}/>
           </div>
           <ul>
-            <li><a href="#game">Start game &gt;</a></li>
-            <li><a href="#howto">How to play &gt;</a></li>
+            {menu.map((item, index) => {
+              return <li className={classNames({selected: index === menuIndex})} key={index}>{item}</li>;
+            })}
           </ul>
         </div>
     );
