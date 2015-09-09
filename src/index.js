@@ -259,10 +259,13 @@ let playerSettingsP = Bacon
       }
     ].map(Bacon.combineTemplate));
 
+const player1Keys = {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w", A: "f", B: "g"};
+const player2Keys = {LEFT: 'j', RIGHT: 'l', DOWN: "k", UP: "i", A: ";", B: "'"};
+
 let playerStatesP = Bacon
     .combineAsArray([
       {
-        keys: {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w", A: "f", B: "g"},
+        keys: player1Keys,
         level: LEVEL,
         levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
@@ -274,7 +277,7 @@ let playerStatesP = Bacon
         blockPosition: 0,
         step: 0
       }, {
-        keys: {LEFT: 'j', RIGHT: 'l', DOWN: "k", UP: "i", A: ";", B: "'"},
+        keys: player2Keys,
         level: LEVEL,
         levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
