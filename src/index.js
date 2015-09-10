@@ -369,7 +369,6 @@ let navigationP = Bacon
     });
 
 navigationP
-    .log()
     .sampledBy(asE)
     .map(navigation => navigation.filter(n => n.selected)[0])
     .onValue(item => window.location.hash = item.link);
