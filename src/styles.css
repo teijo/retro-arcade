@@ -24,7 +24,7 @@ a:hover, a:active {
   color: red;
 }
 
-.selected a {
+a.selected {
   text-decoration: underline;
   color: red;
 }

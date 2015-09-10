@@ -269,14 +269,9 @@ export let MenuPage = React.createClass({
     states: React.PropTypes.array.isRequired,
     settings: React.PropTypes.array.isRequired,
     outputs: React.PropTypes.object.isRequired,
-    menuIndex: React.PropTypes.number.isRequired
+    navigation: React.PropTypes.array.isRequired
   },
   render() {
-    let menu = [
-      <a href="#game">Start game &gt;</a>,
-      <a href="#howto">How to play &gt;</a>
-    ];
-    let menuIndex = Math.abs(this.props.menuIndex % menu.length);
     return (
         <div className="menu">
           <img src="assets/img/logo.png" />
@@ -285,8 +280,12 @@ export let MenuPage = React.createClass({
             <PlayerName placeholder={this.props.settings[1].name} onchange={this.props.outputs.player2Name}/>
           </div>
           <ul>
-            {menu.map((item, index) => {
-              return <li className={classNames({selected: index === menuIndex})} key={index}>{item}</li>;
+            {this.props.navigation.map((item, index) => {
+              return (
+                  <li key={index}>
+                     <a className={classNames({selected: item.selected})} href={item.link}>{item.label}</a>
+                  </li>
+              );
             })}
           </ul>
         </div>
@@ -297,9 +296,11 @@ export let MenuPage = React.createClass({
 export let HowtoPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
-    settings: React.PropTypes.array.isRequired
+    settings: React.PropTypes.array.isRequired,
+    navigation: React.PropTypes.array.isRequired
   },
   render() {
+    let [navigation] = this.props.navigation;
     return (
         <div className="howto">
           <h1>How To Play</h1>
@@ -318,7 +319,7 @@ export let HowtoPage = React.createClass({
             <li><span className="block-bonus">BONUS</span> gives score multiplier only when autocompleted</li>
             <li><span className="block-special-add">AUTOCOMPLETE+1</span> gives one autocomplete command when passed</li>
           </ul>
-          <a href="#menu">&lt; Back to main menu</a>
+          <a className={classNames({selected: navigation.selected})} href={navigation.link}>{navigation.label}</a>
         </div>
     );
   }
@@ -327,9 +328,11 @@ export let HowtoPage = React.createClass({
 export let ScorePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
-    settings: React.PropTypes.array.isRequired
+    settings: React.PropTypes.array.isRequired,
+    navigation: React.PropTypes.array.isRequired
   },
   render() {
+    let [navigation] = this.props.navigation;
     let maxScore = this.props.states.reduce((max, state) => Math.max(max, state.score), 0);
     return (
         <div className="score">
@@ -346,7 +349,7 @@ export let ScorePage = React.createClass({
                 }
             )}
           </ul>
-          <a href="#menu">&lt; Back to main menu</a>
+          <a className={classNames({selected: navigation.selected})} href={navigation.link}>{navigation.label}</a>
         </div>
     );
   }

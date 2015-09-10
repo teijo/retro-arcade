@@ -306,13 +306,13 @@ let pageComponentE = activePageP
     .map(page => {
       switch (page.hash) {
         case "#howto":
-          return (states, settings) => <HowtoPage states={states} settings={settings}/>;
+          return (states, settings, navigation) => <HowtoPage states={states} settings={settings} navigation={navigation}/>;
         case "#game":
           return (states, settings) => <GamePage states={states} page={page} settings={settings}/>;
         case "#score":
-          return (states, settings) => <ScorePage states={states} settings={settings}/>;
+          return (states, settings, navigation) => <ScorePage states={states} settings={settings} navigation={navigation}/>;
         default:
-          return (states, settings, menuIndex) => <MenuPage states={states} settings={settings} outputs={outputs} menuIndex={menuIndex}/>;
+          return (states, settings, navigation) => <MenuPage states={states} settings={settings} outputs={outputs} navigation={navigation}/>;
       }
     });
 
@@ -337,13 +337,44 @@ function merge(...keys) {
 let downsE = merge(player1Keys.DOWN, player2Keys.DOWN).map(() => (x) => x - 1);
 let upsE = merge(player1Keys.UP, player2Keys.UP).map(() => (x) => x + 1);
 let asE = merge(player1Keys.A, player2Keys.A);
+let menuResetE = activePageP.map(() => () => 0);
 
 let menuIndexP = Bacon
-    .mergeAll(downsE, upsE)
+    .mergeAll(downsE, upsE, menuResetE)
     .filter(isGamePageP.not())
     .scan(0, (index, func) => func(index));
 
-Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, menuIndexP, (template, states, settings, menuIndex) => React.render(template(freeze(states), freeze(settings), menuIndex), document.getElementById("main")));
+const navigation = {
+  "#menu": [
+    {link: "#game", label: "Start game >", selected: false},
+    {link: "#howto", label: "How to play >", selected: false}
+  ],
+  "#score": [
+    {link: "#menu", label: "< Back to main menu", selected: false}
+  ],
+  "#howto": [
+    {link: "#menu", label: "< Back to main menu", selected: false}
+  ]
+};
+
+let navigationP = Bacon
+    .constant(navigation)
+    .sampledBy(activePageP, (navigation, page) => navigation.hasOwnProperty(page.hash) ? navigation[page.hash] : [])
+    .sampledBy(menuIndexP, (navigation, index) => {
+      let active = Math.abs(index % navigation.length);
+      return navigation.map((n, i) => {
+        n.selected = i === active;
+        return n;
+      });
+    });
+
+navigationP
+    .log()
+    .sampledBy(asE)
+    .map(navigation => navigation.filter(n => n.selected)[0])
+    .onValue(item => window.location.hash = item.link);
+
+Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, navigationP, (template, states, settings, navigation) => React.render(template(freeze(states), freeze(settings), navigation), document.getElementById("main")));
 
 function playersProgressedToEnd(states) {
   return states.reduce((end, s) => s.progress === 100 && end, true);
