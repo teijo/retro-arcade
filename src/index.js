@@ -196,7 +196,7 @@ function parseBlock(rawBlock, index) {
   }
 }
 
-let worldP = Bacon.constant(World.jsLevel);
+let worldP = Bacon.constant(World.javaScript);
 
 let activeWorldP = worldP.map(world => {
   let blocks = world.split(/<<|>>/).map(parseBlock);

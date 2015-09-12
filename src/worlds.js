@@ -1,20 +1,7 @@
 import * as Const from "./const";
 
-function createBlocks(template) {
-  return template.split(/<<|>>/).map(parseBlock)
-}
 
-function parseBlock(rawBlock, index) {
-  switch (rawBlock[0]) {
-    case "!":
-      return {type: Const.TYPE_GET_SPECIAL, text: rawBlock.slice(1)};
-    default:
-      return {type: index % 2 ? Const.TYPE_BONUS : Const.TYPE_NORMAL, text: rawBlock};
-  }
-}
-
-
-export const jsLevel =
+export const javaScript =
 `<<let>> listener = <<!new>> <<window>>.keypress.Listener();
 players.<<forEach>>(player => {
   let step = 0;
@@ -23,17 +10,10 @@ players.<<forEach>>(player => {
   });
 });`;
 
-const jsBlocks = createBlocks(jsLevel)
-
-export const js = {
-  blocks: jsBlocks,
-  length: jsBlocks.map(b => b.text).join('').length
-}
-
 
 // Source code by Ivan Sergeev
 // https://github.com/vsergeev/apfcp
-export const asmLevel =
+export const assembly =
 `; Hello World System Call Example in nasm (example-hello-nasm.asm)
 section .text
 global _start
@@ -68,9 +48,10 @@ _start:
 section .data
 filename:   db 'foo',0
 message:    db 'Hello World!',10
-messageLen: equ $ - message`
+messageLen: equ $ - message`;
 
-export const haskellLevel =
+
+export const haskell =
 `import Network.HTTP.Conduit
 import Control.Monad.IO.Class (liftIO)
 
@@ -78,4 +59,4 @@ main = withManager $ \manager -> do
     request <- parseUrl "http://www.winsoft.sk"
     liftIO $ print request
     response <- httpLbs request manager
-    liftIO $ print response`
+    liftIO $ print response`;
