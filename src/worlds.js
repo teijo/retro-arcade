@@ -2,10 +2,10 @@ import * as Const from "./const";
 
 
 export const javaScript =
-`<<let>> listener = <<!new>> <<window>>.keypress.Listener();
+`<<let>> l = <<!new>> <<window>>.keypress.Listener();
 players.<<forEach>>(player => {
   let step = 0;
-  listener.<<simple_combo>>(player.trigger, () => {
+  l.<<simple_combo>>(player.trigger, () => {
     player.input.<<push>>(++step);
   });
 });`;
@@ -14,49 +14,75 @@ players.<<forEach>>(player => {
 // Source code by Ivan Sergeev
 // https://github.com/vsergeev/apfcp
 export const assembly =
-`; Hello World System Call Example in nasm (example-hello-nasm.asm)
-section .text
-global _start
-_start:
-  ; open("foo", ...);
-  mov eax, 5
-  mov ebx, filename
-  mov ecx, 0x41
-  mov edx, 0q644
-  int 0x80
+  `.section .text
+.global _start
+<<_start:>>
+  pushl $22
+  <<pushl>> $20
+  !pushl $42
+  <<pushl>> $3
+  call sumNumbers
+  <<!addl>> $16, %esp
+  # %eax is now 84
+  <<# i wish i could
+  # autocomplete comments>>
 
-  ; fd in eax -> ebx
-  mov ebx, eax
+  sumNumbers:
+    <<# Function prologue, save>>
+    <<!# old frame pointer>>
+    <<# and setup new one>>
+    pushl %ebp
+    movl %esp, %ebp
+    sumLoop:
+      <<# Add argument 2, 3, 4, ... n in %eax>>
+      <<# Argument 2 starts at %ebp+12>>
+      addl 12(%ebp, %ecx, 4), %eax
+      incl %ecx
 
-  ; write(fd, ...);
-  mov eax, 4
-  ; fd in ebx from above
-  mov ecx, message
-  mov edx, messageLen
-  int 0x80
+      <<# Loop>>
+      decl %edx
+      jnz sumLoop
 
-  ; close(fd);
-  mov eax, 6
-  ; fd still in ebx
-  int 0x80
+    <<# Function epilogue,
+    # deallocate and
+    # god damn i hate documenting
+    # 80% of the time>>
+    movl %ebp, %esp
+    popl %ebp
+    ret`;
 
-  ; exit(0);
-  mov eax, 1
-  mov ebx, 0
-  int 0x80
-
-section .data
-filename:   db 'foo',0
-message:    db 'Hello World!',10
-messageLen: equ $ - message`;
-
-
+// Source code by Raimo Hanski
+// https://github.com/raimohanska/Monads/blob/gh-pages/examples/challenges/Validation/Validation.hs
 export const haskell =
-`import Network.HTTP.Conduit
-import Control.Monad.IO.Class (liftIO)
+`module Validation(Validation, valid, invalid) where
 
-main = withManager $ \manager -> do
-    request <- parseUrl "http://www.winsoft.sk"
-    liftIO $ print request
-    response <- httpLbs request manager
-    liftIO $ print response`;
+import Control.Applicative
+import Control.Monad
+import Data.Monoid
+
+data Validation e a = Validation a e
+
+valid :: Monoid e => a -> Validation e a
+valid x = Validation x mempty
+
+invalid :: Monoid e => a -> e -> Validation e a
+invalid x error = Validation x error
+
+isValid :: (Eq e, Monoid e) => Validation e a -> Bool
+isValid (Validation a e) = e == mempty
+
+instance (Show a, Show e, Monoid e, Eq e) => Show (Validation e a) where
+  show v@(Validation a e) | isValid v = "OK " ++ show a
+                          | otherwise = "INVALID " ++ show a ++ "(" ++ show e ++")"
+
+instance (Monoid e) => Monad (Validation e) where
+  return = valid
+  (Validation a errors) >>= f = case f a of
+    Validation b moreErrors -> Validation b (errors \`mappend\` moreErrors)
+
+instance (Monoid e) => Functor (Validation e) where
+  fmap = liftM
+
+instance (Monoid e) => Applicative (Validation e) where
+  pure = return
+  (<*>) = ap`;
