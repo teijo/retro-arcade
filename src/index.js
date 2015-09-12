@@ -53,8 +53,11 @@ let nextStep = (() => {
     }
   };
 
+  const getBlocks = state => state.getIn(['world', 'blocks']);
+  const getWorldLength = state => state.getIn(['world', 'length']);
+
   function applyProgress(currentState) {
-    return currentState.set('progress', currentState.get('step') / currentState.get('levelLength') * 100);
+    return currentState.set('progress', currentState.get('step') / getWorldLength(currentState) * 100);
   }
 
   function applyTimeBonus(state, timeLeft) {
@@ -65,9 +68,9 @@ let nextStep = (() => {
   }
 
   function applyNormalKey(state) {
-    let currentPosition = Movement.step(state.get('step')) + Movement.indentSkip(state.get('blocks').get(state.get('blockIndex')).get('text'), state.get('blockPosition')),
+    let currentPosition = Movement.step(state.get('step')) + Movement.indentSkip(getBlocks(state).get(state.get('blockIndex')).get('text'), state.get('blockPosition')),
         stepScore = (currentPosition - state.get('step')) * STEP_MULTIPLIER,
-        [blockIndex, blockPosition] = Movement.getPosition(state.get('blocks'), currentPosition);
+        [blockIndex, blockPosition] = Movement.getPosition(getBlocks(state), currentPosition);
     return state.merge({
       blockIndex: blockIndex,
       blockPosition: blockPosition,
@@ -83,7 +86,7 @@ let nextStep = (() => {
         specialsLeft = state.get('specialsLeft'),
         hitPosition = -1; // The character at which autocomplete was used
     if (state.get('specialsLeft') > 0) {
-      [hitPosition, currentPosition] = Movement.jump(state.get('step'), state.get('blocks'), state.get('blockIndex'), state.get('blockPosition'));
+      [hitPosition, currentPosition] = Movement.jump(state.get('step'), getBlocks(state), state.get('blockIndex'), state.get('blockPosition'));
     } else {
       [hitPosition, currentPosition] = [-1, state.get('step')];
     }
@@ -102,7 +105,7 @@ let nextStep = (() => {
       consecutiveSpecialHits = 0;
       specialsLeft = Math.max(0, state.get('specialsLeft') - 1);
     }
-    let [blockIndex, blockPosition] = Movement.getPosition(state.get('blocks'), currentPosition);
+    let [blockIndex, blockPosition] = Movement.getPosition(getBlocks(state), currentPosition);
     return state.merge({
       blockIndex: blockIndex,
       blockPosition: blockPosition,
@@ -115,8 +118,8 @@ let nextStep = (() => {
 
   function applyBlockFinish(initialState, currentState) {
     // Just finished a block
-    if (currentState.get('blockPosition') == initialState.get('blocks').get(currentState.get('blockIndex')).get('text').length) {
-      if (initialState.get('blocks').get(currentState.get('blockIndex')).get('type') === Const.TYPE_GET_SPECIAL) {
+    if (currentState.get('blockPosition') == getBlocks(initialState).get(currentState.get('blockIndex')).get('text').length) {
+      if (getBlocks(initialState).get(currentState.get('blockIndex')).get('type') === Const.TYPE_GET_SPECIAL) {
         return currentState.set('specialsLeft', initialState.get('specialsLeft') + 1);
       }
     }
@@ -125,7 +128,7 @@ let nextStep = (() => {
 
   // Gets and returns Immutable.Map as state
   return (initialState, timeAndKey) => {
-    if (initialState.get('step') == initialState.get('levelLength')) {
+    if (initialState.get('step') == getWorldLength(initialState)) {
       return initialState;
     }
 
@@ -202,6 +205,15 @@ players.<<forEach>>(player => {
 });`;
 let BLOCKS = LEVEL.split(/<<|>>/).map(parseBlock);
 
+let worldP = Bacon.constant(LEVEL);
+
+let activeWorldP = worldP.map(world => {
+  let blocks = world.split(/<<|>>/).map(parseBlock);
+  return {
+    length: blocks.map(b => b.text).join('').length,
+    blocks: blocks
+  }
+});
 
 let player1NameChangeE = new Bacon.Bus();
 let player2NameChangeE = new Bacon.Bus();
@@ -267,9 +279,8 @@ let playerStatesP = Bacon
     .combineAsArray([
       {
         keys: player1Keys,
-        level: LEVEL,
-        levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
+        world: activeWorldP,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
         score: 0,
@@ -279,9 +290,8 @@ let playerStatesP = Bacon
         step: 0
       }, {
         keys: player2Keys,
-        level: LEVEL,
-        levelLength: BLOCKS.map(b => b.text).join('').length,
         blocks: BLOCKS,
+        world: activeWorldP,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
         score: 0,
