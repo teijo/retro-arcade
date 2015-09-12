@@ -283,7 +283,38 @@ export let MenuPage = React.createClass({
             {this.props.navigation.map((item, index) => {
               return (
                   <li key={index}>
-                     <a className={classNames({selected: item.selected})} href={item.link}>{item.label}</a>
+                    <a className={classNames({selected: item.selected})} href={item.link}>{item.label}</a>
+                  </li>
+              );
+            })}
+          </ul>
+        </div>
+    );
+  }
+});
+
+export let WorldSelectPage = React.createClass({
+  propTypes: {
+    navigation: React.PropTypes.array.isRequired
+  },
+  render() {
+    const sampleWorld = `let listener = !new window.keypress.Listener();
+players.forEach(player => {
+  let step = 0;
+  listener.simple_combo(player.trigger, () => {
+    player.input.push(++step);
+  });
+});`;
+    return (
+        <div className="worldSelect">
+          <img src="assets/img/logo.png" />
+          <h1>Select world</h1>
+          <ul>
+            {this.props.navigation.map((item, index) => {
+              return (
+                  <li className={classNames({selected: item.selected})} key={index}>
+                    <a href={item.link}>{item.label}</a>
+                    <pre>{sampleWorld}</pre>
                   </li>
               );
             })}

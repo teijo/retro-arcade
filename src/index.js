@@ -5,7 +5,7 @@ import Bacon from "Bacon";
 import Immutable from "immutable";
 
 import * as Const from "./const";
-import {HowtoPage, GamePage, ScorePage, MenuPage} from "./components";
+import {HowtoPage, GamePage, ScorePage, WorldSelectPage, MenuPage} from "./components";
 import * as Audio from "./audio";
 
 let nextStep = (() => {
@@ -217,36 +217,37 @@ function timer(count, delay) {
       .takeWhile(t => t >= 0);
 }
 
+const isGameHash = (hash) => hash.startsWith("#game");
+
 let activePageP = Bacon.fromEvent(window, "hashchange")
     .toProperty({newURL: window.location.hash})
     .flatMapLatest(e => {
       let parts = e.newURL.split("#");
       let hash = (parts.length == 2) ? "#" + parts[1] : "#menu";
-      switch (hash) {
-        case "#game":
-          return Bacon
-              .sequentially(Const.TIME_DELAY, ["3", "2", "1", "CODE!", ""])
-              .toProperty("READY?") // immediate start from first countdown element
-              .flatMap(c => Bacon.combineTemplate({
-                  hash: hash,
-                  countdown: c,
-                  timeLeft: c == "" ? timer(Const.GAME_TIME, Const.TIME_DELAY) : Const.GAME_TIME
-              }));
-        default:
-          return Bacon.constant({hash: hash});
+      if (isGameHash(hash)) {
+        return Bacon
+            .sequentially(Const.TIME_DELAY, ["3", "2", "1", "CODE!", ""])
+            .toProperty("READY?") // immediate start from first countdown element
+            .flatMap(c => Bacon.combineTemplate({
+              hash: hash,
+              countdown: c,
+              timeLeft: c == "" ? timer(Const.GAME_TIME, Const.TIME_DELAY) : Const.GAME_TIME
+            }));
+      } else {
+        return Bacon.constant({hash: hash});
       }
     })
     .toProperty();
 
-let gameIsActiveP = activePageP.map(page => page.hash === "#game" && page.countdown === "");
+let gameIsActiveP = activePageP.map(page => isGameHash(page.hash) && page.countdown === "");
 
-let gameTimeLeftP = activePageP.filter(page => page.hash === "#game").map(page => page.timeLeft);
+let gameTimeLeftP = activePageP.filter(page => isGameHash(page.hash)).map(page => page.timeLeft);
 
 let resetStateE = Bacon.mergeAll(
     // Force reset on "Q"
     Bacon.mergeAll(Bacon.once(), registerKey("q")),
     // Reset on menu->game page transition
-    activePageP.slidingWindow(2, 2).filter(w => w[0].hash === "#menu" && w[1].hash === "#game")
+    activePageP.slidingWindow(2, 2).filter(w => w[0].hash === "#worldSelect" && isGameHash(w[1].hash))
 ).map("[reset state]");
 
 let playerSettingsP = Bacon
@@ -305,10 +306,14 @@ let playerStatesP = Bacon
 let pageComponentE = activePageP
     .map(page => {
       switch (page.hash) {
+        case "#worldSelect":
+          return (states, settings, navigation) => <WorldSelectPage navigation={navigation}/>;
         case "#howto":
           return (states, settings, navigation) => <HowtoPage states={states} settings={settings} navigation={navigation}/>;
-        case "#game":
-          return (states, settings) => <GamePage states={states} page={page} settings={settings}/>;
+        case "#game-hs":
+        case "#game-asm":
+        case "#game-js":
+          return (states, settings, navigation) => <GamePage states={states} page={page} settings={settings}/>;
         case "#score":
           return (states, settings, navigation) => <ScorePage states={states} settings={settings} navigation={navigation}/>;
         default:
@@ -327,7 +332,7 @@ function freeze(obj) {
 }
 
 let isGamePageP = activePageP
-    .map(p => p.hash === "#game")
+    .map(p => isGameHash(p.hash))
     .skipDuplicates();
 
 function merge(...keys) {
@@ -346,8 +351,13 @@ let menuIndexP = Bacon
 
 const navigation = {
   "#menu": [
-    {link: "#game", label: "Start game >", selected: false},
+    {link: "#worldSelect", label: "Start game >", selected: false},
     {link: "#howto", label: "How to play >", selected: false}
+  ],
+  "#worldSelect": [
+    {link: "#game-hs", label: "Haskell >", selected: false},
+    {link: "#game-asm", label: "x86 Assembly >", selected: false},
+    {link: "#game-js", label: "JavaScript >", selected: false}
   ],
   "#score": [
     {link: "#menu", label: "< Back to main menu", selected: false}
