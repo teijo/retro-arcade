@@ -196,16 +196,6 @@ function parseBlock(rawBlock, index) {
   }
 }
 
-let worldP = Bacon.constant(World.javaScript);
-
-let activeWorldP = worldP.map(world => {
-  let blocks = world.split(/<<|>>/).map(parseBlock);
-  return {
-    length: blocks.map(b => b.text).join('').length,
-    blocks: blocks
-  }
-});
-
 let player1NameChangeE = new Bacon.Bus();
 let player2NameChangeE = new Bacon.Bus();
 let outputs = {
@@ -266,42 +256,6 @@ let playerSettingsP = Bacon
 const player1Keys = {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w", A: "f", B: "g"};
 const player2Keys = {LEFT: 'j', RIGHT: 'l', DOWN: "k", UP: "i", A: ";", B: "'"};
 
-let playerStatesP = Bacon
-    .combineAsArray([
-      {
-        keys: player1Keys,
-        world: activeWorldP,
-        specialsLeft: 3,
-        consecutiveSpecialHits: 0,
-        score: 0,
-        progress: 0,
-        blockIndex: 0,
-        blockPosition: 0,
-        step: 0
-      }, {
-        keys: player2Keys,
-        world: activeWorldP,
-        specialsLeft: 3,
-        consecutiveSpecialHits: 0,
-        score: 0,
-        progress: 0,
-        blockIndex: 0,
-        blockPosition: 0,
-        step: 0
-      }
-    ].map(Bacon.combineTemplate))
-    .sampledBy(resetStateE)
-    .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
-      let normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
-      let specialE = registerKey(player.keys.A);
-      let keysE = Bacon
-          .mergeAll(specialE.map(Const.KEY_SPECIAL), normalE.map(Const.KEY_NORMAL))
-          .filter(gameIsActiveP);
-      return gameTimeLeftP
-          .sampledBy(keysE, (timeLeft, keyType) => ({timeLeft: timeLeft, keyType: keyType}))
-          .scan(player, (state, timeAndKey) => nextStep(Immutable.fromJS(state), timeAndKey).toJS());
-    })));
-
 let pageComponentE = activePageP
     .map(page => {
       switch (page.hash) {
@@ -348,16 +302,18 @@ let menuIndexP = Bacon
     .filter(isGamePageP.not())
     .scan(0, (index, func) => func(index));
 
+const worlds = [
+  {world: World.assembly, label: "Assembly"},
+  {world: World.javaScript, label: "JavaScript"},
+  {world: World.haskell, label: "Haskell"}
+];
+
 const navigation = {
   "#menu": [
     {link: "#worldSelect", label: "Start game >", selected: false},
     {link: "#howto", label: "How to play >", selected: false}
   ],
-  "#worldSelect": [
-    {link: "#game-hs", label: "Haskell >", selected: false},
-    {link: "#game-asm", label: "x86 Assembly >", selected: false},
-    {link: "#game-js", label: "JavaScript >", selected: false}
-  ],
+  "#worldSelect": worlds.map(w => ({link: "#game-hs", label: w.label + " >", selected: false})),
   "#score": [
     {link: "#menu", label: "< Back to main menu", selected: false}
   ],
@@ -371,7 +327,7 @@ let navigationP = Bacon
     .sampledBy(activePageP, (navigation, page) => navigation.hasOwnProperty(page.hash) ? navigation[page.hash] : [])
     .sampledBy(menuIndexP, (navigation, index) => {
       // Wrap navigation index, i.e. index -1 equals last menu item, last index + 1, equals first menu item
-      let active = (navigation.length + (index % navigation.length)) % navigation.length;
+      let active = wrapIndex(navigation.length, index);
       return navigation.map((n, i) => {
         n.selected = i === active;
         return n;
@@ -382,6 +338,58 @@ navigationP
     .sampledBy(asE)
     .map(navigation => navigation.filter(n => n.selected)[0])
     .onValue(item => window.location.hash = item.link);
+
+let isWorldSelectP = activePageP
+    .map(p => isGameHash(p.hash))
+    .skipDuplicates();
+
+const wrapIndex = (length, index) => (length + (index % length)) % length;
+
+let activeWorldP = Bacon
+    .constant(worlds)
+    .sampledBy(menuIndexP, (worlds, index) => worlds[wrapIndex(worlds.length, index)].world).map(world => {
+      let blocks = world.split(/<<|>>/).map(parseBlock);
+      return {
+        length: blocks.map(b => b.text).join('').length,
+        blocks: blocks
+      }
+    });
+
+let playerStatesP = Bacon
+    .combineAsArray([
+      {
+        keys: player1Keys,
+        world: activeWorldP,
+        specialsLeft: 3,
+        consecutiveSpecialHits: 0,
+        score: 0,
+        progress: 0,
+        blockIndex: 0,
+        blockPosition: 0,
+        step: 0
+      }, {
+        keys: player2Keys,
+        world: activeWorldP,
+        specialsLeft: 3,
+        consecutiveSpecialHits: 0,
+        score: 0,
+        progress: 0,
+        blockIndex: 0,
+        blockPosition: 0,
+        step: 0
+      }
+    ].map(Bacon.combineTemplate))
+    .sampledBy(resetStateE)
+    .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
+      let normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
+      let specialE = registerKey(player.keys.A);
+      let keysE = Bacon
+          .mergeAll(specialE.map(Const.KEY_SPECIAL), normalE.map(Const.KEY_NORMAL))
+          .filter(gameIsActiveP);
+      return gameTimeLeftP
+          .sampledBy(keysE, (timeLeft, keyType) => ({timeLeft: timeLeft, keyType: keyType}))
+          .scan(player, (state, timeAndKey) => nextStep(Immutable.fromJS(state), timeAndKey).toJS());
+    })));
 
 Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, navigationP, (template, states, settings, navigation) => React.render(template(freeze(states), freeze(settings), navigation), document.getElementById("main")));
 
