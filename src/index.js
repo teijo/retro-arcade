@@ -7,6 +7,7 @@ import Immutable from "immutable";
 import * as Const from "./const";
 import {HowtoPage, GamePage, ScorePage, WorldSelectPage, MenuPage} from "./components";
 import * as Audio from "./audio";
+import * as World from "./worlds";
 
 let nextStep = (() => {
   const STEP_MULTIPLIER = 8;
@@ -195,17 +196,7 @@ function parseBlock(rawBlock, index) {
   }
 }
 
-let LEVEL =
-`<<let>> listener = <<!new>> <<window>>.keypress.Listener();
-players.<<forEach>>(player => {
-  let step = 0;
-  listener.<<simple_combo>>(player.trigger, () => {
-    player.input.<<push>>(++step);
-  });
-});`;
-let BLOCKS = LEVEL.split(/<<|>>/).map(parseBlock);
-
-let worldP = Bacon.constant(LEVEL);
+let worldP = Bacon.constant(World.jsLevel);
 
 let activeWorldP = worldP.map(world => {
   let blocks = world.split(/<<|>>/).map(parseBlock);
