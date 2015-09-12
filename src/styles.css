@@ -123,10 +123,9 @@ h1 {
   color: white;
 }
 
-.worldSelect ul li pre {
+.worldSelect ul li p {
   flex: 1;
-  text-align: left;
-  font-size: 0.6rem;
+  font-size: 1.8rem;
 }
 
 .howto ul, .howto ol, .howto a {

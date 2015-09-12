@@ -298,13 +298,6 @@ export let WorldSelectPage = React.createClass({
     navigation: React.PropTypes.array.isRequired
   },
   render() {
-    const sampleWorld = `let listener = !new window.keypress.Listener();
-players.forEach(player => {
-  let step = 0;
-  listener.simple_combo(player.trigger, () => {
-    player.input.push(++step);
-  });
-});`;
     return (
         <div className="worldSelect">
           <img src="assets/img/logo.png" />
@@ -314,7 +307,7 @@ players.forEach(player => {
               return (
                   <li className={classNames({selected: item.selected})} key={index}>
                     <a href={item.link}>{item.label}</a>
-                    <pre>{sampleWorld}</pre>
+                    <p>{item.description}</p>
                   </li>
               );
             })}

@@ -303,9 +303,9 @@ let menuIndexP = Bacon
     .scan(0, (index, func) => func(index));
 
 const worlds = [
-  {world: World.assembly, label: "Assembly"},
-  {world: World.javaScript, label: "JavaScript"},
-  {world: World.haskell, label: "Haskell"}
+  {world: World.assembly, label: "Assembly", description: "Be the machine"},
+  {world: World.javaScript, label: "JavaScript", description: "Best proggaming language"},
+  {world: World.haskell, label: "Haskell", description: "Enjoy your burritos"}
 ];
 
 const navigation = {
@@ -313,7 +313,7 @@ const navigation = {
     {link: "#worldSelect", label: "Start game >", selected: false},
     {link: "#howto", label: "How to play >", selected: false}
   ],
-  "#worldSelect": worlds.map(w => ({link: "#game-hs", label: w.label + " >", selected: false})),
+  "#worldSelect": worlds.map(w => ({link: "#game-hs", label: w.label + " >", description: w.description, selected: false})),
   "#score": [
     {link: "#menu", label: "< Back to main menu", selected: false}
   ],
