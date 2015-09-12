@@ -187,7 +187,7 @@ let CodeBox = React.createClass({
   onInput(cursorOffsetLeft, cursorOffsetTop) {
     let node = this.getDOMNode();
     let {offsetLeft, offsetTop, clientWidth, clientHeight} = node;
-    node.scrollLeft = Math.max(0, cursorOffsetLeft - offsetLeft - clientWidth + 150);
+    node.scrollLeft = Math.max(0, cursorOffsetLeft - offsetLeft - clientWidth + 50);
     node.scrollTop = Math.max(0, cursorOffsetTop - offsetTop - clientHeight + 150);
   },
   render() {
