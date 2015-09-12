@@ -279,7 +279,6 @@ let playerStatesP = Bacon
     .combineAsArray([
       {
         keys: player1Keys,
-        blocks: BLOCKS,
         world: activeWorldP,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
@@ -290,7 +289,6 @@ let playerStatesP = Bacon
         step: 0
       }, {
         keys: player2Keys,
-        blocks: BLOCKS,
         world: activeWorldP,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,

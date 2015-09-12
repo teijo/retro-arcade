@@ -80,7 +80,7 @@ let Game = React.createClass({
   },
   render() {
     let {consecutiveSpecialHits, progress, score, blockPosition,
-        blockIndex, specialsLeft, blocks} = this.props.state;
+        blockIndex, specialsLeft, world} = this.props.state;
     return (
         <div className="player-screen">
           <div className="header">
@@ -88,7 +88,7 @@ let Game = React.createClass({
           </div>
           <CodeBox blockPosition={blockPosition}
                    blockIndex={blockIndex}
-                   blocks={blocks}/>
+                   blocks={world.blocks}/>
           <Splatter value={consecutiveSpecialHits}/>
           <div className="footer">
             <div className="col">
