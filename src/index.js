@@ -339,13 +339,13 @@ function merge(...keys) {
   return Bacon.mergeAll(keys.map(registerKey));
 }
 
-let downsE = merge(player1Keys.DOWN, player2Keys.DOWN).map(() => (x) => x - 1);
-let upsE = merge(player1Keys.UP, player2Keys.UP).map(() => (x) => x + 1);
+let menuNextE = merge(player1Keys.DOWN, player2Keys.DOWN, player1Keys.LEFT, player2Keys.LEFT).map(() => (x) => x - 1);
+let menuPrevE = merge(player1Keys.UP, player2Keys.UP, player1Keys.RIGHT, player2Keys.RIGHT).map(() => (x) => x + 1);
 let asE = merge(player1Keys.A, player2Keys.A);
 let menuResetE = activePageP.map(() => () => 0);
 
 let menuIndexP = Bacon
-    .mergeAll(downsE, upsE, menuResetE)
+    .mergeAll(menuNextE, menuPrevE, menuResetE)
     .filter(isGamePageP.not())
     .scan(0, (index, func) => func(index));
 
