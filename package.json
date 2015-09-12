@@ -4,14 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "gulp watch"
+    "start": "gulp bundle && gulp watch",
+    "postinstall": "bower install"
   },
   "author": "",
   "devDependencies": {
+    "bower" : "1.5.2",
     "react-tools": "^0.13.3",
     "gulp": "^3.9.0",
     "gulp-watch": "^4.3.5",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "browserify": "11.1.0",
+    "babelify": "6.3.0"
   },
   "browser": {
     "Bacon": "./bower_components/bacon/dist/Bacon.js",
