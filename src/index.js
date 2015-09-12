@@ -212,11 +212,15 @@ function timer(count, delay) {
 
 const isGameHash = (hash) => hash.startsWith("#game");
 
-let activePageP = Bacon.fromEvent(window, "hashchange")
+var pageHashP = Bacon.fromEvent(window, "hashchange")
     .toProperty({newURL: window.location.hash})
-    .flatMapLatest(e => {
+    .map(e => {
       let parts = e.newURL.split("#");
-      let hash = (parts.length == 2) ? "#" + parts[1] : "#menu";
+      return (parts.length == 2) ? "#" + parts[1] : "#menu";
+    });
+
+let activePageP = pageHashP
+    .flatMapLatest(hash => {
       if (isGameHash(hash)) {
         return Bacon
             .sequentially(Const.TIME_DELAY, ["3", "2", "1", "CODE!", ""])
@@ -404,8 +408,15 @@ gameIsActiveP
 
 let [game, menu] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3');
 
+
+// Audio
+
 isGamePageP
     .onValue((isActive) => {
       game.play(isActive);
       menu.play(!isActive);
     });
+
+pageHashP.onValue(() => {
+  console.log("SFX: page change");
+});
