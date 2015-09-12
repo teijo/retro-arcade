@@ -85,10 +85,10 @@ let nextStep = (() => {
     if (state.get('specialsLeft') > 0) {
       [hitPosition, currentPosition] = Movement.jump(state.get('step'), state.get('blocks'), state.get('blockIndex'), state.get('blockPosition'));
     } else {
-      [hitPosition, currentPosition] = [false, state.get('step')];
+      [hitPosition, currentPosition] = [-1, state.get('step')];
     }
     // Perfect hit
-    if (hitPosition == 0) {
+    if (hitPosition === 0) {
       // Rewards for hitting special
       consecutiveSpecialHits = consecutiveSpecialHits + 1;
       stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
