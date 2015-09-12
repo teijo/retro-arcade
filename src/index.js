@@ -371,7 +371,8 @@ let navigationP = Bacon
     .constant(navigation)
     .sampledBy(activePageP, (navigation, page) => navigation.hasOwnProperty(page.hash) ? navigation[page.hash] : [])
     .sampledBy(menuIndexP, (navigation, index) => {
-      let active = Math.abs(index % navigation.length);
+      // Wrap navigation index, i.e. index -1 equals last menu item, last index + 1, equals first menu item
+      let active = (navigation.length + (index % navigation.length)) % navigation.length;
       return navigation.map((n, i) => {
         n.selected = i === active;
         return n;
