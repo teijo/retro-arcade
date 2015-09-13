@@ -24,12 +24,21 @@ export let loadAudioContext = (...files) => {
     audio.volume = 1.0;
     context.createMediaElementSource(audio).connect(context.destination);
     return {
-      play(active) {
-        if (active) {
+      loop(active) {
+        audio.loop = true;
+        if (active === true) {
           audio.play();
-        } else {
+        } else if (active === false) {
           audio.pause();
+        } else {
+          throw new Error("Must call as: loop(active: boolean)");
         }
+      },
+      play() {
+        if (arguments.length !== 0) {
+          throw new Error("Must call as: play()");
+        }
+        audio.play();
       }
     }
   }

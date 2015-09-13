@@ -413,14 +413,14 @@ let [game, menu, menuPickSfx, menuSwitchSfx] = Audio.loadAudioContext('assets/ga
 
 isGamePageP
     .onValue((isActive) => {
-      game.play(isActive);
-      menu.play(!isActive);
+      game.loop(isActive);
+      menu.loop(!isActive);
     });
 
 asE.filter(isGamePageP.not()).onValue(() => {
-  menuPickSfx.play(true);
+  menuPickSfx.play();
 });
 
 Bacon.mergeAll(menuNextE, menuPrevE).filter(isGamePageP.not()).onValue(() => {
-  menuSwitchSfx.play(true);
+  menuSwitchSfx.play();
 });
