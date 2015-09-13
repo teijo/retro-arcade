@@ -85,6 +85,7 @@ let nextStep = (() => {
         stepScore = 0,
         consecutiveSpecialHits = state.get('consecutiveSpecialHits'),
         specialsLeft = state.get('specialsLeft'),
+        autocompletes = state.get('autocompletes'),
         hitPosition = -1; // The character at which autocomplete was used
     if (state.get('specialsLeft') > 0) {
       [hitPosition, currentPosition] = Movement.jump(state.get('step'), getBlocks(state), state.get('blockIndex'), state.get('blockPosition'));
@@ -96,11 +97,13 @@ let nextStep = (() => {
       // Rewards for hitting special
       consecutiveSpecialHits = consecutiveSpecialHits + 1;
       stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
+      autocompletes = autocompletes + 1;
     } else if (hitPosition > 0) {
       // Missed first char but still in special block
       stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER / hitPosition;
       consecutiveSpecialHits = 0;
       specialsLeft = Math.max(0, state.get('specialsLeft') - 1);
+      autocompletes = autocompletes + 1;
     } else {
       // Not in special block
       consecutiveSpecialHits = 0;
@@ -113,7 +116,8 @@ let nextStep = (() => {
       step: currentPosition,
       consecutiveSpecialHits: consecutiveSpecialHits,
       specialsLeft: specialsLeft,
-      score: state.get('score') + stepScore
+      score: state.get('score') + stepScore,
+      autocompletes: autocompletes
     });
   }
 
@@ -366,6 +370,7 @@ let playerStatesP = Bacon
         world: activeWorldP,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
+        autocompletes: 0,
         score: 0,
         progress: 0,
         blockIndex: 0,
@@ -376,6 +381,7 @@ let playerStatesP = Bacon
         world: activeWorldP,
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
+        autocompletes: 0,
         score: 0,
         progress: 0,
         blockIndex: 0,
@@ -406,7 +412,8 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav');
+let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx] = Audio.loadAudioContext(
+    'assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav', 'assets/perfect.wav', 'assets/autocomplete.wav');
 
 
 // Audio
@@ -421,7 +428,25 @@ asE.filter(isGamePageP.not()).onValue(() => {
   menuPickSfx.play();
 });
 
-playerStatesP.filter(gameIsActiveP).onValue(() => {
+function stateStream(playerIndex, field) {
+  return playerStatesP.map(s => s[playerIndex][field]).skipDuplicates();
+}
+
+Bacon.mergeAll([
+  stateStream(0, "consecutiveSpecialHits").diff(0, (a, b) => b > a),
+  stateStream(1, "consecutiveSpecialHits").diff(0, (a, b) => b > a)
+]).filter(gameIsActiveP).filter(c => c === true).onValue(() => {
+  perfectSfx.play();
+});
+
+Bacon.mergeAll([
+  stateStream(0, "autocompletes"),
+  stateStream(1, "autocompletes")
+]).filter(gameIsActiveP).onValue(() => {
+  autocompleteSfx.play();
+});
+
+Bacon.mergeAll([stateStream(0, "step"), stateStream(1, "step")]).filter(gameIsActiveP).onValue(() => {
   typeSfx.play();
 });
 
