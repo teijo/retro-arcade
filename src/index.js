@@ -434,6 +434,7 @@ Bacon.mergeAll(menuNextE, menuPrevE).filter(isGamePageP.not()).onValue(() => {
   menuSwitchSfx.play();
 });
 
+
 function orAll(cur, prev, fn) {
   if (cur.length !== prev.length) {
     throw new Error("Compared objects must be same size");
