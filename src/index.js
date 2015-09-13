@@ -412,8 +412,8 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx] = Audio.loadAudioContext(
-    'assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav', 'assets/perfect.wav', 'assets/autocomplete.wav');
+let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx] = Audio.loadAudioContext(
+    'assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav', 'assets/perfect.wav', 'assets/autocomplete.wav', 'assets/miss.wav');
 
 
 // Audio
@@ -425,31 +425,31 @@ isGamePageP
     });
 
 asE.filter(isGamePageP.not()).onValue(() => {
+  console.log("sfx: pick");
   menuPickSfx.play();
 });
 
-function stateStream(playerIndex, field) {
-  return playerStatesP.map(s => s[playerIndex][field]).skipDuplicates();
-}
-
-Bacon.mergeAll([
-  stateStream(0, "consecutiveSpecialHits").diff(0, (a, b) => b > a),
-  stateStream(1, "consecutiveSpecialHits").diff(0, (a, b) => b > a)
-]).filter(gameIsActiveP).filter(c => c === true).onValue(() => {
-  perfectSfx.play();
-});
-
-Bacon.mergeAll([
-  stateStream(0, "autocompletes"),
-  stateStream(1, "autocompletes")
-]).filter(gameIsActiveP).onValue(() => {
-  autocompleteSfx.play();
-});
-
-Bacon.mergeAll([stateStream(0, "step"), stateStream(1, "step")]).filter(gameIsActiveP).onValue(() => {
-  typeSfx.play();
-});
-
 Bacon.mergeAll(menuNextE, menuPrevE).filter(isGamePageP.not()).onValue(() => {
+  console.log("sfx: switch");
   menuSwitchSfx.play();
 });
+
+playerStatesP.slidingWindow(2, 2).onValues((prev, cur) => {
+  if (cur[0].consecutiveSpecialHits > prev[0].consecutiveSpecialHits || cur[1].consecutiveSpecialHits > prev[1].consecutiveSpecialHits) {
+    console.log("sfx: perfect");
+    perfectSfx.play();
+  }
+  if (cur[0].step > prev[0].step || cur[1].step > prev[1].step) {
+    console.log("sfx: type");
+    typeSfx.play();
+  }
+  if (cur[0].autocompletes > prev[0].autocompletes || cur[1].autocompletes > prev[1].autocompletes) {
+    console.log("sfx: autocomplete");
+    autocompleteSfx.play();
+  }
+  if (cur[0].step == prev[0].step && cur[0].specialsLeft < prev[0].specialsLeft || cur[1].step == prev[1].step && cur[1].specialsLeft < prev[1].specialsLeft) {
+    console.log("sfx: miss");
+    missSfx.play();
+  }
+});
+
