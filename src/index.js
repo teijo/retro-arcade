@@ -434,20 +434,32 @@ Bacon.mergeAll(menuNextE, menuPrevE).filter(isGamePageP.not()).onValue(() => {
   menuSwitchSfx.play();
 });
 
+function orAll(cur, prev, fn) {
+  if (cur.length !== prev.length) {
+    throw new Error("Compared objects must be same size");
+  }
+  return cur.reduce((eq, _, index) => eq || fn(cur[index], prev[index]), false);
+}
+
+const gt = (field) => (c, p) => c[field] > p[field];
+
 playerStatesP.slidingWindow(2, 2).onValues((prev, cur) => {
-  if (cur[0].consecutiveSpecialHits > prev[0].consecutiveSpecialHits || cur[1].consecutiveSpecialHits > prev[1].consecutiveSpecialHits) {
+  const any = (fn) => orAll(cur, prev, fn);
+
+  // Any players' current value of given field greater than in previous step
+  if (any(gt("consecutiveSpecialHits"))) {
     console.log("sfx: perfect");
     perfectSfx.play();
   }
-  if (cur[0].step > prev[0].step || cur[1].step > prev[1].step) {
+  if (any(gt("step"))) {
     console.log("sfx: type");
     typeSfx.play();
   }
-  if (cur[0].autocompletes > prev[0].autocompletes || cur[1].autocompletes > prev[1].autocompletes) {
+  if (any(gt("autocompletes"))) {
     console.log("sfx: autocomplete");
     autocompleteSfx.play();
   }
-  if (cur[0].step == prev[0].step && cur[0].specialsLeft < prev[0].specialsLeft || cur[1].step == prev[1].step && cur[1].specialsLeft < prev[1].specialsLeft) {
+  if (any((c, p) => c.step == p.step && c.specialsLeft < p.specialsLeft)) {
     console.log("sfx: miss");
     missSfx.play();
   }
