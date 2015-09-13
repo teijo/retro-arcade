@@ -406,7 +406,7 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-let [game, menu] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3');
+let [game, menu, menuPickSfx, menuSwitchSfx] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav');
 
 
 // Audio
@@ -417,6 +417,10 @@ isGamePageP
       menu.play(!isActive);
     });
 
-pageHashP.onValue(() => {
-  console.log("SFX: page change");
+asE.filter(isGamePageP.not()).onValue(() => {
+  menuPickSfx.play(true);
+});
+
+Bacon.mergeAll(menuNextE, menuPrevE).filter(isGamePageP.not()).onValue(() => {
+  menuSwitchSfx.play(true);
 });
