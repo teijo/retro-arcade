@@ -406,7 +406,7 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-let [game, menu, menuPickSfx, menuSwitchSfx] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav');
+let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx] = Audio.loadAudioContext('assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav');
 
 
 // Audio
@@ -419,6 +419,10 @@ isGamePageP
 
 asE.filter(isGamePageP.not()).onValue(() => {
   menuPickSfx.play();
+});
+
+playerStatesP.filter(gameIsActiveP).onValue(() => {
+  typeSfx.play();
 });
 
 Bacon.mergeAll(menuNextE, menuPrevE).filter(isGamePageP.not()).onValue(() => {
