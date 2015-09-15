@@ -52,9 +52,9 @@ pre {
 }
 
 #main {
-  /* final aspect ratio 16:9 and resolution 1920x1080 */
+  /* final aspect ratio 16:10 and resolution 1920x1200 */
   width: 960px;
-  height: 540px;
+  height: 600px;
   background-color: white;
   position: relative;
 }
