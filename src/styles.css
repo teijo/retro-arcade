@@ -10,6 +10,24 @@ body {
   align-items: center;
 }
 
+@media(max-width: 960px) {
+  body {
+    zoom: 0.5;
+  }
+}
+
+@media(min-width: 1920px) {
+  body {
+    zoom: 2;
+  }
+}
+
+@media(min-width: 2560px) {
+  body {
+    zoom: 3;
+  }
+}
+
 h1, h2 {
   margin: 0;
 }
