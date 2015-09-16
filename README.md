@@ -5,8 +5,7 @@ Light project base for building simple HTML 5 games.
 
 ## Development
 
-Requires [nodejs](https://nodejs.org/) and then `bower` (`npm install -g bower`).
+Requires [nodejs](https://nodejs.org/) 
 
-- `npm install`
-- `npm start` starts watch and builds `src/` to `build/`
-- `open index.html` (in OS X) to open `index.html` as a file in browser
+- `npm start` starts http-server, watch and builds `src/` to `build/`
+- `open http://localhost:8080` (in OS X) to open the game

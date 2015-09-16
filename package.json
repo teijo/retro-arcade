@@ -4,18 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "gulp bundle && gulp watch",
+    "prestart": "npm install && gulp bundle",
+    "start": "parallelshell 'gulp watch' 'http-server . -c-1'",
     "postinstall": "bower install"
   },
   "author": "",
   "devDependencies": {
-    "bower" : "1.5.2",
-    "react-tools": "^0.13.3",
+    "babelify": "6.3.0",
+    "bower": "1.5.2",
+    "browserify": "11.1.0",
     "gulp": "^3.9.0",
     "gulp-watch": "^4.3.5",
-    "vinyl-source-stream": "^1.1.0",
-    "browserify": "11.1.0",
-    "babelify": "6.3.0"
+    "http-server": "^0.8.0",
+    "parallelshell": "^2.0.0",
+    "react-tools": "^0.13.3",
+    "vinyl-source-stream": "^1.1.0"
   },
   "browser": {
     "Bacon": "./bower_components/bacon/dist/Bacon.js",
