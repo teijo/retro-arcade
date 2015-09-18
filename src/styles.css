@@ -5,9 +5,10 @@ body {
   width: 100%;
   height: 100%;
   display: flex;
-  background-color: lightblue;
+  background-color: #222;
   justify-content: center;
   align-items: center;
+  color: white;
 }
 h1, h2 {
   color: white;
@@ -36,17 +37,17 @@ h1, h2 {
 
 a {
   text-decoration: none;
-  color: blue;
+  color: cornflowerblue;
 }
 
 a:hover, a:active {
   text-decoration: underline;
-  color: red;
+  color: orangered;
 }
 
 a.selected {
   text-decoration: underline;
-  color: red;
+  color: orangered;
 }
 
 pre {
@@ -220,7 +221,7 @@ h1 {
   flex: 1;
   padding: 10px;
   margin: 10px;
-  border: 4px solid blue;
+  border: 4px solid cornflowerblue;
 }
 
 .worldSelect ul li a {
@@ -228,7 +229,7 @@ h1 {
 }
 
 .worldSelect ul li.selected a {
-  color: red;
+  color: orangered;
   text-decoration: underline;
 }
 
@@ -285,7 +286,7 @@ h1 {
 }
 
 .score .winner {
-  color: red;
+  color: orangered;
   animation: winning-score 1s infinite;
   height: 100%;
 }
@@ -412,7 +413,7 @@ nav ul {
   width: 100%;
   text-align: center;
   position: absolute;
-  color: blue;
+  color: cornflowerblue;
   font-size: 3rem;
   display: none;
 }
@@ -444,7 +445,7 @@ nav ul {
     height: 200px;
     z-index: 100;
     font-size: 4rem;
-    color: red;
+    color: orangered;
 }
 
 .timeLeft {
@@ -455,7 +456,7 @@ nav ul {
   width: 200px;
   z-index: 100;
   font-size: 2rem;
-  color: red;
+  color: orangered;
 }
 
 * {
@@ -467,7 +468,7 @@ nav ul {
   animation-duration: 0.1s;
   animation-name: bump-animation;
   font-size: 2rem;
-  color: red;
+  color: orangered;
 }
 
 @keyframes bump-animation {
@@ -492,7 +493,7 @@ nav ul {
 
 @keyframes finish-animation {
   0% {
-    color: red;
+    color: orangered;
   }
 
   50% {
@@ -501,20 +502,20 @@ nav ul {
   }
 
   100% {
-    color: red;
+    color: orangered;
   }
 }
 
 @keyframes box-select {
   0% {
-    border-color: yellow;
+    border-color: silver;
   }
 
   50% {
-    border-color: red;
+    border-color: orangered;
   }
 
   100% {
-    border-color: yellow;
+    border-color: silver;
   }
 }
