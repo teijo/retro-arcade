@@ -196,6 +196,24 @@ h1 {
   height: 100%;
 }
 
+.progress-bar.flash {
+  animation: flash-bar 0.1s steps(1) 1;
+}
+
+@keyframes flash-bar {
+  0% {
+    background-color: silver;
+  }
+
+  50% {
+    background-color: red;
+  }
+
+  100% {
+    background-color: silver;
+  }
+}
+
 .menu ul {
   flex: 2;
   margin: 0;

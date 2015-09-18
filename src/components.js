@@ -73,6 +73,25 @@ let Splatter = React.createClass({
   }
 });
 
+let ProgressBar = React.createClass({
+  propTypes: {
+    value: React.PropTypes.number.isRequired
+  },
+  componentDidMount() {
+    disableClassOnAnimationEnd(this.refs.bar, "flash");
+  },
+  componentWillUpdate() {
+    React.findDOMNode(this.refs.bar).classList.toggle("flash", true);
+  },
+  shouldComponentUpdate(nextProps) {
+    // Animate (update component) only when value changes
+    return this.props.value !== nextProps.value;
+  },
+  render() {
+    return <div ref="bar" className="progress-bar" style={{width: this.props.value + "%"}}></div>;
+  }
+});
+
 let Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired,
@@ -84,7 +103,7 @@ let Game = React.createClass({
     return (
         <div className="player-screen">
           <div className="header">
-            <div className="progress-bar" style={{width: Math.round(progress) + "%"}}></div>
+            <ProgressBar value={progress}/>
             <h2>{this.props.settings.name}</h2>
           </div>
           <CodeBox blockPosition={blockPosition}
