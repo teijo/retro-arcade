@@ -181,7 +181,7 @@ h1 {
 
 .menu input {
   flex: 1;
-  padding: 0.5rem;
+  padding: 16px;
   margin: 3rem;
   font-size: 48px;
   font-family: inherit;
@@ -217,9 +217,9 @@ h1 {
 }
 .worldSelect ul li {
   flex: 1;
-  padding: 10px;
-  margin: 10px;
-  border: 4px solid cornflowerblue;
+  padding: 16px;
+  margin: 16px;
+  border: 8px solid cornflowerblue;
 }
 
 .worldSelect ul li a {
@@ -280,7 +280,7 @@ h1 {
 
 .score .resultScore {
   font-size: 3rem;
-  margin: 1rem;
+  margin: 16px;
 }
 
 .score .winner {
@@ -322,7 +322,7 @@ nav {
 nav li {
   list-style: none;
   float: left;
-  margin: 5px;
+  margin: 8px;
 }
 
 nav ul {
@@ -331,8 +331,8 @@ nav ul {
 
 .game .code {
   flex: 1 1 auto;
-  background-color: rgba(248, 248, 248, 0.11);
-  padding: 1rem;
+  background-color: rgba(0, 16, 16, 0.9);
+  padding: 8px;
   display: block;
   overflow: hidden;
 }
@@ -343,8 +343,7 @@ nav ul {
 
 .game .footer {
   flex: 0 0 auto;
-  background: #292b26;
-  padding: 0.2rem;
+  padding: 8px;
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
@@ -355,7 +354,7 @@ nav ul {
   flex: 1;
   flex-direction: column;
   display: flex;
-  margin: 10px;
+  margin: 16px;
   position: relative;
 }
 
@@ -364,7 +363,7 @@ nav ul {
   font-size: 2rem;
   color: #980004;
   text-align: right;
-  padding: 0.1rem;
+  padding: 8px;
   position: relative;
 }
 
@@ -446,7 +445,7 @@ nav ul {
 
 .timeLeft {
   position: absolute;
-  top: 10px;
+  top: 16px;
   left: calc(50% - 100px);
   text-align: center;
   width: 200px;
