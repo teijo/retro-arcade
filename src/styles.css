@@ -386,13 +386,11 @@ nav ul {
 .block-bonus {
   color: #3983e2;
   background-color: rgba(83, 82, 255, 0.35);
-  border-radius: 5px;
 }
 
 .block-special-add {
   color: #ffeb09;
   background-color: rgba(255, 251, 3, 0.35);
-  border-radius: 5px;
 }
 
 .block-normal {
