@@ -11,7 +11,9 @@ body {
   color: white;
 }
 h1, h2 {
+  text-align: center;
   color: white;
+  margin: 0;
 }
 @media(max-width: 960px) {
   body {
@@ -29,10 +31,6 @@ h1, h2 {
   body {
     zoom: 3;
   }
-}
-
-h1, h2 {
-  margin: 0;
 }
 
 a {
