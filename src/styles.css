@@ -418,7 +418,13 @@ nav ul {
 .game .footer .counter {
   position: absolute;
   top: 0;
+}
+
+.game .footer .col:first-child span {
   left: 0;
+}
+.game .footer .col:last-child span {
+  right: 0;
 }
 
 .block-bonus {
