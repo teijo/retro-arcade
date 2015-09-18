@@ -280,6 +280,25 @@ let PlayerName = React.createClass({
   }
 });
 
+let Credits = React.createClass({
+  intervals: [],
+  componentWillUnmount() {
+    this.intervals.map(clearInterval);
+  },
+  getInitialState() {
+    function getCredits() {
+      Const.CREDITS.sort(() => Math.round(Math.random()) - 0.5);
+      return {credits: Const.CREDITS};
+    }
+    this.intervals.push(setInterval(() => this.setState(getCredits()), 3000));
+    return getCredits();
+  },
+  render() {
+    let credits = this.state.credits.join(", ");
+    return <marquee>::: ARCANECODER ::: The realistic software development simulator ::: Presented by following Reaktorians in good old mutable order ::: {credits} ::: And yes, this is &lt;marquee&gt; in case you were wondering... embrace it while you can! :::</marquee>;
+  }
+});
+
 export let MenuPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
@@ -304,6 +323,7 @@ export let MenuPage = React.createClass({
               );
             })}
           </ul>
+          <Credits/>
         </div>
     );
   }

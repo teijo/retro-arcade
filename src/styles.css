@@ -560,3 +560,7 @@ nav ul {
     border-color: silver;
   }
 }
+
+marquee {
+  padding: 8px 0;
+}
