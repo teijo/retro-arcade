@@ -101,7 +101,7 @@ let Game = React.createClass({
             </div>
             <div className="col">
               <AnimatedCounter value={specialsLeft}/>
-              <span className="title">Specials</span>
+              <span className="title">Autocompletes</span>
             </div>
           </div>
         </div>
