@@ -227,7 +227,7 @@ let activePageP = pageHashP
     .flatMapLatest(hash => {
       if (isGameHash(hash)) {
         return Bacon
-            .sequentially(Const.TIME_DELAY, ["3", "2", "1", "CODE!", ""])
+            .sequentially(Const.TIME_DELAY, Const.USE_COUNTDOWN ? ["3", "2", "1", "CODE!", ""] : [""])
             .toProperty("READY?") // immediate start from first countdown element
             .flatMap(c => Bacon.combineTemplate({
               hash: hash,
