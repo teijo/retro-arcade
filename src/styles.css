@@ -336,7 +336,7 @@ nav ul {
   background-color: rgba(248, 248, 248, 0.11);
   padding: 1rem;
   display: block;
-  overflow: scroll;
+  overflow: none;
 }
 
 .game .header {
