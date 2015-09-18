@@ -187,6 +187,12 @@ h1 {
   font-family: inherit;
 }
 
+.progress-bar {
+  background-color: silver;
+  position: absolute;
+  height: 100%;
+}
+
 .menu ul {
   flex: 2;
   margin: 0;
@@ -315,6 +321,11 @@ html {
   width: 100%;
 }
 
+.game h2 {
+  color: cornflowerblue;
+  position: relative;
+}
+
 nav {
   position: absolute;
 }
@@ -339,6 +350,7 @@ nav ul {
 
 .game .header {
   flex: 0 0 auto;
+  position: relative;
 }
 
 .game .footer {

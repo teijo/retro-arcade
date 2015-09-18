@@ -84,6 +84,7 @@ let Game = React.createClass({
     return (
         <div className="player-screen">
           <div className="header">
+            <div className="progress-bar" style={{width: Math.round(progress) + "%"}}></div>
             <h2>{this.props.settings.name}</h2>
           </div>
           <CodeBox blockPosition={blockPosition}
@@ -91,10 +92,6 @@ let Game = React.createClass({
                    blocks={world.blocks}/>
           <Splatter value={consecutiveSpecialHits}/>
           <div className="footer">
-            <div className="col">
-              <AnimatedCounter value={Math.round(progress)}/>
-              <span className="title">Progress</span>
-            </div>
             <div className="col">
               <AnimatedCounter value={score}/>
               <span className="title">Score</span>
