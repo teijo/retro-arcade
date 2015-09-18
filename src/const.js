@@ -7,4 +7,4 @@ export const TIME_DELAY = 100, // Length of a timer tick in milliseconds, for cl
              TYPE_BONUS = Symbol("bonus block type"),
              TYPE_GET_SPECIAL = Symbol("get special block type"),
              CREDITS = ["Teijo Laine", "Niko Kettunen", "Tero Junkkila",
-               "Antero Paarni", "Johannes Koski", "Mikko Vesikkala"];
+               "Antero Päärni", "Johannes Koski", "Mikko Vesikkala"];
