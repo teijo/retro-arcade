@@ -28,7 +28,7 @@ function typeToClassName(type) {
 
 let AnimatedCounter = React.createClass({
   propTypes: {
-    value: React.PropTypes.number.isRequired
+    value: React.PropTypes.any.isRequired
   },
   componentDidMount() {
     disableClassOnAnimationEnd(this.refs.cursor, "bump");
@@ -97,7 +97,7 @@ let Game = React.createClass({
               <span className="title">Score</span>
             </div>
             <div className="col">
-              <AnimatedCounter value={specialsLeft}/>
+              <AnimatedCounter value={Array(specialsLeft + 1).join(">")}/>
               <span className="title">Autocompletes</span>
             </div>
           </div>
