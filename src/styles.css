@@ -180,6 +180,9 @@ h1 {
 }
 
 .menu input {
+  border: 8px solid silver;
+  color: silver;
+  background-color: rgba(0, 0, 0, 0.9);
   flex: 1;
   padding: 16px;
   margin: 3rem;
