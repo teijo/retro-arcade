@@ -191,7 +191,7 @@ h1 {
 }
 
 .progress-bar {
-  background-color: silver;
+  background-color: yellow;
   position: absolute;
   height: 100%;
 }
@@ -202,7 +202,7 @@ h1 {
 
 @keyframes flash-bar {
   0% {
-    background-color: silver;
+    background-color: yellow;
   }
 
   50% {
@@ -210,7 +210,7 @@ h1 {
   }
 
   100% {
-    background-color: silver;
+    background-color: yellow;
   }
 }
 
@@ -343,8 +343,11 @@ html {
 }
 
 .game h2 {
-  color: cornflowerblue;
+  color: red;
   position: relative;
+  text-align: left;
+  padding: 4px 8px;
+  font-size: 32px;
 }
 
 nav {
@@ -372,6 +375,9 @@ nav ul {
 .game .header {
   flex: 0 0 auto;
   position: relative;
+  border: 4px solid orangered;
+  margin: 4px;
+  background-color: black;
 }
 
 .game .footer {
