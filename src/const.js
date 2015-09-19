@@ -1,4 +1,4 @@
-export const TIME_DELAY = 100, // Length of a timer tick in milliseconds, for clocks
+export const TIME_DELAY = 1000, // Length of a timer tick in milliseconds, for clocks
              GAME_TIME = 60,
              USE_COUNTDOWN = true,
              KEY_NORMAL = Symbol("normal-key"),
