@@ -166,7 +166,20 @@ h1 {
   font-size: 3rem;
 }
 
-.menu div {
+.character {
+  image-rendering: pixelated;
+}
+
+.menu .characters {
+  flex: 2;
+}
+
+.menu .character {
+  zoom: 4;
+  padding: 0 39px;
+}
+
+.menu .playerNames {
   flex: 2;
   display: flex;
   flex-direction: row;
@@ -180,13 +193,13 @@ h1 {
 }
 
 .menu input {
-  border: 8px solid silver;
+  border: 6px solid silver;
   color: silver;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.8);
   flex: 1;
-  padding: 16px;
+  padding: 26px;
   margin: 3rem;
-  font-size: 48px;
+  font-size: 2rem;
   font-family: inherit;
 }
 

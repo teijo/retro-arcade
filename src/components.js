@@ -310,7 +310,11 @@ export let MenuPage = React.createClass({
     return (
         <div className="menu">
           <img className="logo" src="assets/img/logo.png" />
-          <div>
+          <div className="characters">
+            <img className="character" src="assets/img/amigadouche.png" />
+            <img className="character" src="assets/img/atarigrrrl.png" />
+          </div>
+          <div className="playerNames">
             <PlayerName placeholder={this.props.settings[0].name} onchange={this.props.outputs.player1Name}/>
             <PlayerName placeholder={this.props.settings[1].name} onchange={this.props.outputs.player2Name}/>
           </div>
