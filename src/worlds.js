@@ -1,6 +1,3 @@
-import * as Const from "./const";
-
-
 export const javaScript =
 `<<let>> l = <<!new>> <<window>>.keypress.Listener();
 players.<<forEach>>(player => {
