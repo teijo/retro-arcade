@@ -309,7 +309,7 @@ export let MenuPage = React.createClass({
   render() {
     return (
         <div className="menu">
-          <img src="assets/img/logo.png" />
+          <img className="logo" src="assets/img/logo.png" />
           <div>
             <PlayerName placeholder={this.props.settings[0].name} onchange={this.props.outputs.player1Name}/>
             <PlayerName placeholder={this.props.settings[1].name} onchange={this.props.outputs.player2Name}/>
@@ -336,7 +336,7 @@ export let WorldSelectPage = React.createClass({
   render() {
     return (
         <div className="worldSelect">
-          <img src="assets/img/logo.png" />
+          <img className="logo" src="assets/img/logo.png" />
           <h1>Select world</h1>
           <ul>
             {this.props.navigation.map((item, index) => {
