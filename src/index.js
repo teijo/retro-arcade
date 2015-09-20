@@ -215,6 +215,7 @@ function timer(count, delay) {
 }
 
 const isGameHash = (hash) => hash.startsWith("#game");
+const isScoreHash = (hash) => hash.startsWith("#score");
 
 var pageHashP = Bacon.fromEvent(window, "hashchange")
     .toProperty({newURL: window.location.hash})
@@ -351,6 +352,10 @@ let isWorldSelectP = activePageP
     .map(p => isGameHash(p.hash))
     .skipDuplicates();
 
+let isScorePageP = activePageP
+  .map(p => isScoreHash(p.hash))
+  .skipDuplicates();
+
 const wrapIndex = (length, index) => (length + (index % length)) % length;
 
 let activeWorldP = Bacon
@@ -431,7 +436,10 @@ asE.filter(isGamePageP.not()).onValue(() => {
   menuPickSfx.play();
 });
 
-Bacon.mergeAll(menuNextE, menuPrevE).filter(isGamePageP.not()).onValue(() => {
+Bacon.mergeAll(menuNextE, menuPrevE)
+  .filter(isGamePageP.not())
+  .filter(isScorePageP.not())
+  .onValue(() => {
   console.log("sfx: switch");
   menuSwitchSfx.play();
 });
