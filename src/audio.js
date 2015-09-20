@@ -1,35 +1,22 @@
 import React from "react";
-
-let Audio = React.createClass({
-  propTypes: {
-    audioId: React.PropTypes.number.isRequired,
-    file: React.PropTypes.string.isRequired
-  },
-  render() {
-    return (
-        <audio ref="element" id={"audio-" + this.props.audioId} crossOrigin="anonymous">
-          <source src={this.props.file} type="audio/wav"/>
-        </audio>
-    );
-  }
-});
+import Howler from "howler";
 
 export let loadAudioContext = (...files) => {
-  // Load all files with <audio> tag
-  React.render(<div>{files.map((f, index) => <Audio key={index} audioId={index} file={f}/>)}</div>, document.getElementById("audio-loader"));
-  let context = new (window.AudioContext || window.webkitAudioContext)();
+  function player(fileName) {
+    var isMp3 = fileName.includes('mp3')
+    var audio = new Howl({
+      urls: [fileName],
+      buffer: isMp3,
+      loop: isMp3
+    })
 
-  function player(index) {
-    let audio = document.getElementById("audio-" + index);
-    audio.volume = 1.0;
-    context.createMediaElementSource(audio).connect(context.destination);
     return {
       loop(active) {
-        audio.loop = true;
+        audio.loop(true)
         if (active === true) {
           audio.play();
         } else if (active === false) {
-          audio.pause();
+          audio.stop();
         } else {
           throw new Error("Must call as: loop(active: boolean)");
         }
@@ -44,5 +31,5 @@ export let loadAudioContext = (...files) => {
   }
 
   // Return a playback functions for each loaded file
-  return files.map((_, index) => player(index));
+  return files.map((fileName) => player(fileName));
 };
