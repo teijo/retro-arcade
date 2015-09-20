@@ -99,7 +99,8 @@ let Game = React.createClass({
   },
   render() {
     let {consecutiveSpecialHits, progress, score, blockPosition,
-        blockIndex, specialsLeft, world} = this.props.state;
+        blockIndex, specialsLeft, world, characterImg} = this.props.state;
+
     return (
         <div className="player-screen">
           <div className="header">
@@ -114,6 +115,10 @@ let Game = React.createClass({
             <div className="col">
               <AnimatedCounter value={score}/>
               <span className="title">Score</span>
+            </div>
+            <div className="col col-character">
+              <img className="character" src={characterImg}/>
+              <img className={consecutiveSpecialHits > 1 ? "flame visible" : "flame"} src={"assets/img/flame.gif"}/>
             </div>
             <div className="col">
               <AnimatedCounter value={Array(specialsLeft + 1).join(">")}/>
@@ -311,8 +316,9 @@ export let MenuPage = React.createClass({
         <div className="menu">
           <img className="logo" src="assets/img/logo.png" />
           <div className="characters">
-            <img className="character" src="assets/img/amigadouche.png" />
-            <img className="character" src="assets/img/atarigrrrl.png" />
+            <img className="character" src={this.props.states[0].characterImg} />
+
+            <img className="character" src={this.props.states[1].characterImg} />
           </div>
           <div className="playerNames">
             <PlayerName placeholder={this.props.settings[0].name} onchange={this.props.outputs.player1Name}/>

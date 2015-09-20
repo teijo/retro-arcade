@@ -368,6 +368,7 @@ let playerStatesP = Bacon
       {
         keys: player1Keys,
         world: activeWorldP,
+        characterImg: 'assets/img/amigadouche.png',
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
         autocompletes: 0,
@@ -379,6 +380,7 @@ let playerStatesP = Bacon
       }, {
         keys: player2Keys,
         world: activeWorldP,
+        characterImg: 'assets/img/atarigrrrl.png',
         specialsLeft: 3,
         consecutiveSpecialHits: 0,
         autocompletes: 0,

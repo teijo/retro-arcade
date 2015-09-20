@@ -420,6 +420,32 @@ nav ul {
   position: relative;
 }
 
+.game .footer .col-character {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75px;
+  margin-top: 2px;
+}
+
+.game .footer .character {
+  zoom: 1.4;
+  z-index: 2;
+}
+.game .footer .flame {
+  opacity: 0;
+  position: absolute;
+  top: -29px;
+  z-index: 1;
+  left: 33px;
+  width: 112px;
+  transition: opacity 0.1s;
+}
+
+.game .footer .flame.visible {
+  opacity: 1;
+}
+
 .game .footer .title {
   color: #fafafa;
   text-transform: uppercase;
