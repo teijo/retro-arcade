@@ -19,7 +19,7 @@ export const assembly =
   !pushl $42
   <<pushl>> $3
   call sumNumbers
-  <<!addl>> $16, %esp
+  <<!addl>> <<!$16,>> <<!%esp>>
   # %eax is now 84
   <<# i wish i could
   # autocomplete comments>>
@@ -48,38 +48,24 @@ export const assembly =
     popl %ebp
     ret`;
 
-// Source code by Raimo Hanski
-// https://github.com/raimohanska/Monads/blob/gh-pages/examples/challenges/Validation/Validation.hs
+// Source code by Juha Paananen
+// https://github.com/raimohanska/Monads/blob/gh-pages/challenges/Identity/Identity.hs
 export const haskell =
-`module Validation(Validation, valid, invalid) where
+`module Identity where
 
-import Control.Applicative
-import Control.Monad
-import Data.Monoid
+import <<!Control>>.Applicative
+import <<!Control>>.Monad
 
-data Validation e a = Validation a e
+data <<Identity>> a = Identity a
+  deriving (<<!Eq>>, <<Show>>)
 
-valid :: Monoid e => a -> Validation e a
-valid x = Validation x mempty
+<<instance>> Monad Identity where
+  return = undefined
+  Identity x > > = f = undefined
 
-invalid :: Monoid e => a -> e -> Validation e a
-invalid x error = Validation x error
+<<instance Functor Identity where>>
+  fmap = undefined
 
-isValid :: (Eq e, Monoid e) => Validation e a -> Bool
-isValid (Validation a e) = e == mempty
-
-instance (Show a, Show e, Monoid e, Eq e) => Show (Validation e a) where
-  show v@(Validation a e) | isValid v = "OK " ++ show a
-                          | otherwise = "INVALID " ++ show a ++ "(" ++ show e ++")"
-
-instance (Monoid e) => Monad (Validation e) where
-  return = valid
-  (Validation a errors) >>= f = case f a of
-    Validation b moreErrors -> Validation b (errors \`mappend\` moreErrors)
-
-instance (Monoid e) => Functor (Validation e) where
-  fmap = liftM
-
-instance (Monoid e) => Applicative (Validation e) where
-  pure = return
-  (<*>) = ap`;
+instance <<Applicative>> Identity where
+  pure = undefined
+  <<(<*>)>> = undefined`;
