@@ -38,7 +38,7 @@ a {
   color: cornflowerblue;
 }
 
-a:hover, a:active {
+a:active {
   text-decoration: underline;
   color: orangered;
 }
