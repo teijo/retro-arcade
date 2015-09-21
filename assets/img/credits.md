@@ -1,0 +1,1 @@
+Original flame animation: SoylentGreen / Wikimedia Commons
