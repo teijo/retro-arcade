@@ -262,8 +262,8 @@ let playerSettingsP = Bacon
       }
     ].map(Bacon.combineTemplate));
 
-const player1Keys = {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w", A: "7", B: "8"};
-const player2Keys = {LEFT: 'j', RIGHT: 'l', DOWN: "k", UP: "i", A: "2", B: "3"};
+const player1Keys = {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w", A: "2", B: "3"};
+const player2Keys = {LEFT: 'j', RIGHT: 'l', DOWN: "k", UP: "i", A: "7", B: "8"};
 
 let pageComponentE = activePageP
     .map(page => {
