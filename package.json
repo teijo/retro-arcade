@@ -6,7 +6,8 @@
   "scripts": {
     "prestart": "npm install && gulp bundle",
     "start": "parallelshell 'gulp watch' 'http-server . -c-1'",
-    "postinstall": "bower install"
+    "postinstall": "bower install",
+    "prod": "gulp bundle && http-server ."
   },
   "author": "",
   "devDependencies": {
