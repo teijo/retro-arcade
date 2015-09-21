@@ -7,7 +7,7 @@
     "prestart": "npm install && gulp bundle",
     "start": "parallelshell 'gulp watch' 'http-server . -c-1'",
     "postinstall": "bower install",
-    "prod": "gulp bundle && http-server ."
+    "prod": "gulp bundle && http-server . -c-1"
   },
   "author": "",
   "devDependencies": {
