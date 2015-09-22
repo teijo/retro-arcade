@@ -242,7 +242,7 @@ let activePageP = pageHashP
     })
     .toProperty();
 
-let gameIsActiveP = activePageP.map(page => isGameHash(page.hash) && page.countdown === "CODE!");
+let gameIsActiveP = activePageP.map(page => isGameHash(page.hash) && page.countdown === "CODE!" || page.countdown === "");
 
 let gameTimeLeftP = activePageP.filter(page => isGameHash(page.hash)).map(page => page.timeLeft);
 
