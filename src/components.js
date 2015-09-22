@@ -113,7 +113,7 @@ let Game = React.createClass({
           <Splatter value={consecutiveSpecialHits}/>
           <div className="footer">
             <div className="col">
-              <AnimatedCounter value={score}/>
+              <AnimatedCounter value={parseFloat(score).toFixed(0)}/>
               <span className="title">Score</span>
             </div>
             <div className="col col-character">
@@ -413,7 +413,7 @@ export let ScorePage = React.createClass({
                   return (
                       <li key={index}>
                         <h2>{this.props.settings[index].name}</h2>
-                        <p className={classes}>{s.score}</p>
+                        <p className={classes}>{parseFloat(s.score).toFixed(0)}</p>
                       </li>
                   );
                 }
