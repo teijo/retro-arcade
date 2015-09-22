@@ -123,7 +123,8 @@ let nextStep = (() => {
 
   function applyBlockFinish(initialState, currentState) {
     // Just finished a block
-    if (currentState.get('blockPosition') == getBlocks(initialState).get(currentState.get('blockIndex')).get('text').length) {
+    let blockLength = getBlocks(initialState).get(currentState.get('blockIndex')).get('text').length
+    if (initialState.get('blockPosition') < blockLength && currentState.get('blockPosition') === blockLength) {
       if (getBlocks(initialState).get(currentState.get('blockIndex')).get('type') === Const.TYPE_GET_SPECIAL) {
         return currentState.set('specialsLeft', initialState.get('specialsLeft') + 1);
       }
