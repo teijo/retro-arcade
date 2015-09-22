@@ -246,7 +246,7 @@ let GameTime = React.createClass({
     value: React.PropTypes.number.isRequired
   },
   render() {
-    return <span className="timeLeft">{this.props.value}</span>;
+    return <div><span className="timeLeft">{this.props.value}</span><span className="logo-clock">Reaktor</span></div>;
   }
 });
 

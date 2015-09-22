@@ -539,6 +539,15 @@ nav ul {
   color: orangered;
 }
 
+.logo-clock {
+  text-align: center;
+  position: absolute;
+  left: 0;
+  font-size: 10px;
+  top: 59px;
+  right: 0;
+}
+
 * {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
