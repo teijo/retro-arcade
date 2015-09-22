@@ -229,7 +229,7 @@ let activePageP = pageHashP
     .flatMapLatest(hash => {
       if (isGameHash(hash)) {
         return Bacon
-            .sequentially(Const.TIME_DELAY, Const.USE_COUNTDOWN ? ["3", "2", "1", "CODE!", ""] : [""])
+            .sequentially(Const.TIME_DELAY, Const.USE_COUNTDOWN ? ["3", "2", "1", "CODE!", ""] : ["CODE!", ""])
             .toProperty("READY?") // immediate start from first countdown element
             .flatMap(c => Bacon.combineTemplate({
               hash: hash,
@@ -242,7 +242,7 @@ let activePageP = pageHashP
     })
     .toProperty();
 
-let gameIsActiveP = activePageP.map(page => isGameHash(page.hash) && page.countdown === "");
+let gameIsActiveP = activePageP.map(page => isGameHash(page.hash) && page.countdown === "CODE!");
 
 let gameTimeLeftP = activePageP.filter(page => isGameHash(page.hash)).map(page => page.timeLeft);
 
