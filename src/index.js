@@ -420,8 +420,8 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx] = Audio.loadAudioContext(
-    'assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav', 'assets/perfect.wav', 'assets/autocomplete.wav', 'assets/miss.wav');
+let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx] = Audio.loadAudioContext(
+    'assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav', 'assets/perfect.wav', 'assets/autocomplete.wav', 'assets/miss.wav', 'assets/finish.wav');
 
 
 // Audio
@@ -473,6 +473,11 @@ playerStatesP.slidingWindow(2, 2).onValues((prev, cur) => {
   if (any((c, p) => c.step == p.step && c.specialsLeft < p.specialsLeft)) {
     console.log("sfx: miss");
     missSfx.play();
+  }
+
+  if (any((c, p) => c.progress === 100 && p.progress < 100)) {
+    console.log("sfx: finish");
+    finishSfx.play();
   }
 });
 
