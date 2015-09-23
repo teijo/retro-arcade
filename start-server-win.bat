@@ -1,1 +1,1 @@
-start /min npm run prod-server-only
+start /min npm run prod
