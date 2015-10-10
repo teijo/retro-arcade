@@ -9,14 +9,14 @@ import {HowtoPage, GamePage, ScorePage, WorldSelectPage, MenuPage} from "./compo
 import * as Audio from "./audio";
 import * as World from "./worlds";
 
-let nextStep = (() => {
+const nextStep = (() => {
   const STEP_MULTIPLIER = 8;
   const SPECIAL_STEP_MULTIPLIER = 32;
 
-  let Movement = {
+  const Movement = {
     indentSkip(block, position) {
       // Match line change and indention whitespace
-      let match = block.substr(position + 1).match(/^(\n|\s{2,})+/);
+      const match = block.substr(position + 1).match(/^(\n|\s{2,})+/);
       if (match == null) {
         return 0;
       } else {
@@ -26,7 +26,7 @@ let nextStep = (() => {
       }
     },
     jump(step, blocks, index, position) {
-      let blockLength = blocks.get(index).get("text").length;
+      const blockLength = blocks.get(index).get("text").length;
       // Jump if _cursor_ is at the first character of special block
       // (actual position is last of previous block)
       if (index % 2 == 0 && position == blockLength) {
@@ -69,7 +69,7 @@ let nextStep = (() => {
   }
 
   function applyNormalKey(state) {
-    let currentPosition = Movement.step(state.get("step")) + Movement.indentSkip(getBlocks(state).get(state.get("blockIndex")).get("text"), state.get("blockPosition")),
+    const currentPosition = Movement.step(state.get("step")) + Movement.indentSkip(getBlocks(state).get(state.get("blockIndex")).get("text"), state.get("blockPosition")),
         stepScore = (currentPosition - state.get("step")) * STEP_MULTIPLIER,
         [blockIndex, blockPosition] = Movement.getPosition(getBlocks(state), currentPosition);
     return state.merge({
@@ -109,7 +109,7 @@ let nextStep = (() => {
       consecutiveSpecialHits = 0;
       specialsLeft = Math.max(0, state.get("specialsLeft") - 1);
     }
-    let [blockIndex, blockPosition] = Movement.getPosition(getBlocks(state), currentPosition);
+    const [blockIndex, blockPosition] = Movement.getPosition(getBlocks(state), currentPosition);
     return state.merge({
       blockIndex: blockIndex,
       blockPosition: blockPosition,
@@ -123,7 +123,7 @@ let nextStep = (() => {
 
   function applyBlockFinish(initialState, currentState) {
     // Just finished a block
-    let blockLength = getBlocks(initialState).get(currentState.get("blockIndex")).get("text").length;
+    const blockLength = getBlocks(initialState).get(currentState.get("blockIndex")).get("text").length;
     if (initialState.get("blockPosition") < blockLength && currentState.get("blockPosition") === blockLength) {
       if (getBlocks(initialState).get(currentState.get("blockIndex")).get("type") === Const.TYPE_GET_SPECIAL) {
         return currentState.set("specialsLeft", initialState.get("specialsLeft") + 1);
@@ -138,7 +138,7 @@ let nextStep = (() => {
       return initialState;
     }
 
-    let {keyType, timeLeft} = timeAndKey;
+    const {keyType, timeLeft} = timeAndKey;
 
     let state = initialState;
     if (keyType == Const.KEY_SPECIAL) {
@@ -171,8 +171,8 @@ const LEFT = "LEFT",
 
 // Outputs an incremented number when input sequence is advanced
 function sequenceStream(keyConfig, sequence) {
-  let keySequence = sequence.map(command => keyConfig[command]);
-  let keyE = keySequence.map(registerKey);
+  const keySequence = sequence.map(command => keyConfig[command]);
+  const keyE = keySequence.map(registerKey);
   return Bacon.mergeAll(keyE)
       .scan({n: 0, loops: 0, seq: keySequence}, (conf, key) => {
         let loops = conf.loops;
@@ -199,9 +199,9 @@ function parseBlock(rawBlock, index) {
   }
 }
 
-let player1NameChangeE = new Bacon.Bus();
-let player2NameChangeE = new Bacon.Bus();
-let outputs = {
+const player1NameChangeE = new Bacon.Bus();
+const player2NameChangeE = new Bacon.Bus();
+const outputs = {
   player1Name(name) { player1NameChangeE.push(name); },
   player2Name(name) { player2NameChangeE.push(name); }
 };
@@ -216,14 +216,14 @@ function timer(count, delay) {
 const isGameHash = (hash) => hash.startsWith("#game");
 const isScoreHash = (hash) => hash.startsWith("#score");
 
-var pageHashP = Bacon.fromEvent(window, "hashchange")
+const pageHashP = Bacon.fromEvent(window, "hashchange")
     .toProperty({newURL: window.location.hash})
     .map(e => {
-      let parts = e.newURL.split("#");
+      const parts = e.newURL.split("#");
       return (parts.length == 2) ? "#" + parts[1] : "#menu";
     });
 
-let activePageP = pageHashP
+const activePageP = pageHashP
     .flatMapLatest(hash => {
       if (isGameHash(hash)) {
         return Bacon
@@ -240,18 +240,18 @@ let activePageP = pageHashP
     })
     .toProperty();
 
-let gameIsActiveP = activePageP.map(page => isGameHash(page.hash) && page.countdown === "CODE!" || page.countdown === "");
+const gameIsActiveP = activePageP.map(page => isGameHash(page.hash) && page.countdown === "CODE!" || page.countdown === "");
 
-let gameTimeLeftP = activePageP.filter(page => isGameHash(page.hash)).map(page => page.timeLeft);
+const gameTimeLeftP = activePageP.filter(page => isGameHash(page.hash)).map(page => page.timeLeft);
 
-let resetStateE = Bacon.mergeAll(
+const resetStateE = Bacon.mergeAll(
     // Force reset on "Q"
     Bacon.mergeAll(Bacon.once(), registerKey("q")),
     // Reset on menu->game page transition
     activePageP.slidingWindow(2, 2).filter(w => w[0].hash === "#worldSelect" && isGameHash(w[1].hash))
 ).map("[reset state]");
 
-let playerSettingsP = Bacon
+const playerSettingsP = Bacon
     .combineAsArray([{
       name: player1NameChangeE.toProperty("Player 1")
     }, {
@@ -261,7 +261,7 @@ let playerSettingsP = Bacon
 const player1Keys = {LEFT: "a", RIGHT: "d", DOWN: "s", UP: "w", A: "2", B: "3"};
 const player2Keys = {LEFT: "j", RIGHT: "l", DOWN: "k", UP: "i", A: "7", B: "8"};
 
-let pageComponentE = activePageP
+const pageComponentE = activePageP
     .map(page => {
       switch (page.hash) {
         case "#worldSelect":
@@ -289,7 +289,7 @@ function freeze(obj) {
   return Object.freeze(obj);
 }
 
-let isGamePageP = activePageP
+const isGamePageP = activePageP
     .map(p => isGameHash(p.hash))
     .skipDuplicates();
 
@@ -297,12 +297,12 @@ function merge(...keys) {
   return Bacon.mergeAll(keys.map(registerKey));
 }
 
-let menuNextE = merge(player1Keys.DOWN, player2Keys.DOWN, player1Keys.LEFT, player2Keys.LEFT).map(() => (x) => x - 1);
-let menuPrevE = merge(player1Keys.UP, player2Keys.UP, player1Keys.RIGHT, player2Keys.RIGHT).map(() => (x) => x + 1);
-let asE = merge(player1Keys.A, player2Keys.A);
-let menuResetE = activePageP.map(() => () => 0);
+const menuNextE = merge(player1Keys.DOWN, player2Keys.DOWN, player1Keys.LEFT, player2Keys.LEFT).map(() => (x) => x - 1);
+const menuPrevE = merge(player1Keys.UP, player2Keys.UP, player1Keys.RIGHT, player2Keys.RIGHT).map(() => (x) => x + 1);
+const asE = merge(player1Keys.A, player2Keys.A);
+const menuResetE = activePageP.map(() => () => 0);
 
-let menuIndexP = Bacon
+const menuIndexP = Bacon
     .mergeAll(menuNextE, menuPrevE, menuResetE)
     .filter(isGamePageP.not())
     .scan(0, (index, func) => func(index));
@@ -327,12 +327,12 @@ const navigation = {
   ]
 };
 
-let navigationP = Bacon
+const navigationP = Bacon
     .constant(navigation)
     .sampledBy(activePageP, (navigation, page) => navigation.hasOwnProperty(page.hash) ? navigation[page.hash] : [])
     .sampledBy(menuIndexP, (navigation, index) => {
       // Wrap navigation index, i.e. index -1 equals last menu item, last index + 1, equals first menu item
-      let active = wrapIndex(navigation.length, index);
+      const active = wrapIndex(navigation.length, index);
       return navigation.map((n, i) => {
         n.selected = i === active;
         return n;
@@ -344,23 +344,23 @@ navigationP
     .map(navigation => navigation.filter(n => n.selected)[0])
     .onValue(item => window.location.hash = item.link);
 
-let isScorePageP = activePageP
+const isScorePageP = activePageP
   .map(p => isScoreHash(p.hash))
   .skipDuplicates();
 
 const wrapIndex = (length, index) => (length + (index % length)) % length;
 
-let activeWorldP = Bacon
+const activeWorldP = Bacon
     .constant(worlds)
     .sampledBy(menuIndexP, (worlds, index) => worlds[wrapIndex(worlds.length, index)].world).map(world => {
-      let blocks = world.split(/<<|>>/).map(parseBlock);
+      const blocks = world.split(/<<|>>/).map(parseBlock);
       return {
         length: blocks.map(b => b.text).join("").length,
         blocks: blocks
       };
     });
 
-let playerStatesP = Bacon
+const playerStatesP = Bacon
     .combineAsArray([{
       keys: player1Keys,
       world: activeWorldP,
@@ -388,9 +388,9 @@ let playerStatesP = Bacon
     }].map(Bacon.combineTemplate))
     .sampledBy(resetStateE)
     .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
-      let normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
-      let specialE = registerKey(player.keys.A);
-      let keysE = Bacon
+      const normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
+      const specialE = registerKey(player.keys.A);
+      const keysE = Bacon
           .mergeAll(specialE.map(Const.KEY_SPECIAL), normalE.map(Const.KEY_NORMAL))
           .filter(gameIsActiveP);
       return gameTimeLeftP
@@ -409,7 +409,7 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx] = Audio.loadAudioContext(
+const [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx] = Audio.loadAudioContext(
     "assets/game.mp3", "assets/menu.mp3", "assets/menu-pick.wav", "assets/menu-switch.wav", "assets/type.wav", "assets/perfect.wav", "assets/autocomplete.wav", "assets/miss.wav", "assets/finish.wav");
 
 

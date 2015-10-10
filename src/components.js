@@ -7,7 +7,7 @@ import classNames from "classNames";
 import * as Const from "./const";
 
 function disableClassOnAnimationEnd(ref, className) {
-  let node = React.findDOMNode(ref);
+  const node = React.findDOMNode(ref);
   Bacon
       .fromEvent(node, "animationend")
       .onValue(() => node.classList.toggle(className, false));
@@ -26,7 +26,7 @@ function typeToClassName(type) {
   }
 }
 
-let AnimatedCounter = React.createClass({
+const AnimatedCounter = React.createClass({
   propTypes: {
     value: React.PropTypes.any.isRequired
   },
@@ -49,7 +49,7 @@ let AnimatedCounter = React.createClass({
   }
 });
 
-let Splatter = React.createClass({
+const Splatter = React.createClass({
   propTypes: {
     value: React.PropTypes.number.isRequired
   },
@@ -64,7 +64,7 @@ let Splatter = React.createClass({
     React.findDOMNode(this.refs.splash).classList.toggle("splash", true);
   },
   render() {
-    let text = this.props.value == 0 ? "" : "PERFECT " + this.props.value + "X!";
+    const text = this.props.value == 0 ? "" : "PERFECT " + this.props.value + "X!";
     return (
         <div className="splatter-container">
           <span ref="splash" className="splatter">{text}</span>
@@ -73,7 +73,7 @@ let Splatter = React.createClass({
   }
 });
 
-let ProgressBar = React.createClass({
+const ProgressBar = React.createClass({
   propTypes: {
     value: React.PropTypes.number.isRequired
   },
@@ -92,13 +92,13 @@ let ProgressBar = React.createClass({
   }
 });
 
-let Game = React.createClass({
+const Game = React.createClass({
   propTypes: {
     state: React.PropTypes.object.isRequired,
     settings: React.PropTypes.object.isRequired
   },
   render() {
-    let {consecutiveSpecialHits, progress, score, blockPosition,
+    const {consecutiveSpecialHits, progress, score, blockPosition,
         blockIndex, specialsLeft, world, characterImg} = this.props.state;
 
     return (
@@ -130,7 +130,7 @@ let Game = React.createClass({
   }
 });
 
-let PassedBlock = React.createClass({
+const PassedBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
     animate: React.PropTypes.bool.isRequired,
@@ -140,12 +140,12 @@ let PassedBlock = React.createClass({
     disableClassOnAnimationEnd(this.refs.block, "finish");
   },
   render() {
-    let classes = classNames(typeToClassName(this.props.type), {finish: this.props.animate});
+    const classes = classNames(typeToClassName(this.props.type), {finish: this.props.animate});
     return <span ref="block" style={{color: "red"}} className={classes}>{this.props.content}</span>;
   }
 });
 
-let ActiveBlock = React.createClass({
+const ActiveBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
     position: React.PropTypes.number.isRequired,
@@ -153,14 +153,14 @@ let ActiveBlock = React.createClass({
     type: React.PropTypes.any.isRequired
   },
   componentDidUpdate() {
-    let cursor = React.findDOMNode(this.refs.cursor);
+    const cursor = React.findDOMNode(this.refs.cursor);
     if (cursor === null) {
       return;
     }
     this.props.onInput(cursor.offsetLeft, cursor.offsetTop);
   },
   render() {
-    let {content, position} = this.props,
+    const {content, position} = this.props,
         completed = content.substr(0, position),
         cursor = content.substr(position, 1),
         left = content.substr(position + 1);
@@ -174,7 +174,7 @@ let ActiveBlock = React.createClass({
   }
 });
 
-let UpcomingBlock = React.createClass({
+const UpcomingBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
     type: React.PropTypes.any.isRequired
@@ -184,7 +184,7 @@ let UpcomingBlock = React.createClass({
   }
 });
 
-let UpcomingNextBlock = React.createClass({
+const UpcomingNextBlock = React.createClass({
   propTypes: {
     content: React.PropTypes.string.isRequired,
     type: React.PropTypes.any.isRequired
@@ -199,22 +199,22 @@ let UpcomingNextBlock = React.createClass({
   }
 });
 
-let CodeBox = React.createClass({
+const CodeBox = React.createClass({
   propTypes: {
     blockPosition: React.PropTypes.number.isRequired,
     blockIndex: React.PropTypes.number.isRequired,
     blocks: React.PropTypes.array.isRequired
   },
   onInput(cursorOffsetLeft, cursorOffsetTop) {
-    let node = this.getDOMNode();
-    let {offsetLeft, offsetTop, clientWidth, clientHeight} = node;
+    const node = this.getDOMNode();
+    const {offsetLeft, offsetTop, clientWidth, clientHeight} = node;
     node.scrollLeft = Math.max(0, cursorOffsetLeft - offsetLeft - clientWidth + 50);
     node.scrollTop = Math.max(0, cursorOffsetTop - offsetTop - clientHeight + 150);
   },
   render() {
-    let {blockPosition, blockIndex, blocks} = this.props;
-    let elements = blocks.map((block, index) => {
-      let key = "block_" + index;
+    const {blockPosition, blockIndex, blocks} = this.props;
+    const elements = blocks.map((block, index) => {
+      const key = "block_" + index;
       if (index == blockIndex && blockPosition < blocks[blockIndex].text.length) {
         return <ActiveBlock key={key} type={block.type} onInput={this.onInput} content={block.text} position={blockPosition}/>;
       } else if (index <= blockIndex) {
@@ -232,7 +232,7 @@ let CodeBox = React.createClass({
   }
 });
 
-let Countdown = React.createClass({
+const Countdown = React.createClass({
   propTypes: {
     value: React.PropTypes.string.isRequired
   },
@@ -241,7 +241,7 @@ let Countdown = React.createClass({
   }
 });
 
-let GameTime = React.createClass({
+const GameTime = React.createClass({
   propTypes: {
     value: React.PropTypes.number.isRequired
   },
@@ -250,7 +250,7 @@ let GameTime = React.createClass({
   }
 });
 
-export let GamePage = React.createClass({
+export const GamePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
     settings: React.PropTypes.array.isRequired,
@@ -269,7 +269,7 @@ export let GamePage = React.createClass({
   }
 });
 
-let PlayerName = React.createClass({
+const PlayerName = React.createClass({
   propTypes: {
     onchange: React.PropTypes.func.isRequired,
     placeholder: React.PropTypes.string.isRequired
@@ -285,7 +285,7 @@ let PlayerName = React.createClass({
   }
 });
 
-let Credits = React.createClass({
+const Credits = React.createClass({
   intervals: [],
   componentWillUnmount() {
     this.intervals.map(clearInterval);
@@ -299,12 +299,12 @@ let Credits = React.createClass({
     return getCredits();
   },
   render() {
-    let credits = this.state.credits.join(", ");
+    const credits = this.state.credits.join(", ");
     return <marquee>::: ARCANECODER ::: The realistic software development simulator ::: Presented by following Reaktorians in good old mutable order ::: {credits} ::: And yes, this is &lt;marquee&gt; in case you were wondering... embrace it while you can! :::</marquee>;
   }
 });
 
-export let MenuPage = React.createClass({
+export const MenuPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
     settings: React.PropTypes.array.isRequired,
@@ -339,7 +339,7 @@ export let MenuPage = React.createClass({
   }
 });
 
-export let WorldSelectPage = React.createClass({
+export const WorldSelectPage = React.createClass({
   propTypes: {
     navigation: React.PropTypes.array.isRequired
   },
@@ -363,14 +363,14 @@ export let WorldSelectPage = React.createClass({
   }
 });
 
-export let HowtoPage = React.createClass({
+export const HowtoPage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
     settings: React.PropTypes.array.isRequired,
     navigation: React.PropTypes.array.isRequired
   },
   render() {
-    let [navigation] = this.props.navigation;
+    const [navigation] = this.props.navigation;
     return (
         <div className="howto">
           <h1>How To Play</h1>
@@ -395,21 +395,21 @@ export let HowtoPage = React.createClass({
   }
 });
 
-export let ScorePage = React.createClass({
+export const ScorePage = React.createClass({
   propTypes: {
     states: React.PropTypes.array.isRequired,
     settings: React.PropTypes.array.isRequired,
     navigation: React.PropTypes.array.isRequired
   },
   render() {
-    let [navigation] = this.props.navigation;
-    let maxScore = this.props.states.reduce((max, state) => Math.max(max, state.score), 0);
+    const [navigation] = this.props.navigation;
+    const maxScore = this.props.states.reduce((max, state) => Math.max(max, state.score), 0);
     return (
         <div className="score">
           <h1>Game over</h1>
           <ul>
             {this.props.states.map((s, index) => {
-              let classes = classNames("resultScore", {winner: s.score === maxScore});
+              const classes = classNames("resultScore", {winner: s.score === maxScore});
               return (
                   <li key={index}>
                     <h2>{this.props.settings[index].name}</h2>
