@@ -26,11 +26,11 @@ let nextStep = (() => {
       }
     },
     jump(step, blocks, index, position) {
-      let blockLength = blocks.get(index).get('text').length;
+      let blockLength = blocks.get(index).get("text").length;
       // Jump if _cursor_ is at the first character of special block
       // (actual position is last of previous block)
       if (index % 2 == 0 && position == blockLength) {
-        return [0, step + blocks.get(index + 1).get('text').length];
+        return [0, step + blocks.get(index + 1).get("text").length];
       } else if (index % 2 == 1) {
         return [position, step + blockLength - position];
       } else {
@@ -48,66 +48,66 @@ let nextStep = (() => {
       do {
         remainder = next;
         blockIndex++;
-        next -= blocks.get(blockIndex).get('text').length;
+        next -= blocks.get(blockIndex).get("text").length;
       } while (next > 0);
       return [blockIndex, remainder];
     }
   };
 
-  const getBlocks = state => state.getIn(['world', 'blocks']);
-  const getWorldLength = state => state.getIn(['world', 'length']);
+  const getBlocks = state => state.getIn(["world", "blocks"]);
+  const getWorldLength = state => state.getIn(["world", "length"]);
 
   function applyProgress(currentState) {
-    return currentState.set('progress', currentState.get('step') / getWorldLength(currentState) * 100);
+    return currentState.set("progress", currentState.get("step") / getWorldLength(currentState) * 100);
   }
 
   function applyTimeBonus(state, timeLeft) {
     return state.merge({
       timeLeft: timeLeft,
-      score: state.get('score') + timeLeft * 1000
+      score: state.get("score") + timeLeft * 1000
     });
   }
 
   function applyNormalKey(state) {
-    let currentPosition = Movement.step(state.get('step')) + Movement.indentSkip(getBlocks(state).get(state.get('blockIndex')).get('text'), state.get('blockPosition')),
-        stepScore = (currentPosition - state.get('step')) * STEP_MULTIPLIER,
+    let currentPosition = Movement.step(state.get("step")) + Movement.indentSkip(getBlocks(state).get(state.get("blockIndex")).get("text"), state.get("blockPosition")),
+        stepScore = (currentPosition - state.get("step")) * STEP_MULTIPLIER,
         [blockIndex, blockPosition] = Movement.getPosition(getBlocks(state), currentPosition);
     return state.merge({
       blockIndex: blockIndex,
       blockPosition: blockPosition,
       step: currentPosition,
-      score: state.get('score') + stepScore
+      score: state.get("score") + stepScore
     });
   }
 
   function applySpecialKey(state) {
     let currentPosition = 0,
         stepScore = 0,
-        consecutiveSpecialHits = state.get('consecutiveSpecialHits'),
-        specialsLeft = state.get('specialsLeft'),
-        autocompletes = state.get('autocompletes'),
+        consecutiveSpecialHits = state.get("consecutiveSpecialHits"),
+        specialsLeft = state.get("specialsLeft"),
+        autocompletes = state.get("autocompletes"),
         hitPosition = -1; // The character at which autocomplete was used
-    if (state.get('specialsLeft') > 0) {
-      [hitPosition, currentPosition] = Movement.jump(state.get('step'), getBlocks(state), state.get('blockIndex'), state.get('blockPosition'));
+    if (state.get("specialsLeft") > 0) {
+      [hitPosition, currentPosition] = Movement.jump(state.get("step"), getBlocks(state), state.get("blockIndex"), state.get("blockPosition"));
     } else {
-      [hitPosition, currentPosition] = [-1, state.get('step')];
+      [hitPosition, currentPosition] = [-1, state.get("step")];
     }
     // Perfect hit
     if (hitPosition === 0) {
       // Rewards for hitting special
       consecutiveSpecialHits = consecutiveSpecialHits + 1;
-      stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
+      stepScore = (currentPosition - state.get("step")) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER;
       autocompletes = autocompletes + 1;
     } else if (hitPosition > 0) {
       // Missed first char but still in special block
-      stepScore = (currentPosition - state.get('step')) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER / hitPosition;
+      stepScore = (currentPosition - state.get("step")) * consecutiveSpecialHits * SPECIAL_STEP_MULTIPLIER / hitPosition;
       consecutiveSpecialHits = 0;
-      specialsLeft = Math.max(0, state.get('specialsLeft') - 1);
+      specialsLeft = Math.max(0, state.get("specialsLeft") - 1);
       autocompletes = autocompletes + 1;
     } else {
       // Not in special block
       consecutiveSpecialHits = 0;
-      specialsLeft = Math.max(0, state.get('specialsLeft') - 1);
+      specialsLeft = Math.max(0, state.get("specialsLeft") - 1);
     }
     let [blockIndex, blockPosition] = Movement.getPosition(getBlocks(state), currentPosition);
     return state.merge({
@@ -116,17 +116,17 @@ let nextStep = (() => {
       step: currentPosition,
       consecutiveSpecialHits: consecutiveSpecialHits,
       specialsLeft: specialsLeft,
-      score: state.get('score') + stepScore,
+      score: state.get("score") + stepScore,
       autocompletes: autocompletes
     });
   }
 
   function applyBlockFinish(initialState, currentState) {
     // Just finished a block
-    let blockLength = getBlocks(initialState).get(currentState.get('blockIndex')).get('text').length
-    if (initialState.get('blockPosition') < blockLength && currentState.get('blockPosition') === blockLength) {
-      if (getBlocks(initialState).get(currentState.get('blockIndex')).get('type') === Const.TYPE_GET_SPECIAL) {
-        return currentState.set('specialsLeft', initialState.get('specialsLeft') + 1);
+    let blockLength = getBlocks(initialState).get(currentState.get("blockIndex")).get("text").length;
+    if (initialState.get("blockPosition") < blockLength && currentState.get("blockPosition") === blockLength) {
+      if (getBlocks(initialState).get(currentState.get("blockIndex")).get("type") === Const.TYPE_GET_SPECIAL) {
+        return currentState.set("specialsLeft", initialState.get("specialsLeft") + 1);
       }
     }
     return currentState;
@@ -134,7 +134,7 @@ let nextStep = (() => {
 
   // Gets and returns Immutable.Map as state
   return (initialState, timeAndKey) => {
-    if (initialState.get('step') == getWorldLength(initialState)) {
+    if (initialState.get("step") == getWorldLength(initialState)) {
       return initialState;
     }
 
@@ -149,12 +149,12 @@ let nextStep = (() => {
     }
     state = applyBlockFinish(initialState, state);
     state = applyProgress(state);
-    if (state.get('progress') === 100) {
+    if (state.get("progress") === 100) {
       state = applyTimeBonus(state, timeLeft);
     }
 
     return state;
-  }
+  };
 })();
 
 function registerKey(key) {
@@ -166,10 +166,8 @@ function registerKey(key) {
 }
 
 // Input config object keys
-const UP = 'UP',
-      DOWN = 'DOWN',
-      LEFT = 'LEFT',
-      RIGHT = 'RIGHT';
+const LEFT = "LEFT",
+    RIGHT = "RIGHT";
 
 // Outputs an incremented number when input sequence is advanced
 function sequenceStream(keyConfig, sequence) {
@@ -204,8 +202,8 @@ function parseBlock(rawBlock, index) {
 let player1NameChangeE = new Bacon.Bus();
 let player2NameChangeE = new Bacon.Bus();
 let outputs = {
-  player1Name(name) { player1NameChangeE.push(name) },
-  player2Name(name) { player2NameChangeE.push(name) }
+  player1Name(name) { player1NameChangeE.push(name); },
+  player2Name(name) { player2NameChangeE.push(name); }
 };
 
 function timer(count, delay) {
@@ -254,17 +252,14 @@ let resetStateE = Bacon.mergeAll(
 ).map("[reset state]");
 
 let playerSettingsP = Bacon
-    .combineAsArray([
-      {
-        name: player1NameChangeE.toProperty("Player 1")
-      },
-      {
-        name: player2NameChangeE.toProperty("Player 2")
-      }
-    ].map(Bacon.combineTemplate));
+    .combineAsArray([{
+      name: player1NameChangeE.toProperty("Player 1")
+    }, {
+      name: player2NameChangeE.toProperty("Player 2")
+    }].map(Bacon.combineTemplate));
 
-const player1Keys = {LEFT: 'a', RIGHT: 'd', DOWN: "s", UP: "w", A: "2", B: "3"};
-const player2Keys = {LEFT: 'j', RIGHT: 'l', DOWN: "k", UP: "i", A: "7", B: "8"};
+const player1Keys = {LEFT: "a", RIGHT: "d", DOWN: "s", UP: "w", A: "2", B: "3"};
+const player2Keys = {LEFT: "j", RIGHT: "l", DOWN: "k", UP: "i", A: "7", B: "8"};
 
 let pageComponentE = activePageP
     .map(page => {
@@ -276,7 +271,7 @@ let pageComponentE = activePageP
         case "#game-hs":
         case "#game-asm":
         case "#game-js":
-          return (states, settings, navigation) => <GamePage states={states} page={page} settings={settings}/>;
+          return (states, settings) => <GamePage states={states} page={page} settings={settings}/>;
         case "#score":
           return (states, settings, navigation) => <ScorePage states={states} settings={settings} navigation={navigation}/>;
         default:
@@ -287,7 +282,7 @@ let pageComponentE = activePageP
 // From MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
 function freeze(obj) {
   Object.getOwnPropertyNames(obj).forEach(function(name) {
-    if (typeof obj[name] == 'object' && !Object.isFrozen(obj[name])) {
+    if (typeof obj[name] == "object" && !Object.isFrozen(obj[name])) {
       freeze(obj[name]);
     }
   });
@@ -349,10 +344,6 @@ navigationP
     .map(navigation => navigation.filter(n => n.selected)[0])
     .onValue(item => window.location.hash = item.link);
 
-let isWorldSelectP = activePageP
-    .map(p => isGameHash(p.hash))
-    .skipDuplicates();
-
 let isScorePageP = activePageP
   .map(p => isScoreHash(p.hash))
   .skipDuplicates();
@@ -364,39 +355,37 @@ let activeWorldP = Bacon
     .sampledBy(menuIndexP, (worlds, index) => worlds[wrapIndex(worlds.length, index)].world).map(world => {
       let blocks = world.split(/<<|>>/).map(parseBlock);
       return {
-        length: blocks.map(b => b.text).join('').length,
+        length: blocks.map(b => b.text).join("").length,
         blocks: blocks
-      }
+      };
     });
 
 let playerStatesP = Bacon
-    .combineAsArray([
-      {
-        keys: player1Keys,
-        world: activeWorldP,
-        characterImg: 'assets/img/amigadouche.png',
-        specialsLeft: 3,
-        consecutiveSpecialHits: 0,
-        autocompletes: 0,
-        score: 0,
-        progress: 0,
-        blockIndex: 0,
-        blockPosition: 0,
-        step: 0
-      }, {
-        keys: player2Keys,
-        world: activeWorldP,
-        characterImg: 'assets/img/atarigrrrl.png',
-        specialsLeft: 3,
-        consecutiveSpecialHits: 0,
-        autocompletes: 0,
-        score: 0,
-        progress: 0,
-        blockIndex: 0,
-        blockPosition: 0,
-        step: 0
-      }
-    ].map(Bacon.combineTemplate))
+    .combineAsArray([{
+      keys: player1Keys,
+      world: activeWorldP,
+      characterImg: "assets/img/amigadouche.png",
+      specialsLeft: 3,
+      consecutiveSpecialHits: 0,
+      autocompletes: 0,
+      score: 0,
+      progress: 0,
+      blockIndex: 0,
+      blockPosition: 0,
+      step: 0
+    }, {
+      keys: player2Keys,
+      world: activeWorldP,
+      characterImg: "assets/img/atarigrrrl.png",
+      specialsLeft: 3,
+      consecutiveSpecialHits: 0,
+      autocompletes: 0,
+      score: 0,
+      progress: 0,
+      blockIndex: 0,
+      blockPosition: 0,
+      step: 0
+    }].map(Bacon.combineTemplate))
     .sampledBy(resetStateE)
     .flatMapLatest(players => Bacon.combineAsArray(players.map(player => {
       let normalE = sequenceStream(player.keys, [LEFT, RIGHT]);
@@ -421,7 +410,7 @@ gameIsActiveP
     .onValue(() => window.location.hash = "#score");
 
 let [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx] = Audio.loadAudioContext(
-    'assets/game.mp3', 'assets/menu.mp3', 'assets/menu-pick.wav', 'assets/menu-switch.wav', 'assets/type.wav', 'assets/perfect.wav', 'assets/autocomplete.wav', 'assets/miss.wav', 'assets/finish.wav');
+    "assets/game.mp3", "assets/menu.mp3", "assets/menu-pick.wav", "assets/menu-switch.wav", "assets/type.wav", "assets/perfect.wav", "assets/autocomplete.wav", "assets/miss.wav", "assets/finish.wav");
 
 
 // Audio
@@ -433,17 +422,15 @@ isGamePageP
     });
 
 asE.filter(isGamePageP.not()).onValue(() => {
-  console.log("sfx: pick");
   menuPickSfx.play();
 });
 
 Bacon.mergeAll(menuNextE, menuPrevE)
-  .filter(isGamePageP.not())
-  .filter(isScorePageP.not())
-  .onValue(() => {
-  console.log("sfx: switch");
-  menuSwitchSfx.play();
-});
+    .filter(isGamePageP.not())
+    .filter(isScorePageP.not())
+    .onValue(() => {
+      menuSwitchSfx.play();
+    });
 
 function orAll(cur, prev, fn) {
   if (cur.length !== prev.length) {
@@ -459,24 +446,19 @@ playerStatesP.slidingWindow(2, 2).onValues((prev, cur) => {
 
   // Any players' current value of given field greater than in previous step
   if (any(gt("consecutiveSpecialHits"))) {
-    console.log("sfx: perfect");
     perfectSfx.play();
   }
   if (any(gt("step"))) {
-    console.log("sfx: type");
     typeSfx.play();
   }
   if (any(gt("autocompletes"))) {
-    console.log("sfx: autocomplete");
     autocompleteSfx.play();
   }
   if (any((c, p) => c.step == p.step && c.specialsLeft < p.specialsLeft)) {
-    console.log("sfx: miss");
     missSfx.play();
   }
 
   if (any((c, p) => c.progress === 100 && p.progress < 100)) {
-    console.log("sfx: finish");
     finishSfx.play();
   }
 });

@@ -216,9 +216,9 @@ let CodeBox = React.createClass({
     let elements = blocks.map((block, index) => {
       let key = "block_" + index;
       if (index == blockIndex && blockPosition < blocks[blockIndex].text.length) {
-        return <ActiveBlock key={key} type={block.type} onInput={this.onInput} content={block.text} position={blockPosition}/>
+        return <ActiveBlock key={key} type={block.type} onInput={this.onInput} content={block.text} position={blockPosition}/>;
       } else if (index <= blockIndex) {
-        return <PassedBlock animate={true} type={block.type} content={block.text} key={key}/>
+        return <PassedBlock animate={true} type={block.type} content={block.text} key={key}/>;
       } else {
         // Previous block finished, cursor jumps to current block
         if (blockIndex == index - 1 && blockPosition == blocks[blockIndex].text.length) {
@@ -409,14 +409,14 @@ export let ScorePage = React.createClass({
           <h1>Game over</h1>
           <ul>
             {this.props.states.map((s, index) => {
-                  let classes = classNames('resultScore', {winner: s.score === maxScore});
-                  return (
-                      <li key={index}>
-                        <h2>{this.props.settings[index].name}</h2>
-                        <p className={classes}>{parseFloat(s.score).toFixed(0)}</p>
-                      </li>
-                  );
-                }
+              let classes = classNames("resultScore", {winner: s.score === maxScore});
+              return (
+                  <li key={index}>
+                    <h2>{this.props.settings[index].name}</h2>
+                    <p className={classes}>{parseFloat(s.score).toFixed(0)}</p>
+                  </li>
+              );
+            }
             )}
           </ul>
           <a className={classNames({selected: navigation.selected})} href={navigation.link}>{navigation.label}</a>
@@ -424,4 +424,3 @@ export let ScorePage = React.createClass({
     );
   }
 });
-
