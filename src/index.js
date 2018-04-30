@@ -401,7 +401,7 @@ const playerStatesP = Bacon
 Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, navigationP, (template, states, settings, navigation) => React.render(template(freeze(states), freeze(settings), navigation), document.getElementById("main")));
 
 function playersProgressedToEnd(states) {
-  return states.reduce((end, s) => s.progress === 100 && end, true);
+  return states.reduce((end, s) => s.progress === 100 || end, false);
 }
 
 gameIsActiveP
