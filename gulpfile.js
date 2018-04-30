@@ -17,7 +17,7 @@ gulp.task('bundle', ["lint"], function() {
         entries: 'src/index.js'
       })
       .transform(babelify.configure({
-        ignore: /(bower_components)|(node_modules)/
+        ignore: /node_modules/
       }))
       .bundle()
       .on("error", function(err) {

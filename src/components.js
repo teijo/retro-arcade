@@ -1,7 +1,7 @@
 "use strict";
 
 import React from "react";
-import Bacon from "Bacon";
+import Bacon from "baconjs";
 import classNames from "classNames";
 
 import * as Const from "./const";

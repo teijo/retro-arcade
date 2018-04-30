@@ -1,7 +1,7 @@
 "use strict";
 
 import React from "react";
-import Bacon from "Bacon";
+import Bacon from "baconjs";
 import Immutable from "immutable";
 
 import * as Const from "./const";

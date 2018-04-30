@@ -1,10 +1,10 @@
-import * as Howler from "howler";
+import { Howl } from "howler";
 
 export const loadAudioContext = (...files) => {
   function player(fileName) {
     const isMp3 = fileName.includes("mp3");
-    const audio = new Howler.Howl({
-      urls: [fileName],
+    const audio = new Howl({
+      src: [fileName],
       buffer: isMp3,
       loop: isMp3
     });
