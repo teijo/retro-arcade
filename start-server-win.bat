@@ -1,1 +1,1 @@
-start /min npm run prod
+start /min yarn prod
