@@ -12,6 +12,7 @@
     "build:dev": "yarn build --mode development --watch",
     "build:prod": "yarn build --mode production",
     "serve": "http-server . -c-1",
+    "prestart": "yarn install",
     "start": "concurrently \"yarn build:dev\" \"yarn serve\"",
     "prod": "yarn build:prod && yarn serve"
   },
