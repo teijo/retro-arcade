@@ -8,13 +8,10 @@
     "yarn": "^1.6.0"
   },
   "scripts": {
+    "prebuild": "yarn install",
     "build": "webpack --module-bind js=babel-loader!eslint-loader",
-    "build:dev": "yarn build --mode development --watch",
-    "build:prod": "yarn build --mode production",
-    "serve": "http-server . -c-1",
-    "prestart": "yarn install",
-    "start": "concurrently \"yarn build:dev\" \"yarn serve\"",
-    "prod": "yarn build:prod && yarn serve"
+    "start": "yarn build --mode development --watch",
+    "prod": "yarn build --mode production"
   },
   "author": "",
   "devDependencies": {
@@ -24,11 +21,9 @@
     "babel-preset-react": "^6.24.1",
     "baconjs": "^1.0.1",
     "classnames": "^2.2.5",
-    "concurrently": "^3.5.1",
     "eslint": "^1.6.0",
     "eslint-plugin-react": "^3.5.1",
     "howler": "^2.0.9",
-    "http-server": "^0.11.1",
     "immutable": "^3.7.4",
     "react": "^0.13.3",
     "react-tools": "^0.13.3",
