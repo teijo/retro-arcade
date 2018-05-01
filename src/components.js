@@ -381,19 +381,20 @@ export class MenuPage extends React.Component {
 
             <img className="character" src={this.props.states[1].characterImg} />
           </div>
+          <ul>
+            {this.props.navigation.map((item, index) => {
+              return (
+                <li key={index}>
+                  <a className={classNames({selected: item.selected})} href={item.link}>{item.label}</a>
+                </li>
+              );
+            })}
+          </ul>
+
           <div className="playerNames">
             <PlayerName placeholder={this.props.settings[0].name} onchange={this.props.outputs.player1Name}/>
             <PlayerName placeholder={this.props.settings[1].name} onchange={this.props.outputs.player2Name}/>
           </div>
-          <ul>
-            {this.props.navigation.map((item, index) => {
-              return (
-                  <li key={index}>
-                    <a className={classNames({selected: item.selected})} href={item.link}>{item.label}</a>
-                  </li>
-              );
-            })}
-          </ul>
           <Credits/>
         </div>
     );
