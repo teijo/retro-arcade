@@ -2,7 +2,7 @@
 
 import React from "react";
 import Bacon from "baconjs";
-import classNames from "classNames";
+import classNames from "classnames";
 
 import * as Const from "./const";
 
