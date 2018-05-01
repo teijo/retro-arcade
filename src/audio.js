@@ -1,15 +1,14 @@
-import * as Howler from "howler";
+import { Howl } from "howler";
 
-export const loadAudioContext = (...files) => {
-  function player(fileName) {
-    const isMp3 = fileName.includes("mp3");
-    const audio = new Howler.Howl({
-      urls: [fileName],
-      buffer: isMp3,
-      loop: isMp3
+export const loadAudioContext = () => {
+  function player(audioEntry) {
+    const audio = new Howl({
+      src: [audioEntry.src],
+      loop: audioEntry.isBackgroundMusic
     });
 
-    return {
+    const context = {};
+    context[audioEntry.name] = {
       loop(active) {
         audio.loop(true);
         if (active === true) {
@@ -27,8 +26,12 @@ export const loadAudioContext = (...files) => {
         audio.play();
       }
     };
+
+    return context;
   }
 
   // Return a playback functions for each loaded file
-  return files.map((fileName) => player(fileName));
+  return window.audioData
+    .map(player)
+    .reduce((memo, current) => Object.assign(current, memo, {}), {});
 };

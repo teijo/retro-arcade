@@ -1,7 +1,8 @@
 "use strict";
 
-import React from "react";
-import Bacon from "Bacon";
+import React from "react"; // eslint-disable-line
+import ReactDOM from "react-dom";
+import Bacon from "baconjs";
 import Immutable from "immutable";
 
 import * as Const from "./const";
@@ -398,10 +399,10 @@ const playerStatesP = Bacon
           .scan(player, (state, timeAndKey) => nextStep(Immutable.fromJS(state), timeAndKey).toJS());
     })));
 
-Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, navigationP, (template, states, settings, navigation) => React.render(template(freeze(states), freeze(settings), navigation), document.getElementById("main")));
+Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, navigationP, (template, states, settings, navigation) => ReactDOM.render(template(freeze(states), freeze(settings), navigation), document.getElementById("main")));
 
 function playersProgressedToEnd(states) {
-  return states.reduce((end, s) => s.progress === 100 && end, true);
+  return states.reduce((end, s) => s.progress === 100 || end, false);
 }
 
 gameIsActiveP
@@ -409,9 +410,7 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-const [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx] = Audio.loadAudioContext(
-    "assets/game.mp3", "assets/menu.mp3", "assets/menu-pick.wav", "assets/menu-switch.wav", "assets/type.wav", "assets/perfect.wav", "assets/autocomplete.wav", "assets/miss.wav", "assets/finish.wav");
-
+const {game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx} = Audio.loadAudioContext();
 
 // Audio
 

@@ -3,32 +3,33 @@
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "^10.0.0",
+    "yarn": "^1.6.0"
+  },
   "scripts": {
-    "prestart": "npm install && gulp bundle",
-    "start": "parallelshell 'gulp watch' 'http-server . -c-1'",
-    "postinstall": "bower install",
-    "prod": "gulp bundle && http-server . -c-1"
+    "prebuild": "yarn install",
+    "build": "webpack --module-bind js=babel-loader!eslint-loader",
+    "start": "yarn build --mode development --watch",
+    "prod": "yarn build --mode production"
   },
   "author": "",
   "devDependencies": {
-    "babelify": "6.3.0",
-    "bower": "1.5.2",
-    "browserify": "11.1.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "baconjs": "^1.0.1",
+    "classnames": "^2.2.5",
     "eslint": "^1.6.0",
+    "eslint-loader": "^2.0.0",
     "eslint-plugin-react": "^3.5.1",
-    "gulp": "^3.9.0",
-    "gulp-eslint": "^1.0.0",
-    "gulp-watch": "^4.3.5",
-    "http-server": "^0.8.0",
-    "parallelshell": "^2.0.0",
-    "react-tools": "^0.13.3",
-    "vinyl-source-stream": "^1.1.0"
-  },
-  "browser": {
-    "Bacon": "./bower_components/bacon/dist/Bacon.js",
-    "react": "./bower_components/react/react.js",
-    "classNames": "./bower_components/classnames/index.js",
-    "immutable": "./bower_components/immutable/dist/immutable.js",
-    "howler": "./bower_components/howler/howler.js"
+    "howler": "^2.0.9",
+    "immutable": "^3.7.4",
+    "prop-types": "^15.6.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.1.2"
   }
 }
