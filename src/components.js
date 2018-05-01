@@ -1,13 +1,15 @@
 "use strict";
 
 import React from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 import Bacon from "baconjs";
 import classNames from "classnames";
 
 import * as Const from "./const";
 
 function disableClassOnAnimationEnd(ref, className) {
-  const node = React.findDOMNode(ref);
+  const node = ReactDOM.findDOMNode(ref);
   Bacon
       .fromEvent(node, "animationend")
       .onValue(() => node.classList.toggle(className, false));
@@ -26,20 +28,20 @@ function typeToClassName(type) {
   }
 }
 
-const AnimatedCounter = React.createClass({
-  propTypes: {
-    value: React.PropTypes.any.isRequired
-  },
+class AnimatedCounter extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   componentDidMount() {
     disableClassOnAnimationEnd(this.refs.cursor, "bump");
-  },
+  }
   shouldComponentUpdate(nextProps) {
     // Animate (update component) only when value changes
     return this.props.value !== nextProps.value;
-  },
+  }
   componentWillUpdate() {
-    React.findDOMNode(this.refs.cursor).classList.toggle("bump", true);
-  },
+    ReactDOM.findDOMNode(this.refs.cursor).classList.toggle("bump", true);
+  }
   render() {
     return (
         <span className="counter">
@@ -47,22 +49,26 @@ const AnimatedCounter = React.createClass({
         </span>
     );
   }
-});
+}
 
-const Splatter = React.createClass({
-  propTypes: {
-    value: React.PropTypes.number.isRequired
-  },
+AnimatedCounter.proTypes = {
+  value: PropTypes.any.isRequired
+}; 
+
+class Splatter extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   componentDidMount() {
     disableClassOnAnimationEnd(this.refs.splash, "splash");
-  },
+  }
   shouldComponentUpdate(nextProps) {
     // Animate (update component) only when value changes
     return this.props.value !== nextProps.value;
-  },
+  }
   componentWillUpdate() {
-    React.findDOMNode(this.refs.splash).classList.toggle("splash", true);
-  },
+    ReactDOM.findDOMNode(this.refs.splash).classList.toggle("splash", true);
+  }
   render() {
     const text = this.props.value == 0 ? "" : "PERFECT " + this.props.value + "X!";
     return (
@@ -71,32 +77,39 @@ const Splatter = React.createClass({
         </div>
     );
   }
-});
+}
 
-const ProgressBar = React.createClass({
-  propTypes: {
-    value: React.PropTypes.number.isRequired
-  },
+Splatter.propTypes = {
+  value: PropTypes.number.isRequired
+};
+
+class ProgressBar extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   componentDidMount() {
     disableClassOnAnimationEnd(this.refs.bar, "flash");
-  },
+  }
   componentWillUpdate() {
-    React.findDOMNode(this.refs.bar).classList.toggle("flash", true);
-  },
+    ReactDOM.findDOMNode(this.refs.bar).classList.toggle("flash", true);
+  }
   shouldComponentUpdate(nextProps) {
     // Animate (update component) only when value changes
     return this.props.value !== nextProps.value;
-  },
+  }
   render() {
     return <div ref="bar" className="progress-bar" style={{width: this.props.value + "%"}}></div>;
   }
-});
+}
 
-const Game = React.createClass({
-  propTypes: {
-    state: React.PropTypes.object.isRequired,
-    settings: React.PropTypes.object.isRequired
-  },
+ProgressBar.propTypes =  {
+  value: PropTypes.number.isRequired
+};
+
+class Game extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     const {consecutiveSpecialHits, progress, score, blockPosition,
         blockIndex, specialsLeft, world, characterImg} = this.props.state;
@@ -128,37 +141,43 @@ const Game = React.createClass({
         </div>
     );
   }
-});
+}
 
-const PassedBlock = React.createClass({
-  propTypes: {
-    content: React.PropTypes.string.isRequired,
-    animate: React.PropTypes.bool.isRequired,
-    type: React.PropTypes.any.isRequired
-  },
+Game.propTypes = {
+  state: PropTypes.object.isRequired,
+  settings: PropTypes.object.isRequired
+};
+
+class PassedBlock extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   componentDidMount() {
     disableClassOnAnimationEnd(this.refs.block, "finish");
-  },
+  }
   render() {
     const classes = classNames(typeToClassName(this.props.type), {finish: this.props.animate});
     return <span ref="block" style={{color: "red"}} className={classes}>{this.props.content}</span>;
   }
-});
+}
 
-const ActiveBlock = React.createClass({
-  propTypes: {
-    content: React.PropTypes.string.isRequired,
-    position: React.PropTypes.number.isRequired,
-    onInput: React.PropTypes.func.isRequired,
-    type: React.PropTypes.any.isRequired
-  },
+PassedBlock.propTypes = {
+  content: PropTypes.string.isRequired,
+  animate: PropTypes.bool.isRequired,
+  type: PropTypes.any.isRequired
+};
+
+class ActiveBlock extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   componentDidUpdate() {
-    const cursor = React.findDOMNode(this.refs.cursor);
+    const cursor = ReactDOM.findDOMNode(this.refs.cursor);
     if (cursor === null) {
       return;
     }
     this.props.onInput(cursor.offsetLeft, cursor.offsetTop);
-  },
+  }
   render() {
     const {content, position} = this.props,
         completed = content.substr(0, position),
@@ -172,23 +191,33 @@ const ActiveBlock = React.createClass({
         </span>
     );
   }
-});
+}
 
-const UpcomingBlock = React.createClass({
-  propTypes: {
-    content: React.PropTypes.string.isRequired,
-    type: React.PropTypes.any.isRequired
-  },
+ActiveBlock.propTypes = {
+  content: PropTypes.string.isRequired,
+  position: PropTypes.number.isRequired,
+  onInput: PropTypes.func.isRequired,
+  type: PropTypes.any.isRequired
+};
+
+class UpcomingBlock extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return <span className={typeToClassName(this.props.type)}>{this.props.content}</span>;
   }
-});
+}
 
-const UpcomingNextBlock = React.createClass({
-  propTypes: {
-    content: React.PropTypes.string.isRequired,
-    type: React.PropTypes.any.isRequired
-  },
+UpcomingBlock.propTypes = {
+  content: PropTypes.string.isRequired,
+  type: PropTypes.any.isRequired
+};
+
+class UpcomingNextBlock extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return (
         <span className={typeToClassName(this.props.type)}>
@@ -197,20 +226,24 @@ const UpcomingNextBlock = React.createClass({
         </span>
     );
   }
-});
+}
 
-const CodeBox = React.createClass({
-  propTypes: {
-    blockPosition: React.PropTypes.number.isRequired,
-    blockIndex: React.PropTypes.number.isRequired,
-    blocks: React.PropTypes.array.isRequired
-  },
+UpcomingNextBlock.propTypes = {
+  content: PropTypes.string.isRequired,
+  type: PropTypes.any.isRequired
+};
+
+class CodeBox extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onInput = this.onInput.bind(this);
+  }
   onInput(cursorOffsetLeft, cursorOffsetTop) {
-    const node = this.getDOMNode();
+    const node = ReactDOM.findDOMNode(this);
     const {offsetLeft, offsetTop, clientWidth, clientHeight} = node;
     node.scrollLeft = Math.max(0, cursorOffsetLeft - offsetLeft - clientWidth + 50);
     node.scrollTop = Math.max(0, cursorOffsetTop - offsetTop - clientHeight + 150);
-  },
+  }
   render() {
     const {blockPosition, blockIndex, blocks} = this.props;
     const elements = blocks.map((block, index) => {
@@ -230,32 +263,44 @@ const CodeBox = React.createClass({
     });
     return <pre className="code">{elements}</pre>;
   }
-});
+}
 
-const Countdown = React.createClass({
-  propTypes: {
-    value: React.PropTypes.string.isRequired
-  },
+CodeBox.propTypes = {
+  blockPosition: PropTypes.number.isRequired,
+  blockIndex: PropTypes.number.isRequired,
+  blocks: PropTypes.array.isRequired
+};
+
+class Countdown extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return <span className="countdown" ref="cursor">{this.props.value}</span>;
   }
-});
+}
 
-const GameTime = React.createClass({
-  propTypes: {
-    value: React.PropTypes.number.isRequired
-  },
+Countdown.propTypes = {
+  value: PropTypes.string.isRequired
+};
+
+class GameTime extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return <div><span className="timeLeft">{this.props.value}</span><span className="logo-clock">Reaktor</span></div>;
   }
-});
+}
 
-export const GamePage = React.createClass({
-  propTypes: {
-    states: React.PropTypes.array.isRequired,
-    settings: React.PropTypes.array.isRequired,
-    page: React.PropTypes.object.isRequired
-  },
+GameTime.propTypes = {
+  value: PropTypes.number.isRequired
+};
+
+export class GamePage extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return (
         <div>
@@ -267,50 +312,66 @@ export const GamePage = React.createClass({
         </div>
     );
   }
-});
+}
 
-const PlayerName = React.createClass({
-  propTypes: {
-    onchange: React.PropTypes.func.isRequired,
-    placeholder: React.PropTypes.string.isRequired
-  },
+GamePage.propTypes = {
+  states: PropTypes.array.isRequired,
+  settings: PropTypes.array.isRequired,
+  page: PropTypes.object.isRequired
+};
+
+class PlayerName extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   componentDidMount() {
     Bacon
-        .fromEvent(React.findDOMNode(this.refs.input), "keyup")
+        .fromEvent(ReactDOM.findDOMNode(this.refs.input), "keyup")
         .map(e => e.target.value)
         .onValue(this.props.onchange);
-  },
+  }
   render() {
     return <input placeholder={this.props.placeholder} ref="input" type="text"/>;
   }
-});
+}
 
-const Credits = React.createClass({
-  intervals: [],
+PlayerName.propTypes = {
+  onchange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string.isRequired
+};
+
+function getCredits() {
+  Const.CREDITS.sort(() => Math.round(Math.random()) - 0.5);
+  return Const.CREDITS;
+}
+
+class Credits extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      credits: getCredits(),
+      interval: undefined
+    };
+  }
+
   componentWillUnmount() {
-    this.intervals.map(clearInterval);
-  },
-  getInitialState() {
-    function getCredits() {
-      Const.CREDITS.sort(() => Math.round(Math.random()) - 0.5);
-      return {credits: Const.CREDITS};
-    }
-    this.intervals.push(setInterval(() => this.setState(getCredits()), 3000));
-    return getCredits();
-  },
+    clearInterval(this.interval);
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.setState({credits: getCredits()}), 3000);
+  }
+
   render() {
     const credits = this.state.credits.join(", ");
     return <marquee>::: ARCANECODER ::: The realistic software development simulator ::: Presented by following Reaktorians in good old mutable order ::: {credits} ::: And yes, this is &lt;marquee&gt; in case you were wondering... embrace it while you can! :::</marquee>;
   }
-});
+}
 
-export const MenuPage = React.createClass({
-  propTypes: {
-    states: React.PropTypes.array.isRequired,
-    settings: React.PropTypes.array.isRequired,
-    outputs: React.PropTypes.object.isRequired,
-    navigation: React.PropTypes.array.isRequired
-  },
+export class MenuPage extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return (
         <div className="menu">
@@ -337,12 +398,19 @@ export const MenuPage = React.createClass({
         </div>
     );
   }
-});
+}
 
-export const WorldSelectPage = React.createClass({
-  propTypes: {
-    navigation: React.PropTypes.array.isRequired
-  },
+MenuPage.propTypes = {
+  states: PropTypes.array.isRequired,
+  settings: PropTypes.array.isRequired,
+  outputs: PropTypes.object.isRequired,
+  navigation: PropTypes.array.isRequired
+};
+
+export class WorldSelectPage extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return (
         <div className="worldSelect">
@@ -361,14 +429,16 @@ export const WorldSelectPage = React.createClass({
         </div>
     );
   }
-});
+}
 
-export const HowtoPage = React.createClass({
-  propTypes: {
-    states: React.PropTypes.array.isRequired,
-    settings: React.PropTypes.array.isRequired,
-    navigation: React.PropTypes.array.isRequired
-  },
+WorldSelectPage.propTypes =  {
+  navigation: PropTypes.array.isRequired
+};
+
+export class HowtoPage extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     const [navigation] = this.props.navigation;
     return (
@@ -393,14 +463,18 @@ export const HowtoPage = React.createClass({
         </div>
     );
   }
-});
+}
 
-export const ScorePage = React.createClass({
-  propTypes: {
-    states: React.PropTypes.array.isRequired,
-    settings: React.PropTypes.array.isRequired,
-    navigation: React.PropTypes.array.isRequired
-  },
+HowtoPage.propTypes =  {
+  states: PropTypes.array.isRequired,
+  settings: PropTypes.array.isRequired,
+  navigation: PropTypes.array.isRequired
+};
+
+export class ScorePage extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     const [navigation] = this.props.navigation;
     const maxScore = this.props.states.reduce((max, state) => Math.max(max, state.score), 0);
@@ -423,4 +497,10 @@ export const ScorePage = React.createClass({
         </div>
     );
   }
-});
+}
+
+ScorePage.propTypes =  {
+  states: PropTypes.array.isRequired,
+  settings: PropTypes.array.isRequired,
+  navigation: PropTypes.array.isRequired
+};

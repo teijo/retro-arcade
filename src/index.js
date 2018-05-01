@@ -1,6 +1,7 @@
 "use strict";
 
-import React from "react";
+import React from "react"; // eslint-disable-line
+import ReactDOM from "react-dom";
 import Bacon from "baconjs";
 import Immutable from "immutable";
 
@@ -398,7 +399,7 @@ const playerStatesP = Bacon
           .scan(player, (state, timeAndKey) => nextStep(Immutable.fromJS(state), timeAndKey).toJS());
     })));
 
-Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, navigationP, (template, states, settings, navigation) => React.render(template(freeze(states), freeze(settings), navigation), document.getElementById("main")));
+Bacon.onValues(pageComponentE, playerStatesP, playerSettingsP, navigationP, (template, states, settings, navigation) => ReactDOM.render(template(freeze(states), freeze(settings), navigation), document.getElementById("main")));
 
 function playersProgressedToEnd(states) {
   return states.reduce((end, s) => s.progress === 100 || end, false);
