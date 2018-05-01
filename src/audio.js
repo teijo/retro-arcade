@@ -1,15 +1,15 @@
 import { Howl } from "howler";
 
 const files = [
-  {src: "assets/game.mp3", isBackgroundMusic: true},
-  {src: "assets/menu.mp3", isBackgroundMusic: true},
-  {src: "assets/menu-pick.wav", isBackgroundMusic: false},
-  {src: "assets/menu-switch.wav", isBackgroundMusic: false},
-  {src: "assets/type.wav", isBackgroundMusic: false},
-  {src: "assets/perfect.wav", isBackgroundMusic: false},
-  {src: "assets/autocomplete.wav", isBackgroundMusic: false},
-  {src: "assets/miss.wav", isBackgroundMusic: false},
-  {src: "assets/finish.wav", isBackgroundMusic: false}
+  {name: "game", src: "assets/game.mp3", isBackgroundMusic: true},
+  {name: "menu", src: "assets/menu.mp3", isBackgroundMusic: true},
+  {name: "menuPickSfx", src: "assets/menu-pick.wav", isBackgroundMusic: false},
+  {name: "menuSwitchSfx", src: "assets/menu-switch.wav", isBackgroundMusic: false},
+  {name: "typeSfx", src: "assets/type.wav", isBackgroundMusic: false},
+  {name: "perfectSfx", src: "assets/perfect.wav", isBackgroundMusic: false},
+  {name: "autocompleteSfx", src: "assets/autocomplete.wav", isBackgroundMusic: false},
+  {name: "missSfx", src: "assets/miss.wav", isBackgroundMusic: false},
+  {name: "finishSfx", src: "assets/finish.wav", isBackgroundMusic: false}
 ];
 
 export const loadAudioContext = () => {
@@ -19,7 +19,8 @@ export const loadAudioContext = () => {
       loop: file.isBackgroundMusic
     });
 
-    return {
+    const context = {};
+    context[file.name] = {
       loop(active) {
         audio.loop(true);
         if (active === true) {
@@ -37,8 +38,12 @@ export const loadAudioContext = () => {
         audio.play();
       }
     };
+
+    return context;
   }
 
   // Return a playback functions for each loaded file
-  return files.map((fileName) => player(fileName));
+  return files
+    .map((fileName) => player(fileName))
+    .reduce((memo, current) => Object.assign(current, memo, {}), {});
 };

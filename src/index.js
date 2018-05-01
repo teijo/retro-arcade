@@ -409,7 +409,7 @@ gameIsActiveP
     .filter(s => s === true)
     .onValue(() => window.location.hash = "#score");
 
-const [game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx] = Audio.loadAudioContext();
+const {game, menu, menuPickSfx, menuSwitchSfx, typeSfx, perfectSfx, autocompleteSfx, missSfx, finishSfx} = Audio.loadAudioContext();
 
 // Audio
 
