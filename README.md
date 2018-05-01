@@ -7,5 +7,5 @@ Light project base for building simple HTML 5 games.
 
 Requires [nodejs](https://nodejs.org/) 
 
-- `yarn start` starts http-server, watch and builds `src/` to `build/`
-- `open http://localhost:8080` (in OS X) to open the game
+- `yarn start` watches and builds `src/` to `build/`
+- `open index.html` (in OS X) to open the game
