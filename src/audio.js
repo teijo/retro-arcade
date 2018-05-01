@@ -1,6 +1,18 @@
 import { Howl } from "howler";
 
-export const loadAudioContext = (...files) => {
+const files = [
+  "assets/game.mp3",
+  "assets/menu.mp3",
+  "assets/menu-pick.wav",
+  "assets/menu-switch.wav",
+  "assets/type.wav",
+  "assets/perfect.wav",
+  "assets/autocomplete.wav",
+  "assets/miss.wav",
+  "assets/finish.wav"
+];
+
+export const loadAudioContext = () => {
   function player(fileName) {
     const isMp3 = fileName.includes("mp3");
     const audio = new Howl({
