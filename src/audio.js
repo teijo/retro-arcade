@@ -1,23 +1,22 @@
 import { Howl } from "howler";
 
 const files = [
-  "assets/game.mp3",
-  "assets/menu.mp3",
-  "assets/menu-pick.wav",
-  "assets/menu-switch.wav",
-  "assets/type.wav",
-  "assets/perfect.wav",
-  "assets/autocomplete.wav",
-  "assets/miss.wav",
-  "assets/finish.wav"
+  {src: "assets/game.mp3", isBackgroundMusic: true},
+  {src: "assets/menu.mp3", isBackgroundMusic: true},
+  {src: "assets/menu-pick.wav", isBackgroundMusic: false},
+  {src: "assets/menu-switch.wav", isBackgroundMusic: false},
+  {src: "assets/type.wav", isBackgroundMusic: false},
+  {src: "assets/perfect.wav", isBackgroundMusic: false},
+  {src: "assets/autocomplete.wav", isBackgroundMusic: false},
+  {src: "assets/miss.wav", isBackgroundMusic: false},
+  {src: "assets/finish.wav", isBackgroundMusic: false}
 ];
 
 export const loadAudioContext = () => {
-  function player(fileName) {
-    const isMp3 = fileName.includes("mp3");
+  function player(file) {
     const audio = new Howl({
-      src: [fileName],
-      loop: isMp3
+      src: [file.src],
+      loop: file.isBackgroundMusic
     });
 
     return {
