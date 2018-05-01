@@ -1,1 +1,0 @@
-start /min yarn prod
